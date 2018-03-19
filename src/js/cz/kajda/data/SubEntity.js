@@ -60,7 +60,10 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
     {
         return this._cssClasses;
     },
-
+    /**
+     * Parse rawCssClasses into array of strings
+     * @returns {Array<String>} parsed array of strings
+     */
     _createCssClasses : function(rawCssClasses)
     {
         var split = rawCssClasses.split(" ");
