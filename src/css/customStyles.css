@@ -1,3 +1,18 @@
 .king{
-    color: black;
+    /*background-color: black; */
+    background:rgba(59, 58, 58, 0.5);
+}
+.person{
+    /*background-color: blue; */
+    background:rgba(39, 2, 253, 0.5);
+}
+.queen{
+    /*background-color: pink; */
+    background:rgba(228, 109, 109, 0.5);
+}
+.fancy{
+    border-radius: 5px;
+}
+.commit{
+    background:rgba(4, 255, 59, 0.5);
 }
