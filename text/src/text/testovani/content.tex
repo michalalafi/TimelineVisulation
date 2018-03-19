@@ -1,0 +1,228 @@
+% nastavení cesty k~obrázkům této kapitoly
+\graphicspath{{text/testovani/img/}}
+
+\chapter{Testování}
+\label{testovani}
+	Jedním z~bodů zadání této diplomové práce bylo provedení testování implementovaného prvku ovládací osy, přičemž důraz má být kladen obzvlášť na uživatelskou přívětivost a~použitelnost. Následující podkapitoly uvádí způsoby, jimiž lze funk\-čnost a~výkonnost vzniklého řešení testovat, a~doplňují je i~o~konkrétní získané výsledky.
+	
+	\section{Metody testování}
+		U widgetu časové osy můžeme za zásadní považovat dva aspekty -- uživatelskou přívětivost a~výkon. Zatímco míru toho, jak je použití ovládacího prvku pro uživatele příjemné a~jednoduché, lze ověřit konstrukcí scénáře procháze\-jícího jednotlivé funkce widgetu, pro prokázání dostatečné výkon\-nosti musíme jednak nejdříve určit, jaká úroveň představuje dostačující výkon, a~pak také jak ji lze prověřit.
+		
+		Pro softwarový produkt vzniklý v~rámci této práce postupně provedeme násle\-dující testy:
+		\begin{enumerate}
+			\item[--] testy kompatibility, které navzdory proklamovanému omezení podpory pou\-ze na prohlí\-žeč {\sf Chrome} (kapitola \ref{omezeni-navrhu}) ověří funkčnost i~v~jiných programech pro procházení HTML obsahu,
+			\item[--] výkonnostní testy, jež odhalí časovou náročnost vybraných výpočtů logiky a~vykreslování pro různou velikost vstupních dat,
+			\item[--] a~uživatelské testy dle scénáře, jimiž práce dokládá použitelnost widgetu.
+		\end{enumerate}
+		
+	\section{Testování kompatibility}
+		Jak již zmiňovala poznámka ke cross-browser kompatibilitě v~kapitole \ref{omezeni-navrhu}, vývoj a~průběžné testování funkčnosti widgetu probíhaly výhradně v~prohlížeči {\sf Chrome}. Přesto byli pro ověření kompatibility zvoleni tři hlavní zástupci na poli prohlí\-žečů, a~sice {\sf Google Chrome}, {\sf Mozilla Firefox} a~{\sf Internet Explorer} \cite{w3c-browser}. Ve všech třech aplikacích proběhly testy nad statickým zdrojem dat {\tt StaticSource}, z~nichž vznikl seznam potenciálně kritických oblastí, ve kterých může dojít k~nekompatibilitě. Výsledky uvádí tabulka \ref{kompatibilita} a~podrobněji je rozebírá následující kapitola.
+		\begin{table}
+			\centering
+			\small
+			\begin{tabular}{|l|ccc|}
+			\hline
+			 & Chrome 43.0 & Firefox 38.0 & IE 11.0\\		
+			 \hline			 
+			 \multicolumn{4}{|l|}{\bf Ovládání}\\
+			 \hline			
+			 změna úrovně přiblížení & \OK /\OK /\OK & {\bf !$^1$}/--/\OK & {\bf !$^1$}/\OK /\OK\\
+			 posun & \OK /\OK /\OK & \OK /\OK /\OK & \OK /--/--\\
+			 zrušení výběru záznamu & \OK /\OK /-- & \OK /\OK /-- & \OK /\OK /-- \\
+			 výběr záznamu & \OK & \OK & \OK \\
+			 přechod po vztahu & \OK & \OK & -- \\	
+			 \hline			 
+			 \multicolumn{4}{|l|}{\bf Ostatní}\\
+			 \hline			
+			 náhledy záznamů a~vztahů & \OK & \OK & \OK \\
+			 vodicí linky & \OK & \OK & \OK\\
+			 zobrazení vztahů & \OK & \OK & \OK \\
+			 řešení kolizí záznamů & \OK &  \bf !$^2$ & \bf !$^2$\\
+			 vykreslení a~vzhled & \OK & \OK & \OK \\
+			 \hline
+			\end{tabular}
+			\caption{Tabulka výsledků testování kompatibility (položky s~více symboly charakterizují různé způsoby ovládání, a~to v~pořadí myš / klávesy / tlačítka widgetu)}
+			\label{kompatibilita}
+		\end{table}
+		
+		\subsection{Výsledky testování kompatibility}
+			Tabulka \ref{kompatibilita} uvádí poměrně překvapivé výsledky, vezmeme-li v~potaz, že při vývoji procházel widget testy výhradně v~prohlížeči {\sf Chrome}. Přesto se napříč zvolenými aplikacemi objevují drobné problémy s~kompatibilitou, které buďto zapříčiňují úplnou absenci vybrané funkce (--) nebo její odlišné chování ({\bf !}), kde uvedený index odpovídá těmto případům:
+			\begin{enumerate}
+				\item Při rolování kolečkem myši za účelem změny úrovně přiblížení dochází v~označených prohlížečích k~opačnému efektu -- při rolování směrem dopředu prohlížeč {\sf Chrome} obsah přibližuje, kdežto {\sf Internet Explorer} a~{\sf Mozilla Firefox} jej oddalují. Problém lze snadno řešit úpravou kódu.
+				\item {\sf Internet Explorer} a~{\sf Mozilla Firefox} v~jistých případech špatně vyřeší kolize záznamů, a~ty se tak překrývají. Tento problém nevzniká chybou lane algoritmu (kapitola \ref{band}), nýbrž špatným určováním šířky záznamu $w_{item}$, jehož popisek je absolutně pozicován uvnitř.
+			\end{enumerate}
+			
+	\section{Výkonnostní testy}
+		Widget časové osy při svém překreslení provádí řadu úkonů, které mohou při větším množství vstupních dat výrazně zvýšit jeho časovou náročnost. Jde napří\-klad o~vykreslení záznamů do pásů nebo řešení kolizí mezi nimi.
+		
+		Pro testování výkonu zvolíme zdroj náhodných dat ({\tt RandSource}), jež je rov\-něž součástí implementace, jako časový rozsah období generovaných entit určíme 1. ledna 2001 př. n. l až 31. prosince 2000 a~nastavíme vlastnosti jeho konfiguračního objektu podle tabulky \ref{tab:conf-obj-rand}.
+		\begin{table}[h!]
+			\begin{tabular}{|p{0.26\textwidth}p{0.4\textwidth}p{0.25\textwidth}|}
+				\hline			
+				\bf vlastnost& \bf význam & \bf hodnota \\
+				\hline
+				\tt count & počet generovaných entit & $n\in\{10, ..., 1000\}$ \\
+				\tt durationDist & trvání entity ($d_e$)& $\sim N(100, 30)$ [roky]\\
+				\tt relationDist & počet vztahů k~entitě & $\sim N(20, 5)$\\
+				\tt priorityDist & priorita entit & $\sim N(100, 0)$\\
+				\tt momentProbability & pravděpodob. vzniku momen\-tové entity & $0,\!4$\\
+				\hline
+			\end{tabular}
+			\caption{Parametry zdroje náhodných dat pro testování výkonnosti}
+			\label{tab:conf-obj-rand}
+		\end{table}
+		
+		Měření vždy proběhně při maximálním oddálení časové osy -- tím docílíme toho, že spousta záznamů se bude kvůli velikosti popisků překrývat, a~my tak zatížíme lane algoritmus, který se tyto kolize snaží řešit. Jak je z~obrázku \ref{img:entity-collisions} patrné, při maximálním oddálení se ose podaří entity v~rozmezí přibližně 4 tisíc let rozdělit jen na čtyři \emph{sloupečky}.
+		
+		Postupně provedeme tři měření pro 10, 50, 100, 250, 500, 750 a~1\ts000 vygenerovaných záznamů, jejichž prioritu jsme jednotně nastavili na 100, abychom měli jistotu, že se osa pokusí zobrazit všechny najednou (byť část z~nich \emph{vyteče} z~pásu). Informace o~naměřených časech získáme z~konzole prohlížeče, kam je komponenty widgetu zasílají (obrázek \ref{img:console-output}). Tyto informace může sledovat i~běžný uživatel, jsou-li po načtení knihovny {\sf oop.js} nastaveny proměnné {\tt \_OOP.debug} a~{\tt \_OOP.time\-Info} na hodnotu {\tt true} (standardně tomu tak je).
+		
+		
+		\image{img:console-output}
+		{}{console-output.eps}
+		{Ukázka výstupu o~měření časů v~jednotlivých komponentách widgetu}
+		{h!}
+		
+		\image{img:entity-collisions}
+		{}{entity-collision.eps}
+		{Ukázka vykreslení velkého počtu záznamů při maximálním oddálení osy}
+		{h!}
+						
+		\subsection{Výsledky výkonnostních testů}
+		Tabulka \ref{tab:redraw-times} ukazuje závislost času vyžadovaného překreslením widgetu na počtu záznamů, které zobrazuje. Uvedené hodnoty jsou získány třemi měřeními pro každé $n$ a~jednotlivé sloupce mají následující význam:
+		\begin{itemize}
+			\item[--] \emph{DOM} -- čas vyžadovaný na registraci komponenty u~rodiče, vytvoření odpovídajícího HTML prvku a~jeho vložení do HTML prvku rodiče,
+			\item[--] \emph{redraw} -- čas vyžadovaný na výpočet a~změnu pozice záznamu dle jeho časového zasazení a~na výpočet umístění popisku,
+			\item[--] \emph{lane algo} -- čas nutný k~realizaci lane algoritmu včetně času potřebného k~získání šířky a~pozice prvku,
+			\item[--] \emph{overlap} -- čas potřebný na úpravu pozic záznamů podle lane algoritmu,
+			\item[--] \emph{total} -- celková doba překreslení časové osy včetně všech komponent.
+		\end{itemize}
+		
+		Je zřejmé, že hranici použitelnosti widget překračuje přibližně při vizualizaci 250 až 500 záznamů. Musíme však vzít v~úvahu, že v~tomto testu jsme zobrazovali všechny záznamy najednou. V~praxi pravděpodobně nenastane situace, kdy by měla časová osa zobrazit současně 500 položek, protože jejich autor data ohodnotí (či použije hodnoticí mechanismy implementované v~rámci práce Bc. Davida Hrbáčka) tak, že při maximálním oddálení budou viditelné pouze ty položky, jejichž význam je v~onom měřítku relevantní. Díky tomu sníží $n$ při minimálním přiblížení třeba na pouhých 20.
+		
+		V rámci měření widget zároveň zaznamenával i~počet přesunů záznamů mezi pruhy ($C$) při běhu lane algoritmus. Podle kapitoly \ref{band} odhadujeme jeho asymp\-totickou složitost na $O(\frac{n^2+n}{2})$, což odpovídá kvadratické složitosti $O(n^2)$. Tabulka~\ref{tab:lane-crosses} doplněná grafem \ref{img:lane-crosses-graph} poukazuje na to, že naměřené počty přesunů mezi pruhy se jen zdaleka přibližují nejhoršímu odhadu, i~přesto že jsme vstupní data modelovali tak, aby cíleně lane algoritmus vytížila.
+		
+		\begin{table}[h!]
+			\small
+			\begin{tabular}{|r|rrrrr|}
+				\hline
+				$n$ & DOM & redraw & lane algo & overlap & total\\
+				\hline
+				10 & 0,014$\pm$0,002 & 0,018$\pm$0,003 & 0,010$\pm$0,001 & 0,019$\pm$0,002 & 0,164$\pm$0,005\\
+				50 & 0,049$\pm$0,003 & 0,081$\pm$0,007 & 0,101$\pm$0,032 & 0,055$\pm$0,005 & 0,363$\pm$0,049\\
+				100 & 0,114$\pm$0,030 & 0,149$\pm$0,008 & 0,214$\pm$0,026 & 0,101$\pm$0,007 & 0,664$\pm$0,013\\
+				250 & 0,210$\pm$0,006 & 0,340$\pm$0,027 & 1,018$\pm$0,010 & 0,280$\pm$0,016 & 1,940$\pm$0,026\\
+				500 & 0,426$\pm$0,019 & 0,819$\pm$0,034 & 3,798$\pm$0,091 & 0,704$\pm$0,025 & 5,859$\pm$0,128\\
+				750 & 0,640$\pm$0,029 & 1,358$\pm$0,025 & 8,223$\pm$0,111 & 1,280$\pm$0,006 & 11,614$\pm$0,070\\
+				1000 & 0,900$\pm$0,018 & 2,150$\pm$0,054 & 14,421$\pm$0,111 & 1,962$\pm$0,080 & 19,559$\pm$0,141\\
+				\hline
+			\end{tabular}
+			\caption{Tabulka výsledků měření časů [sekundy] jednotlivých úkonů při $n$ záznamech}
+			\label{tab:redraw-times}
+		\end{table}
+		
+		\begin{table}[h!]
+			\centering
+				\small
+				\begin{tabular}{|r|rrrrrrr|}
+				\hline
+					$n$ & 10 & 50 & 100 & 250 & 500 & 750 & 1\ts000\\
+					\hline
+					$C$ &16 & 366 & 1427 & 8769 & 34\ts231 & 75\ts706 & 135\ts143\\
+					$C_w$ & 55 & 1\ts275 & 5\ts050 & 31\ts375 & 125\ts250 & 281\ts625 & 500\ts500\\
+					$L$ & 5 & 20 & 36 & 84 & 162 & 237 & 306\\
+
+					\hline
+				\end{tabular}
+				\caption{Tabulka počtu přesunů záznamů mezi pruhy $C$, nejhoršího odhadu tohoto počtu $C_w$ a~počtu vzniklých pruhů $L$}
+				\label{tab:lane-crosses}
+			\end{table}
+			
+		
+		\section{Uživatelské testy}
+		Cílem uživatelského testování je prověřit, zda se ovládací prvek časové osy dobře používá, nezpůsobuje uživatelům problémy s~orientací a~především plní svoji funkci tak, jak se od něj očekává. Tyto aspekty pomůže ověřit testovací scénář, jejž zúčastněné osoby s~widgetem seznámí, vysvětlí jim účel testování a~této práce a~nakonec prověří funkce časové osy tím, že požádá uživatele o~vyřešení několika úkolů. Na konci testování má pak autor vyplněného scénáře možnost poskytnout zpětnou vazbu, a~to jak hodnocením, tak i~prostřednictvím otevřeného komentáře.
+		
+		Pro uživatelské testování zvolíme historické záznamy z~období Českého knížec\-tví, přesněji od počátku Sámovy říše až po vymření rodu Přemyslovců, přičemž hlavními daty budou informace o~panovnících, jejich příbuzenských vztazích a~na vedlejší úrovni pak vybrané události z~doby jejich vlády. Tyto záznamy poskytneme aplikaci formou statického datového zdroje {\tt StaticSource}\footnote{{\tt StaticSource} je v~aplikaci již připraven a~není potřeba jej nijak inicializovat. Stačí pouze na konci souboru {\sf js/main.js} odkomentovat řádek {\tt app.createSource()}.}.
+
+		Samotný scénář testování zpřístupníme jako {\sf Google Forms} dotazník, který umožňuje pohodlný sběr dat. Kompletní přepis testovacího scénáře obsahuje příloha A. Obrázek \ref{img:user-environment} pak prezentuje podobu widgetu spolu s~podpůrnou aplikací, tak jak jej zobrazí účastníci testu.
+		
+		\image{img:lane-crosses-graph}{}{lane-crosses-graph.eps}{Graf závislosti počtu přesunů záznamů mezi pruhy (lanes) na celkovém počtu záznamů}{h!}
+		\image{img:user-environment}
+		{}{user-environment.eps}
+		{Náhled widgetu a~podpůrné aplikace, tak jak jej zobrazí tester}
+		{h!}
+		
+		\subsection{Charakteristika testerů}
+		Testování se zúčastnilo 15 osob. Součástí průvodce scénářem byla i~část, která od uživatelů získávala základní demografické údaje a~informace o~jejich znalosti dějin a~práce s~počítačem. Na základě získaných dat můžeme průměrnou osobu, která odeslala testovací scénář této diplomové práce, charakterizovat jako někoho, kdo
+		\vbox{\begin{itemize}
+			\item[--]je ve věku 30--50 let,
+			\item[--]své znalosti českého dějepisu považuje za běžné,
+			\item[--]zná klávesové zkratky na běžné nebo nadprůměrné úrovni,
+			\item[--]umí standardně pracovat s~webovým prohlížečem
+			\item[--]a má nadprůměrné zkušenosti se zpracováním dat.
+		\end{itemize}}
+		
+		\subsection{Výsledky testů}
+		Testovací scénář požadoval po uživatelích splnění tří úkolů, a~sice:
+		\begin{itemize}
+			\item[--] \emph{Čtení časových údajů} -- uživatel měl prostředictvím podpůrné aplikace a~wid\-getu dohledat datování vybraných osob či událostí, přičemž v~některých případech nebylo jméno uvedeno explicitně, a~tester jej tak musel dohledat čtením vztahů.
+			\item[--] \emph{Jaký byl vztah?} -- výchozí text uváděl dvě jména, mezi nimiž měl uživatel určit odpovídající vztah.
+			\item[--] \emph{Mohli se potkat?} -- úkolem testera bylo bez znalosti konkrétních časových údajů, pouze na základě vizualizace časovou osou rozhodnout, zda se dvě osoby mohly setkat, či nikoliv.
+		\end{itemize}
+		
+		\subsubsection{Čtení časových údajů}
+		Při čtení časových údajů, ať už z~widgetu či podpůrné aplikace, většina testerů odpověděla správně. Výjimku v~tomto ohledu tvořila otázka \emph{Kolika let se dožil sourozenec Vratislava I.}, u~níž se testeři rozdělili do čtyř skupin, přičemž jen jedna odpověděla správně. Chybu ostatních zřejmě zapříčinila špatná interpretace vztahů čtených z~widgetu nebo nepozornost, kvůli které mohli například zaměnit Vratislava za Vladislava.
+		
+		\subsubsection{Jaký byl vztah?}
+		Podobně jako u~předchozího úkolu i~zde většina uživatelů odpovídala správně. Zcela odlišné odpovědi však testeři uváděli u~otázky \emph{Břetislav I. je \underline{\qquad} Boleslava~II.}, jejíž správnou odpovědí je \emph{vnuk}. Ta ale byla zastoupena v~takřka stejném počtu jako špatná možnost \emph{děd} (obrázek \ref{img:relation-result}).
+		
+		Hlavní problém zde pro uživatele zřejmě představovalo nalezení správného vztahu přes \emph{prostředníka}. Relaci \emph{prapotomek} (děd $\leftrightarrow$ vnuk) nelze z~časové osy vyčíst přímo, místo toho je reprezentována dvěma vztahy \emph{potomek} (otec $\leftrightarrow$ syn) -- otec (v případě této otázky Oldřich) je tedy prostředníkem. Nicméně toho většina testerů identifikovala správně, pouze pak vztah obrátila navzdory tomu, že z~widgetu je zcela patrné pozdější narození Břetislava I. oproti Boleslavu II. K~podobné chybě, nikoliv v~takové míře, docházelo i~u otázky \emph{Přemysl Otakar II. je \underline{\qquad} Přemysla Otakara I.}
+		
+		\image{img:relation-result}
+		{}{relation-result.eps}
+		{Výsledky otázky \emph{Břetislav I. je \underline{\qquad} Boleslava II.}}{h!}
+		
+		\subsubsection{Mohli se potkat?}
+		V posledním úkolu měli testeři rozhodnout o~tom, zda se dvě osobnosti mohly potkat, a~to na základě jejich reprezentace v~časové ose (tedy průniku jejich životů). Většinu otázek vyřešili uživatelé správně, problém pro ně představovala pouze otázka setkání Oldřicha a~jeho nejmladšího vnuka. U~té totiž museli pracovat nejen se vztahy (určení vnuka pomocí prostředníka), ale také s~pozicí grafické reprezentace v~časové ose (výběr nejmladšího). Při řešení této otázky selhala jedna třetina uživatelů.
+		
+		\subsection{Uživatelské hodnocení}
+		\label{uzivatelske-hodnoceni}
+		V poslední kroku testování uživatelé hodnotili celkový průběh testů. Pomocí pětiúrovňové stupnice měli rozhodnout o~náročnosti jednotlivých úkolů a~také o~tom, jak jim vybrané funkční oblasti widgetu vyhovovaly. Výsledky shrnují grafy \ref{img:task-levels} a~\ref{img:user-friendliness}.
+		
+		Mimo hodnocení pomocí výběru dostali testeři také prostor k~písemnému vyjádření, ať už šlo o~zdůraznění negativ či pozitiv. Většina uživatelů této možnos\-ti využila a~popsala své zkušenosti, které během testování získala.
+		
+		\image{img:task-levels}
+		{}{task-levels.eps}
+		{Hodnocení jednotlivých úkolů}{}
+		
+		\image{img:user-friendliness}
+		{}{user-friendliness.eps}
+		{Hodnocení uživatelské přívětivosti operací widgetu}{}
+		
+		\clearpage		
+		
+		Jako negativum většina testerů uváděla způsob vizualizace vztahů. Popis pomocí šipek považovali za matoucí, obzvlášť velké problémy jim činil směr čtení vztahu (kapitola \ref{relation-viewer}) bez ohledu na to, zda pracovali přímo s~widgetem nebo s~podpůrnou aplikací. Za obtěžující pak považovali operaci rušení výběru záznamu (což je patrné i~z grafu \ref{img:user-friendliness}) -- použití pravého tlačítka pro zrušení výběru označili jako neintuitivní, případně postrádali možnost označit více záznamů najednou tak, aby mohli sledovat cestu vztahů (například pokrevní linii).
+		
+		Naopak popularitu u~uživatelů získala podpůrná aplikace, která sice není přímým produktem této diplomové práce, na druhou stranu ale demonstruje, že vhodnou implementací doplňující interaktivity, která využívá vnější rozhraní wid\-getu, lze dosáhnout lepšího ohlasu u~uživatelů. Někteří rovněž ocenili rychlost, jakou časová osa reaguje na změnu úrovně přiblížení, a~klasifikaci záznamů pomocí pásů. Zajímavostí je, že jeden z~testerů považoval za užitečné zobrazení vztahu pomocí šipek, jež bylo ostatními ve většině případů označováno jako matoucí či náročné na pochopení. Tento uživatel jej však považoval za efektivní pomůcku při učení:
+		
+		\begin{quote}\it
+		Líbí se mi práce s~daty a~jmény. Špatně se mi pamatují pojmy bez práce s~nimi, tj. strojově. Určitě bych nezaváděl označení vztahů, při přemýšlení nad tím, kdo je kdo podle šipek, se dobře zapamatovaly. Kdyby byly přímo napsané, nemělo by to ten efekt.
+		\end{quote}
+		
+		
+	\section{Význam výsledků pro další vývoj}
+	Tato kapitola shrnuje výsledky všech testování a~na jejich základě uvádí možnosti, jakými lze widget dále vyvíjet.
+		
+		\subsection{Vizualizace vztahů}
+		Uživatelská část testování ukázala, že zobrazení relací mezi entitami pomocí pouhé šipky, kde pozice jejího konce (špičky) zásadně ovlivňuje význam vztahu, představuje pro člověka problém. Naneštěstí neexistuje mnoho jiných alternativ, které by mohly šipky nahradit a~přitom úspěšně charakterizovat vztah mezi záznamy. 
+		
+		Výraznou pomocí pro zmateného uživatele by však mohla být specifikace názvu vztahu pro oba jeho významové směry. V~této verzi widgetu očekává objektová reprezentace relace jediný řetězec názvu, který má kompletně vyjadřovat její smysl. Pokud by v~budoucnu došlo k~rozšíření relace o~alternativní název vystihující opačný směr vztahu, uživatel by se orientoval snáze. Příkladem může být několikrát opakovaná relace \emph{potomek}. Ať ji uživatel prochází ve směru od otce nebo od syna, pokaždé uvidí pouze popisek \emph{potomek}, a~to, kdo je koho synem, vyčte až ze směru šipky. V~případě, kdy by vztah disponoval alternativním názvem, by uživatel při klepnutí na záznam otce uviděl u~vztahu popisek \emph{otec} směřující k~jeho potomkovi. Při klepnutí na potomka by pak relace zobrazila titulek \emph{potomek} vedoucí směrem k~otci.
+		
+		\subsection{Označování záznamů}
+		Pro spoustu uživatelů je aktuální řešení označování záznamů nepraktické, a~to především z~toho důvodu, že pro výběr jiné položky musí nejdříve označení záznamu zrušit pomocí pravého tlačítka nebo klávesy {\sf Escape}. To je ovšem vyžado\-váno pouze v~případě, kdy widget aktivně používá vrstvu vztahů. Při její deaktivaci lze výběr záznamu změnit překliknutím na jiný. Tato možnost není při použití relation vieweru dostupná, protože jeho komponenta překrývá položky pásů, aby mohla zobrazit kompletně všechny šipky a~nedošlo k~jejich skrytí pod záznamy (pouze označená položka je předsunuta před vrstvu vztahů).
+		
+		Jako možné řešení této situace se nabízí úprava vykreslovacího algoritmu vrstvy vztahů tak, že nepovedeme šipky do středového bodu prvku, který zobrazuje dobu trvání entity, ale ukončíme je na jeho okraji (obrázek \ref{img:relation-draw-future}). V~takovém případě bychom i~nadále určovali středové body, jen bychom pomocí odchylky vektorů (vektor vztahu a~vektor vzdálenosti mezi středy položek účastnících se vztahu) určili průsečík šipky s~okrajem cílového záznamu.
+		
+		\image{img:relation-draw-future}
+		{}{relation-draw-future.eps}
+		{Rozdíl mezi současným a~případným budoucím zobrazením vztahu}{h!}
+	

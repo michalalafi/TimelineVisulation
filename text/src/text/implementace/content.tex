@@ -1,0 +1,491 @@
+% nastavení cesty k~obrázkům této kapitoly
+\graphicspath{{text/implementace/img/}}
+
+\chapter{Implementace}
+	\label{implementace}
+	
+	\section{Použité knihovny jiných stran}
+		\label{pouzite-knihovny}
+		\subsection{{\sf jQuery} a~{\sf jQuery UI}}
+			\label{jquery-jquery-ui}
+			
+			Hlavní účel často užívané knihovny {\sf jQuery} představuje zjednodušení psaní aplikací v~JavaScriptu, což plně vystihuje i~její motto \emph{write less, do more} (napiš méně, udělej více). Běžné operace, které v~čistém JavaScriptu vyžadují několik řádek zdrojového textu, zabaluje do jednoduchých a~stručných metod, které jsou navíc funkční napříč všemi prohlížeči -- řeší tedy interně i~stránku \emph{cross-browser} kompatibility~\cite{w3c-jquery}.
+			
+			{\sf jQuery UI} je rozšiřující knihovou {\sf jQuery}, která vývojáři usnadňuje práci přede\-vším tím, že doplňuje standardní možnosti o~nové způsoby interakce a~řadu ovládacích prvků~\cite{jqueryui-2015}. V~její nabídce tak lze nalézt widget pro výběr data, indikátor postupu ale rovněž i~implementaci interakce typu tažení, změna velikosti nebo přeskupení prvků DOM.
+			
+			Uvedené charakteristiky jsou dostatečným důvodem pro použití obou knihoven v~této práci. {\sf jQuery} výrazně zjednoduší zpracovávání AJAX požadavků a~prá\-ci s~DOM, jež představuje jednu z~majoritních činností widgetu. U~{\sf jQuery UI} pak bude využito poskytované implementace pro interakci typu tažení (draggable) -- to umožní získat kontrolu nad tím, jak uživatel manipuluje s~časovou osou, a~adekvátně na tyto události reagovat.
+			
+			\vspace{\baselineskip}
+			\renewcommand{\arraystretch}{1.3}
+			\noindent
+			\begin{tabularx}{\textwidth}{|lX|}
+			\hline
+			\bf Vydavatel & jQuery Foundation \\
+			\bf Domovská stránka & http://jquery.com $\bullet$ http://jqueryui.com\\
+			\bf Licence & MIT license \\
+			\bf Použitá verze & 2.1.4 ({\sf jQuery}) $\bullet$ 1.11.2 ({\sf jQuery UI})\\
+			\bf Vydána dne & 28.\ts dubna 2015 ({\sf jQuery}) $\bullet$ 6.\ts února 2015 ({\sf jQuery UI})\\
+			\hline
+			\end{tabularx}
+		
+		\subsection{\sf RequireJS}
+			\label{requirejs}
+			
+			Jednoduché webové stránky velmi často používají jen knihovny třetích stran a~samy nevyžadují velké množství dalšího kódu JavaScriptu. Jedná-li se však o~aplikaci, lze poměrně snadno očekávat, že velikost JavaScriptových souborů poroste -- v~případě, že se vyvojář snaží o~přehlednost, stoupne i~jejich počet.
+
+			\begin{samepage}
+			Pokud nevkládáme JavaScriptový zdrojový text do HTML stránky přímo, musíme jej do dokumentu zahrnout direktivou\footnote{Starší publikace uvádí také atribut {\tt type}, ten však není vyžadován, neboť je JavaScript výchozím skriptovacím jazykem pro HTML dokument~\cite{w3schools-js}.}
+			\begin{verbatim}<script src="[cesta_k_JS]"></script>\end{verbatim}
+			\end{samepage}
+			a~tu umístit před ukončovací značku pro {\tt body} -- zlepší se tak způsob načítání stránky (soubory JavaScriptu nebudou svým stahováním zdržovat stažení obráz\-ků či samotného obsahu dokumentu)~\cite{w3schools-js}. Když uvážíme výše popsanou situaci, kdy aplikace pracuje s~mnohdy až desítkami takových souborů, znamenalo by to uvést je všechny v~HTML dokumentu, a~rovněž je tedy i~všechny najednou načíst při jeho stahování. Často však nejsou všechny potřeba.
+
+			Popsanou situaci řeší využití {\sf RequireJS} -- knihovna, která usnadňuje načítání souborů a~modulů JavaScriptu a~zlepšuje rychlost a~kvalitu kódu -- jednak jeho organizací a~také tím, že konkrétní modul (soubor) načítá až ve chvíli, kdy je skutečně vyžadován~\cite{requirejs}. Díky elegantně navrženému zápisu se tak zahrnutí externího modulu ve zdrojovém textu JavaScript souboru (obrázek \ref{img:requirejs_module}) podobá použití direktiv {\tt import} nebo {\tt include}, na než jsme zvyklí v~jiných programovacích jazycích.
+
+			\begin{figure}[h!]
+				\begin{verbatim}
+
+define([
+   "PrvniModul",   /* relativní cesta k externímu modulu */
+   "DruhyModul",
+], function(
+    Prvni,         /* alias externího modulu */
+    Druhy          /* pro použití v definici tohoto modulu */
+) {
+    return {
+	   ... new Prvni() ...
+    }
+}\end{verbatim}
+			\caption{Struktura JavaScript modulu za použití {\sf RequireJS}}
+			\label{img:requirejs_module}
+		\end{figure}
+		
+		\vspace{\baselineskip}
+		\renewcommand{\arraystretch}{1.3}
+		\noindent
+		\begin{tabularx}{\textwidth}{|lX|}
+		\hline
+		\bf Vydavatel & The Dojo Foundation \\
+		\bf Domovská stránka & http://requirejs.org\\
+		\bf Licence & The New BSD license / MIT license \\
+		\bf Použitá verze & 2.1.17 \\
+		\bf Vydána dne & 31.\ts března 2015\\
+		\hline
+		\end{tabularx}
+			
+		\subsection{\sf moment.js}
+			\label{momentjs}
+			Práce s~datem bývá oříškem ve většině jazyků a~velmi často na ni nestačí jejich standardní vybavení, programátor tedy musí sáhnout po knihovnách třetích stran. Nejinak je tomu i~v~případě JavaScriptu, zde se jedná o~obzvlášť obtížnou práci.
+			
+			Základní objekty tohoto jazyka sice umožňují s~datem pracovat, jde však o~jednoduché operace, např. zformátování data či jeho převod z~reprezentace časovým otiskem na člověkem čitelný údaj. Na problém narazíme ve chvíli, kdy potřebujeme počítat diferenci mezi dvěma daty či datum modifikovat třeba posunem o~den.
+			
+			Každé datum je v~JavaScriptu v~rámci objektu {\tt Date} uchováváno jako počet milisekund od půlnoci 1. ledna 1970 dále označovaný jako \emph{časová hodnota}, přičemž přes\-tupné sekundy jsou ignorovány~\cite{ecma-2011}. Vrátíme-li se k~uvedenému příkladu s~při\-čtením dne k~aktuálnímu datu, můžeme naivně předpokládat, že o~den posunuté datum získáme prostým přičtením počtu milisekund jednoho dne ($8,\!64\cdot10^7$). Ve většině případů bude výsledek správný, ne však pokud půjde o~datum, při němž se mění SEČ na SELČ. Ačkoliv je samozřejmé, že při této změně času nedochází k~žádné ztrátě milisekund mezi dvěma dny, interpretace času je upravena -- právě toto JavaScript neřeší a~zřejmě i~z~toho důvodu neposkytuje u~objektu {\tt Date} metody {\tt add} nebo {\tt subtract} jako jiné jazyky (např. PHP). Časovou aritmetiku neimplementuje.
+			
+			Mimo tento vybraný problém neposkytuje JavaScript pro práci s~datem ani spoustu dalších funkcí, které může vývojář očekávat -- ať už jde o~sofistikované metody formátování, jeho lokalizaci či manipulaci s~reprezentací časového úseku (\emph{duration}).
+			
+			Proto tato práce využije knihovnu {\sf moment.js}. Mimo to, že výše uvedené nedostatky JavaScriptu skvěle řeší, její použití je navíc velmi jednoduché. Instance data se vytváří mnohonásobně přetíženým konstruktorem {\tt moment}, existuje tedy řada způsobů, jak datum specifikovat -- časovou hodnotou, otiskem nebo i~řetězcem ve stanoveném formátu~\cite{techrep-2013}.
+			
+			{\sf moment.js} podporuje veškeré formáty stanovené normou ISO~8601~\cite{iso-8601, moment-doc}, vstup časových údajů i~jejich výstup je tedy standardizován. Widget pracuje s~daty, která nejsou nijak spojena s~časovým pásmem, díky čemuž se vyhýbá problémům se změnanami ze SEČ na SELČ -- {\sf moment.js} výrazně zjednodušuje vypuštění časových zón svojí metodou {\tt utc}. Ta začne data interně interpretovat pomocí koordinovaného světového času (UTC).
+		
+			\vspace{\baselineskip}
+			\renewcommand{\arraystretch}{1.3}
+			\noindent
+			\begin{tabularx}{\textwidth}{|lX|}
+			\hline
+			\bf Vydavatel & Iskren Ivov Chernev \\
+			\bf Domovská stránka & http://momentjs.com\\
+			\bf Licence & MIT license \\
+			\bf Použitá verze & 2.10.3\\
+			\bf Vydána dne & 13.\ts května 2015\\
+			\hline
+			\end{tabularx}
+			
+		\subsection{\sf Snap.svg}
+		Vrstva vztahů používá pro vykreslení šipek SVG, přičemž důvody jeho upřednost\-nění před použitím canvasu uvádí kapitola \ref{jazyk-implementace}. Ačkoliv JavaScript poskytuje základní metody pro práci s~SVG (to je totiž součástí DOM, proto s~ním lze pracovat až na vybrané detaily velmi podobně), existují knihovny, jež činí manipulaci s~ním mnohem jednodušší. Jednou z~takových je i~{\sf Snap.svg}, která pochází od autora rozšířené knihovny {\sf Raphaël}, jež rovněž pracuje SVG. Rozdíl mezi nimi je však v~podpoře prohlížeči. Zatímco {\sf Raphaël} se soustředí na maximální podporu prohlížeči na úkor nabízených funkcí, {\sf Snap.svg} se zaměřuje na moderní prohlížeče, díky čemuž může nabídnout pokročilejší možnosti \cite{snapsvg-why}.
+				
+		\vspace{\baselineskip}
+		\renewcommand{\arraystretch}{1.3}
+		\noindent
+		\begin{tabularx}{\textwidth}{|lX|}
+		\hline
+		\bf Vydavatel & Dmitry Baranovskiy \\
+		\bf Domovská stránka & http://snapsvg.io\\
+		\bf Licence & Apache License 2.0 \\
+		\bf Použitá verze & 0.4.1\\
+		\bf Vydána dne & 13.\ts dubna 2015\\
+		\hline
+		\end{tabularx}
+		
+		
+		\subsection{Knihovny použité pro demo aplikaci}
+			Demo aplikace (nebo také podpůrná aplikace) slouží v~této práci pouze k~tomu, aby demonstrovala použití widgetu. Není tedy hlavním produktem, a~proto se jí ani text práce nebude příliš věnovat. Nicméně stojí za zmínku, že mimo výše popsané knihovny používané ovládacím prvkem časové osy, pracuje navíc pouze s~CSS frameworkem {\sf Bootstrap}, jenž definuje výchozí vzhled některých prvků HTML stránky, doplňuje je o~možnost interakce a~celkově usnadňuje práci se styly.
+			
+			V podpůrné aplikaci jej doplňuje ještě CSS/JavaScript rozšíření {\sf Bootstrap dialog}, které usnadňuje vytváření dialogových oken.
+				
+	\section{Vlastní podpůrné moduly}
+		\label{vlastni-moduly}
+		\subsection{\sf oop.js}
+		\label{oopjs}
+		JavaScript je interpretovaný objektově orientovaný jazyk s~datovými typy, operá\-tory a~několika výchozími objekty a~metodami. Jeho syntaxe vychází z~jazyků Java a~C, stejně jako byla spousta principů těchto jazyků převzata do Java\-Scriptu~\cite{mozdev-js-intro}. Navzdory tomu se JavaScript od zmíněných jazyků výrazně odlišuje v~zásad\-ních bodech:
+		\begin{itemize}
+			\item[--] nepracuje s~třídami -- ty jsou nahrazeny objektovými prototypy,
+			\item[--] funkce jsou interpretovány jako objekty, nesou spustitelný kód, který může být předán jinému objektu~\cite{mozdev-js-intro}.
+		\end{itemize}
+		
+		Uvedené vlastnosti JavaScriptu vedly k~tomu, že vznikla jednoduchá knihovna, která zmíněné odlišnosti zakrývá tak, aby bylo možné vytvářet kód co do největší míry podobný principům OOP, jak je známe -- tedy s~třídami, rozhraními, dě\-děním apod.
+		
+		\subsubsection*{Closures}
+			\begin{mydef}
+				\emph{Closure} je datová struktura, která uchovává kód funkce společně s~daty či prostředím (\emph{scope}), v~němž má být spouštěna~\cite{soshnikov}.
+			\end{mydef}
+		 V~případě JavaScriptu představuje scope to, na co se uvnitř funkce odkazujeme klíčovým slovem {\tt this}. Closures lze využít mnoha způsoby, v~této práci však slouží především k~vytvářením \emph{callbacků} -- funkcí volaných v~příhodnou dobu. Widget časové osy je používá především k~obsluze událostí.
+			
+			Novou closure vytvoříme následovně:
+			\begin{verbatim}new Closure(scope, function, args);\end{verbatim}
+			přičemž zavolat ji pak můžeme pomocí standardních method JavaScriptu, a~to {\tt call} nebo {\tt apply}. Tyto metody se liší pouze tím, jak předávají cílové funkci argumenty. Například:
+			\begin{verbatim}
+var obj = {
+  x : 5, 
+  sum : function(a, b) {
+    this.x = a + b;
+  }
+}
+
+var clr = new Closure(obj, obj.sum);
+clr.apply(null, [1, 2]); alert(obj.x);
+clr.call(null, 1, 2); alert(obj.x);
+
+			\end{verbatim}
+			Dialogové okno volané na posledních dvou řádcích ukázky zobrazí v~obou přípa\-dech výsledek {\sf 3}. Prvním argumentem obou metod je právě scope, my však voláme closure, která sama o~sobě žádný kontext nepotřebuje, a~proto můžeme předat {\tt null} (nebo jinou libovolnou hodnotu -- nebude využita).
+			
+			Funkci {\tt function}, která je v~rámci closure spouštěna, můžeme předat dodatečné parametry, které definujeme již při inicializaci closure. Ty se pak sloučí s~těmi, které předává objekt volající closure. Mějme příklad, kdy jedno tlačítko provede nad objektem součet jeho dvou členů a~druhé rozdíl, přičemž obě operace lze uskutečnit stejnou metodou, pouze s~odlišným argumentem.
+			
+			\vbox{\begin{verbatim}
+var obj = {
+  a : 1,
+  b : 2,
+  perform : function(e, op) {
+    this.a = this.a + op * this.b;
+    alert(this.a);
+  }
+}
+
+document.getElementById("btn_add")
+  .onclick = new Closure(obj, obj.perform, +1);
+document.getElementById("btn_sub")
+  .onclick = new Closure(obj, obj.perform, -1);
+			\end{verbatim}}
+			Podstatnou roli zde hraje pořadí argumentů, kterému musí vývojář věnovat svoji pozornost -- parametry předávané volajícím objektem (v tomto případě objekt události {\tt e} vyvolaný jedním z~tlačítek) obdrží funkce \mbox{uvnitř} closure jako první a~až za nimi pak nalezne parametry předané při inicializaci closure (v tomto případě {\tt op}, který je buď $+1$, nebo $-1$).
+			
+		\subsubsection*{Pseudo-třídy s~{\tt Class}}
+			{\tt Class} slouží k~vytvoření iluze, že v~kódu JavaScriptu definujeme třídu tak, jak jsme zvyklí například u~jazyka Java. Tento speciální objekt předává jako návratovou hodnotu funkci opatřenou objektovým prototypem -- tato funkce se tedy chová jako konstruktor, a~jejím voláním společně s~klíčovým slovem {\tt new} tak vytvoříme nový objekt (instanci).
+			
+			{\tt Class} navíc umožňuje jednoduchým způsobem dědit od jiných pseudo-tříd, kontroluje, zda jsou implementovány metody ze všech rozhraní, která pseudo-třída používá, a~umožňuje pohodlnější ladění. Pro zjednodušení budeme dále v~textu pro označení pseudo-třídy používat pouze výraz \emph{třída}. Její definice vypadá následovně:
+			
+			\begin{verbatim}
+MyClass = new Class("MyClass", {
+   _extends : AnotherClass,
+   _implements : [IInterface1, IInterface2],
+   _constructor : function(arg) {
+      this.myArg = arg;
+      this.myArray = [];
+   },
+	
+   myArg : null,
+   myArray : null,
+   MY_CONST : 5,
+	
+   getArray : function() {
+      if(this.myArray == null) this.__exception("err", "...");
+      return this.myArray;
+   }
+	
+   myAbstractMethod : function() {
+      this.__abstract("myAbstractMethod");
+   }
+});
+			\end{verbatim}
+			Je důležité poznamenat, že členské proměnné třídy {\bf musí} být inicializovány uvnitř konstruktoru (nebo jinde, každopádně však před jejich použitím). Zápis \mbox{\tt myArray : null} totiž ve skutečnosti nedefinuje členskou, nýbrž interní\footnote{Interní proměnná je společná pro všechny instance třídy, pouze ty k~ní mohou přistupovat -- chová se tedy jako privátní statická.} proměn\-nou, a~slouží tak pouze k~zpřehlednění kódu -- dává jasně najevo, že instance disponuje členem {\tt myArray}.
+			
+			Každá třída vytvořená pomocí {\tt Class} navíc automaticky dědí od speciální třídy {\tt \_Core}, která poskytuje prostředky pro vytvoření abstraktní metody nebo sofistikovaný záznam výjimky. Také první parametr konstruktoru {\tt Class} -- název třídy -- má usnadnit orientaci v~případných chybách vypsaných do konzole.
+			
+		\subsubsection*{Dědění s~{\tt Class}}
+			Předchozí kapitola již poznamenala, že s~pomocí {\tt Class} lze používat i~principy dědičnosti. Prvním krokem je uvedení předka nepovinným atributem {\tt \_extends}.
+			
+			Velmi často se setkáváme s~tím, že konstruktor obsahuje parametry. V~takovém případě je nutné zavolat i~rodičovský konstruktor. U~jazyků, jako je Java, jsme zvyklí, že k~tomuto účelu použijeme klíčové slovo {\tt super}. Zde tomu tak není, musíme přímo volat konstruktor rodiče, avšak v~kontextu potomka:
+			\begin{verbatim}
+	_constructor : function(arg1, arg2) {
+	   MyParentClass.call(this, arg1, arg2);
+	}
+			\end{verbatim}
+			
+		 V~ostatních metodách instance už pak můžeme rodičovské metody volat pomocí automaticky generované členské proměnné {\tt \_\_super}, například
+			\begin{verbatim}
+				this.__super.someMethod.call(this, arg);
+			\end{verbatim}
+			
+			\paragraph{Poznámka}
+			Mimo členskou proměnnou {\tt \_\_super} disponuje každá instance také proměnnou {\tt \_\_className}, která může usnadnit práci při ladění.
+			
+		\subsubsection{Rozhraní}
+			Stejně jako třídy lze definovat pomocí {\sf oop.js} i~rozhraní. Ve své podstatě se jedná o~jednoduché objekty s~prázdnými funkcemi. Ty jsou pak při implementaci rozhraní třídou předefinovány. Pokud však vývojář některou z~prázdných funkcí zapomene předefinovat, kontrolní mechanismus jej na to při vytváření instance třídy upozorní.
+			
+			
+		
+		\subsection{\sf moment.extension.js}
+			Rozšíření {\sf moment.extension.js} doplňuje knihovnu {\sf moment.js} o~dodatečné funkce vyža\-dované widgetem časové osy. Jde především o~úpravu formátování, původní knihovna totiž neposkytuje formátovací řetězce, jež by umožnily získat z~časových dat informaci o~století či desetiletí, do něhož časový okamžik spadá. Stejně tak neumožňuje lokalizovat výstup pro data před naším letopočtem (výstupem je v~takovém případě pouze záporné číslo).
+			
+			\paragraph{Poznámka}
+			{\sf moment.js} je poskytnut s~MIT licencí, lze jej tedy bez omezení upravovat za předpokladu, že s~ním nadále bude znění licence distribuováno. Doplňky implementované v~rámci popsaného rozšíření by se tedy mohly stát přímo součástí knihovny, to by si však vyžádalo porozumění její stavbě a~konvencím zdrojového textu, což není předmětem této práce.
+	
+	\section{Fyzická struktura aplikace}
+		\label{fyzicka-struktura}
+		To, jakým způsobem je aplikace fyzicky strukturována, ilustruje obrázek \ref{img:structure}. V~zásadě jde o~rozdělení na tři základní části, a~sice data, styly a~soubory JavaScriptu. Zdrojové texty widgetu (složka {\sf js/cz}) jsou uspořádané podobně jako balíky aplikace v~jazyce {\sf Java} a~jejich struktura je zachována i~při notaci tříd definovaných v~rámci widgetu.
+		\newpage
+		
+		\begin{figure}[h!]
+			\renewcommand*\DTstyle{\sf}
+			\dirtree{%
+				.1  . 
+				.2 css.
+				.3 auxiliary.
+				.4 bootstrap\DTcomment{CSS framework {\sf Bootstrap}}.
+				.4 bootstrap-dialog\DTcomment{stylopis rozšíření {\sf Bootstrap dialog}}.
+				.4 {\it cz.kajda.timeline.css}\DTcomment{stylopis widgetu}.
+				.4 {\it styles.css}\DTcomment{stylopis podpůrné aplikace}.
+				.2 data. 
+				.3 {\it data.js}\DTcomment{statická testovací data}.
+				.2 dialogs\DTcomment{dialogy průvodce daty (podp. aplikace)}.
+				.2 js.
+				.3 auxiliary.
+				.4 bootstrap\DTcomment{JS podpora frameworku {\sf Bootstrap}}.
+				.4 bootstrap-dialog\DTcomment{JS podpora rozšíření {\sf Bootstrap dialog}}.
+				.4 {\it App.js}\DTcomment{JS podpůrné aplikace}.
+				.4 {\it DataWizard.js}\DTcomment{JS průvodce daty}.
+				.4 {\it RandSource.js}\DTcomment{generátor náhodných dat}.
+				.4 {\it RestClient.js}\DTcomment{klient pro komunikaci s~REST serverem}.
+				.4 {\it RestSource.js}\DTcomment{zdroj dat získaných pomocí REST}.
+				.4 {\it StaticSource.js}\DTcomment{zdroj statických testovacích dat}.
+				.3 cz\DTcomment{hlavní JS soubory DP}.
+				.4 kajda. 
+				.5 common\DTcomment{obecné třídy a~rozhraní}. 
+				.5 data\DTcomment{práce s~daty, mapování}.
+				.5 timeline\DTcomment{komponenty widgetu}.
+				.6 band\DTcomment{pásy, položky pásů}.
+				.6 render\DTcomment{renderery a~pomocné třídy}.
+				.3 lib\DTcomment{JS knihovny popsané v~kapitole \ref{pouzite-knihovny}}.
+				.3 {\it main.js}\DTcomment{hlavní soubor aplikace}.
+				.3 {\it moment.extension.js}\DTcomment{rozšíření knihovny {\sf moment.js}}.
+				.3 {\it oop.js}\DTcomment{JS OOP framework}.
+				.2 less\DTcomment{zdrojové LESS soubory}.
+				.2 {\it index.html}\DTcomment{demonstrační HTML soubor}.
+				}
+			\caption{Fyzická struktura aplikace}
+			\label{img:structure}
+		\end{figure}
+			\pagebreak
+		
+		\section{Konvence zdrojových textů}
+		Pro větší přehlednost uspořádání a~obsahu zdrojových souborů, stanovuje diplomová práce několik základních konvencí, jež její programová část dodržuje.
+		\begin{itemize}
+			\item[--] Třídy a~rozhraní jsou sdružovány do balíků, přičemž jejich fyzické umístění balíkovou strukturu kopíruje.
+			\item[--] Každá třída nebo rozhraní je umístěno ve vlastním JS souboru.
+			\item[--] Názvy privátních členských proměnných a~metod obsahují prefix {\tt \_}.
+			\item[--] Celky jednotlivých definic, např. členské proměnné, gettery a~přepsané metody, se sdružují do \emph{code-folds}, speciálních direktiv, které umožňuje část kódu sbalit do jednoho řádku. Zdrojový text vznikal v~aplikaci {\sf Netbeans}, která je jako součást komentáře definuje následovně:
+			\begin{verbatim}
+//<editor-fold defaultstate="collapsed" desc="getters">
+   ...
+//</editor-fold>
+			\end{verbatim}
+			\item[--] Názvy proměnných a~dalších objektů používají formu \emph{camelCase} (např. getAbsolutePosition), třídy a~rozhraní pak speciálně \emph{CamelCase} (např. RelationViewer). Jedinou výjimku tvoří názvy, které představují jméno matematické proměnné s~indexem, např. {\tt x\_t} pro vyjádření $x_t$.
+			\item[--] Při definici třídy je v~první řadě uváděna informace o~implementaci rozhraní {\tt \_implements} a~dědění rodičovské třídy {\tt \_extends} následována konstruktorem {\tt \_constructor}. Za ním pokračuje seznam členských proměnných a~až poté deklarace a~definice metod.
+			\item[--] Dokumentační komentáře používají z~převážné většiny direktivy definované nástrojem {\sf JsDoc 3} a~stejně tak používají i~jím stanovené konvence pro zápis jmenných cest (namepaths). Konkrétně jde v~případě widgetu o~rozlišení zápisu statické ({\tt Class.member}) a~členské proměnné ({\tt Class\#member})~\cite{jsdoc}.
+		\end{itemize}
+		
+		\section{Stručný popis zdrojových souborů widgetu}
+			Následující podkapitoly pouze velmi stručně informují o~funkci jednotlivých tříd či rozhraní v~rámci widgetu. Podrobnější informace lze získat z~dokumentace uvedené přímo ve zdrojových textech, které jsou důsledně komentovány, a~to včetně privátních metod a~členských proměnných.
+			
+			\paragraph{Poznámka} Následující text používá výrazy \emph{třída}, \emph{rozhraní}, \emph{abstraktní}, \emph{implementovat} a~další. Jejich význam má v~tomto případě pouze informativní charakter, jelikož se fyzicky stále jedná o~jednoduché funkce a~objekty, které jsou pomocí OOP frameworku popsaného v~kapitole \ref{oopjs} uspořádány a~formátovány tak, aby připomínaly syntaxi standardních objektových jazyků.
+			
+		
+			\pagebreak
+			\subsection{Balík {\tt cz.kajda.common}}
+				Sdružuje obecně používané třídy a~rozhraní, a~to jak v~rámci widgetu, tak i~v~demo aplikaci.
+				\begin{longtable}{|p{0.3\textwidth}p{0.63\textwidth}|}
+					\hline
+					\tt Identifiable & Rozhraní implementované třídami, jejichž instance mají být jedinečné svého typu. Unikátnost zajišťuje numerický identifikátor, jejž má entita vracet při volání metody {\tt getId}, kterou právě toto rozhraní deklaruje.\\
+					\hline
+					{\tt Observable} & Abstraktní třída, která umožňuje instancím odděděných tříd generovat události a~těmi notifikovat objekty, které se metodou {\tt addListener}  zaregistrovaly k~jejich poslechu.\\
+					\hline
+				\end{longtable}				
+				
+			\subsection{Balík {\tt cz.kajda.data}}
+				Spojuje třídy, které jsou zodpovědné za práci s~daty -- uchovávají je, reprezentují a~načítají. Jde o~vrstvu mezi poskytovatelem dat a~časovou osou.
+				\begin{longtable}{|p{0.3\textwidth}p{0.63\textwidth}|}
+					\hline
+					\tt AbstractDataSource & Abstrakce datového zdroje podrobněji popsaná v~kapitole \ref{datovy-zdroj}. Deklaruje potřebné metody, přičemž mezi ty nejpodstatnější patří {\tt loadData} a~{\tt \_map}. {\tt loadData} slouží vnějším objektům k~vyvolání požadavku na získání dat. {\tt \_map} mapuje obdržená data na objekty používané widgetem časové osy, které jsou datovému zdroji předány při inicializaci.\\
+					\hline
+					{\tt AbstractEntity} & Abstraktní třída popisující historický záznam. Vyžaduje pouze jeho identifikátor, o~další podobě dat s~ním spojených nic neříká. \\
+					\hline
+					{\tt AbstractRelation} & Abstraktní třída popisující vztah mezi záznamy. Vyžaduje pouze jeho identifikátor, o~další podobě dat s~ním spojených nic neříká. \\
+					\hline
+					{\tt Collection} & Kolekce, která pracuje s~instancemi tříd implementujících {\tt Identifiable}. Umožňuje tedy na základě identifikátoru hledat položku kolekce a~při vkládání zabraňuje vzniku duplicit.\\
+					\hline
+					{\tt Entity} & Konkrétní implementace objektu historického záznamu. Při inicializaci vyžaduje data ve formátu specifikovaném v~kapitole \ref{format-dat}. Řeší problémy přesnosti datování (\ref{presnost-datovani}), rozlišuje momentovou a~intervalovou entitu (\ref{povaha-historickych-dat}). \\
+					\hline
+					{\tt Relation} & Konkrétní implementace vztahu mezi historickými záznamy. Při inicializaci vyžaduje data ve formátu specifikovaném v~kapitole \ref{format-dat}. \\
+					\hline
+				\end{longtable}
+			\subsection{Balík {\tt cz.kajda.timeline}}
+				Sdružuje komponenty widgetu, které zajišťují hlavní funkce časové osy.
+				\begin{longtable}{|p{0.3\textwidth}p{0.63\textwidth}|}
+					\hline
+					{\tt AbstractItem} & Abstrakce položky časové osy připravena pro budoucí využití. V této práci ji používá pouze třída {\tt BandItem}. \\
+					\hline
+					\tt Component & Rodičovská třída pro všechny komponenty časové osy i~ji samotnou. Komponenta může být vložena do DOM, lze ji překreslit, může generovat události (díky dědění od {\tt Observable}) a~může přidávat a~spravovat podřízené komponenty.\\
+					\hline
+					\tt NavBar & Komponenta navigační lišty umístěná v~horní části widgetu. Informuje uživatele o~aktuální středovém času a~poskytuje mu možnost jej měnit pomocí tlačítek.\\
+					\hline
+					\tt Projection & Pomocná třída pro provádění transformací na základě úrovně přiblížení popsaných v~kapitole \ref{urovne-priblizeni}.\\
+					\hline
+					\tt RelationViewer & Vrstva pro prezentaci vztahů mezi záznamy. Sama o~sobě {\bf nevykresluje vztahy}, pouze rozhoduje o~tom, zda vůbec a~které vykreslit na základě pravidel uvedených v~kapitole \ref{relation-viewer}.\\
+					\hline
+					\tt Ruler & Komponenta pravítka, jež uživateli pomáhá s~orientací v~čase. Zajišťuje vykreslování dílků podle aktuální úrovně přiblížení, tak jak to popisuje kapitola \ref{ruler}.\\
+					\hline
+					\tt Timeline & Hlavní komponenta widgetu zastřešující ostatní součásti. Obsluhuje všechny z~vnějšku přicházející události a~zároveň také generuje vlastní. Poskytuje rozhraní pro komunikaci s~okolním prostředím, díky čemuž umožňuje jiným objektům měnit její vybrané vlastnosti (např. středový čas nebo označený záznam).\\
+					\hline
+					\tt Wrapper & Obálka časové osy sdružující ty komponenty, které při posunu osy rovněž změní svoji pozici, např. pravítko, pás záznamů. Wrapper generuje události informující o~tažení osy a~předává je hlavní komponentě ke zpracování.\\
+					\hline
+					\tt ZoomBar & Ovládací prvek pro změnu úrovně přiblížení dostupný v~pravém horním rohu widgetu. \\
+					\hline
+					\tt ZoomLevel & Objektová reprezentace úrovně přiblížení. Uchovává charakteristiky popsané v~kapitole \ref{urovne-priblizeni} potřebné pro poziční a~proporční výpočty v~rámci časové osy. \\
+					\hline
+				\end{longtable}
+			\subsection{Balík {\tt cz.kajda.timeline.band}}
+				Spojuje dohromady komponenty časové osy, které jsou zodpovědné za reprezentaci pásů záznamů, jejich slučování a~identifikaci.
+				\begin{longtable}{|p{0.3\textwidth}p{0.63\textwidth}|}
+					\hline
+					{\tt Band} & Komponenta pásu, která si uchovává seznam záznamů do ní spadajících a~na základě podmínek v~kapitole \ref{band} tyto záznamy pak prezentuje uživateli. Stejná kapitola rovněž uvádí i~způsob, kterým tato komponenta řeší kolize záznamů. \\
+					\hline
+					\tt BandGroup & Slučuje pásy do jedné skupiny tak, aby se při posunu osy pohybovaly všechny současně a~nedocházelo tak mezi nimi k~časovým rozporům. {\tt BandGroup} je zároveň zodpovědná za rozdělení dostupné výšky průhledu mezi jednotlivé pásy.\\
+					\hline
+					\tt BandItem & Komponenta reprezentující historický záznam jako položku pásu, jde o~grafickou podobu instancí třídy {\tt Entity}. Položka pásu o~svojí podobě nerozhoduje, tu obstarává renderer, jehož instanci obdrží při inicializaci.\\
+					\hline
+					\tt BandLabelContainer & Speciální komponenta, která je umístěna mimo wrapper do popředí widgetu časové osy, a~to z~toho důvodu, aby při posunu obálky neměnila svoji pozici a~zůstala pozicována fixně v~levé části. Uživatele informuje o~názvu jednotlivých pásů vložených do skupiny.\\
+					\hline
+				\end{longtable}
+				
+			\subsection{Balík {\tt cz.kajda.timeline.render}}
+				Komponenty sloužící k~prezentaci dat popsané v~předchozích bodech ve většině případů samy nezodpovídají za svoji podobu. Ta je totiž dána renderery -- \mbox{objekty}, které na základě vlastností dat rozhodnou o~tom, jak mají být zobrazena uživa\-teli. Balík {\tt render} takové třídy spojuje.
+				
+				\begin{longtable}{|p{0.3\textwidth}p{0.63\textwidth}|}
+					\hline
+					{\tt AbstractItemRenderer} & Abstraktní třída pro vykreslování záznamu na časové ose. Deklaruje metodu {\tt render}, která vytvoří fyzický HTML prvek, jenž může být přidán do DOM, a~{\tt redraw}, jež podle potřeby mění jeho podobu či pozici. \\
+					\hline
+					\tt AbstractRelation\-Renderer & Abstraktní třída pro vykreslování vztahů mezi záznamy na časové ose. Na rozdíl od {\tt AbstractItemRenderer} nevytváří HTML prvky, pouze přidává elementy do SVG plátna komponenty {\tt RelationViewer}, a~to jedinou metodou {\tt drawRelation}.\\
+					\hline
+					\tt BandItemRelation\-Renderer & Konkrétní implementace rendereru pro vyobrazení vztahů mezi položkami pásu časové osy.\\
+					\hline
+					\tt BandItemRenderer & Konkrétní implementace rendereru pro položky pásu časové osy.\\
+					\hline
+					\tt Color & Pomocná třída pro objektovou reprezentaci barev. Díky tomu, že nejde o~pouhý hexadecimální řetězec, umožňuje měnit jas barvy nebo hodnotu jejího alfa kanálu. Toho využívají renderery ve chvíli, kdy potřebují vytvořit rám okolo položky pásu tak, že je o~několik stupňů tmavší než barva jejího pozadí.\\
+					\hline
+				\end{longtable}
+				
+		\section{Komponenty}
+		Tato kapitola podrobněji popisuje charakteristiky komponent uvnitř widgetu, především se pak zabývá vztahem komponenty a~HTML prvku, překreslováním a~prací s~pozicí.
+			
+			\subsection{Životní cyklus}
+				V případě HTML aplikace se komponenty chovají odlišně, než jak jsme zvyklí například u~jazyka {\sf Java}. Není je potřeba překreslovat při každé změně, jelikož nejde o~proces renderování ve svém standardním slova smyslu. Prvky \emph{překreslu\-jeme} pouze v~okamžiku, kdy přímo vyžadujeme jejich změnu, a~tehdy cíleně vyvoláváme požadavek na vykreslení.
+				
+				Následující kroky přibližují životní cyklus komponenty uvnitř widgetu:
+				\begin{enumerate}
+					\item Komponenta {\tt newbie} je iniciována voláním konstruktoru. V tuto chvíli existuje pouze v~paměti, není však žádným způsobem přítomna v~DOM.
+					\item Komponentu {\tt newbie} přidává jiný objekt {\tt parent} jako svoji subkomponentu voláním {\tt parent.addComponent(newbie)}. 
+					\begin{itemize}
+						\item[--] {\tt parent} se nastaví komponentě {\tt newbie} jako její rodič.
+						\item[--] Zavolá nad {\tt newbie} metodu {\tt build}, která vytvoří HTML prvek a~v~podobě jQuery objektu jej vrátí.
+						\item[--] Ten vloží {\tt parent} do svého HTML prvku.
+						\item[--] {\tt parent} přidá {\tt newbie} do seznamu subkomponent.
+					\end{itemize}
+					\item Komponentu {\tt newbie} lze nyní standardně používat. Nachází se v~DOM wid\-getu, což lze ověřit metodou {\tt isInDOM}. Rovněž všechny další metody týkající se její HTML reprezentace, jako jsou {\tt getWidth} nebo {\tt getPosition}, můžeme nyní použít.
+					\item Sama komponenta nebo jiný objekt (obvykle rodič) si může vyžádat pře\-kreslení voláním {\tt redraw}. Ve standardní implementaci tím způsobí pouze to, že komponenta zavolá {\tt redraw} nad všemi svými subkomponentami. Obvykle ale většina objektů uvnitř časové osy tuto metodu přepisuje a~provádí v~ní vlastní potřebné úkony k~zajištění správného vykreslení. Například objekt časové osy při překreslení přepočítá aktuální středový čas.
+					\item Kterýkoliv objekt může komponentu cíleně vyjmout z~DOM voláním metody {\tt undraw}. Ta vyjme z~objektového modelu widgetu HTML prvek reprezentující komponentu (a následná volání metody {\tt isInDOM} pak vracejí negativní odpověď) a~zároveň také zruší její registraci u~rodiče. Komponenta však nadále existuje v~paměti.
+					\item Objekt komponenty lze zcela odstranit použitím klíčového slova {\tt delete}, které je standardní výbavou JavaScriptu. Předtím však lze \emph{život} komponenty obnovit tak, že ji opět přidáme jako subkomponentu některé z~existujících --  v~takovém případě se vrátíme do bodu 2.
+				\end{enumerate}
+			
+			\subsection{Hierarchie v~rámci widgetu}
+				Komponenty uvnitř prvku časové osy zachovávají předem dané stromové uspořá\-dání, které popisuje obrázek \ref{img:component-tree}. Ačkoliv dle popsané implementace třídy {\tt Compo\-nent} mají přístup výhradně k~nadřazené komponentě a~svým subkomponentám, instance třídy {\tt Timeline} si speciálně uchovává referenci i~na vybrané komponenty, které nejsou jejím přímým potomkem, např. {\tt Ruler}.
+			
+				\image{img:component-tree}
+				{}{component-tree.eps}
+				{Komponentový strom}{}
+			
+		\section{Vybrané problémy implementace}
+			V kapitole \ref{komplikace-vizualizace} popisuje práce některé problémy spojené s~vizualizací historických dat. Následující odstavce se zabývají tím, jaké postupy byly použity pro jejich eliminaci, ať už byla jakkoliv úspěšná.
+		
+			\subsection{Rok 1 př. n. l}
+				Kapitola \ref{1bc} pojednávala o~rozporu specifikace ISO8601 a~gregoriánského kalendáře v~záležitosti roku nula, respektive 1 př. n. l. Protože použitá knihovna {\sf moment.js} pracuje rovněž s~uvedenou normou ISO, promítá se tento problém i~do časové osy vznikající v~rámci diplomové práce.
+				
+				První krok ke korekci roku nula znamenal úpravu formátování, a~to ať už přímo v~knihovně {\sf moment.js} nebo jejím doplněném rozšíření {\sf moment.extension.js}. Cílem bylo upravení hodnoty roku u~všech dat, která předcházejí 1. lednu roku 1~n.~l. Taková úprava však sama o~sobě nepomohla při vykreslování pravítka osy, naopak problém zhoršila, protože při velikosti dílku odpovídající jednomu století pak popisky končily číslicí jedna. To nepůsobí přehledně.
+				
+				Po provedení této korekce zřejmě dojdeme k~závěru, že zásadní problém vytváří chybějící nula v~číselné řadě, tedy že mezi rokem 1 př. n. l. a~1 n. l. uběhl čas jednoho roku, byť $1 - (-1) = 2$. Proto budeme v~komponentě pravítka před jejím vykreslením ověřovat, zda vkládaný dílek nepokrývá počátek našeho letopočtu, a~pokud ano, zmenšíme jeho trvání o~1 rok. Tím zkrátíme první století před naším letopočtem a~vyrovnáme tak chybějící nulu v~číselné řadě pravítka (let).
+				
+				Tak ovšem situaci nevyřešíme úplně. Pokud posuneme obálku a~upravíme úroveň přiblížení do takové podoby, kdy se celý načtený časový interval nachází před začátkem našeho letopočtu, ke korekci nedojde. Tento problém se ale bohužel vyřešit nepodařilo.
+
+			\subsection{Letní čas}
+				Problém vznikající při zobrazení časového intervalu, v~němž dochází ke změně ze SEČ na SELČ a~vice versa, popisovala kapitola \ref{selc}. Jeho řešení však bylo výrazně jednodušší než u~komplikací s~rokem nula. Díky tomu, že knihovna {\sf moment.js} nabízí funkci {\tt utc}, která interně určuje, že se s~datem bude zacházet jako se světově koordinovaným časem, se tento problém okamžitě eliminoval. Data zpracovávaná tímto způsobem tedy {\sf moment.js} připraví o~jakékoliv informace o~časové zóně, kterou právě i~SELČ je.
+			
+			\subsection{Přesnost datování}
+				Kapitola \ref{presnost-datovani} uváděla problém týkající se toho, jak od sebe odlišit entity, kde jedna začíná 1. ledna 1918 a~o~druhé víme pouze to, že někdy v~roce 1918 začala. ISO norma nám neumožňuje uchovávat pouze část data, řetězec vyhovující standardu musí vždy nést minimálně informace o~dni, měsíci a~roku.
+				
+				Tento problém widget řeší zavedením přesnosti data (vlastnosti entity {\tt start\-Precision} a~{\tt endPrecision}), která říká, jak velkým časovým úsekem chceme konec či začátek trvání entity popsat. Záměrem widgetu však bylo informovat uživatele o~přesnosti data nejen textově, jak popisuje kapitola \ref{presnost-datovani}, ale i~vizuálně, vzhledem entity.
+				
+				V rámci implementace byl tedy upraven renderer položky pásu {\tt BandItem\-Renderer}, který se pomocí speciální CSS vlastnosti pokoušel vyjádřit nepřesnost začátku či konce záznamu barevným přechodem od standardní barvy pozadí záznamu k~průhledné barvě. Při větším množství položek v~pásu ale byly zporovány problémy s~časem vykreslení, který se znatelně prodloužil právě díky nutnosti vykreslení gradientů. Mimo to se při dlouho trvajících záznamech zobrazoval barevný přechod nestandardně. Z těchto důvodů byla implementace vizuální reprezentace časových nepřesností zrušena.
+			
+			\subsection{Entita typu \emph{místo}}
+				Kapitola \ref{misto-entita} se zabývala problémem vizualizace entity se stereotypem \emph{místo}. U záznamů tohoto typu lze obvykle velmi obtížně rozhodnout o~jejich trvání a~i~v~případě, kdy jsme schopni takový údaj stanovit, půjde pravděpodobně o~velké časové rozmezí. Pokud pak bude v~pásu přítomno více takových entit, uživatel prakticky neustále uvidí jen dlouhé pásy, což postrádá význam.
+				
+				Widget vytvořený v~rámci diplomové práce tento problém neřeší a~takové záznamy interpretuje stejně jako ostatní. Díky obecnému návrhu však nabízí možnost vytvořit vlastní způsob vizualizace položek osy, který může nahradit zobrazení vlast\-ních pásů, a~to jen s~minimálním zásahem do logiky widgetu.
+			
+		\section{Demo aplikace}				
+			Současně se zdrojovými soubory widgetu je dodána i~demo aplikace, která prezentuje jeho použití. Zároveň poslouží i~k~provedení uživatelského testování. Tato práce se jí nebude zabývat podrobně, protože není jejím předmětem, uvede ale v~následujících odstavcích aspoň základní informace o~propojení s~ovládacím prvkem časové osy.
+			
+			\subsection{Implementace datových zdrojů}
+			Podpůrná aplikace nabízí tři odlišně implementované datové zdroje, přičemž každý z~nich vznikl za jiným účelem testování. Všechny níže uvedené třídy dědí od abstraktní {\tt cz.kajda.data.AbstractDataSource}.
+			
+			\begin{longtable}{|p{0.2\textwidth}p{0.73\textwidth}|}
+					\hline
+					{\tt RandSource} & Slouží pro výkonnostní testování widgetu. Na základě konfigurace generuje náhodně záznamy i~vztahy mezi nimi a~ty poté předává časové ose. Uživatel u~něj má možnost stanovit počet i~časový rozsah generovaných entit.\\
+					\hline
+					\tt RestSource & Komunikuje s~REST serverem (produkt dip. práce Bc.~Davida Hrbáčka), kterému při žádosti o~data poskytne uživatelem nastavené priority jednotlivých stereotypů entit a~relací. Server pak odpoví ohodnocenými záznamy a~vztahy získanými z~databáze.\\
+					\hline
+					\tt StaticSource & Poskytuje statická data uložená v~souboru JavaScriptu jako JSON objekt. Tato data nejsou ohodnocená, ale díky jejich rozsáhlosti a rozmanitosti nad nimi lze provést uživatelské testování widgetu.\\
+					\hline
+				\end{longtable}
+				
+			\subsection{Pomocné třídy}
+			Podpůrná aplikace využívá mimo soubory widgetu a~datových zdrojů ještě několik vlastních tříd umístěných v~adresáři {\sf js/auxiliary}.
+			\begin{longtable}{|p{0.2\textwidth}p{0.73\textwidth}|}
+					\hline
+					{\tt App} & Sdružuje funkce podpůrné aplikace, převážně pak postranního panelu použitého při uživatelském testování. Demonstruje komunikaci s~widgetem prostřednictvím vnějšího rozhraní.\\
+					\hline
+					\tt DataWizard & Pomocí rozšíření {\sf Bootstrap dialog} vytváří průvodce pro volbu priorit záznamů a~vztahů při použití datového zdroje {\tt RestSource}.\\
+					\hline
+					\tt RestClient & Zjednodušuje vytváření požadavku pro REST server a~jeho následnou obluhu. {\tt RestClient} je používán datovým zdrojem {\tt RestSource} při vyžádání načtení dat.\\
+					\hline
+				\end{longtable}
+				
+			\subsection{Změna datového zdroje}
+				\label{zmena-zdroje}
+				Při testování má uživatel možnost libovolně měnit datový zdroj použitý widgetem. Stačí, když v~hlavním souboru JavaScriptu {\sf js/main.js} na posledních řádcích odkomentuje jeden ze řádků:
+				\begin{itemize}
+					\item[--] {\tt app.createSource()} -- vytvoří datový zdroj ze statického souboru dat ({\sf data/data.js}),
+					\item[--] {\tt app.startDataWizard()} -- spustí průvodce nastavením priorit a~následně vytvoří datový zdroj z~odpovědi REST serveru,
+					\item[--] {\tt app.createRandSource(\{...\})} -- v~rámci datového zdroje vygeneruje ná\-hodná data na základě předané konfigurace\footnote{Popis konfiguračního objektu je zdokumentován v~rámci interní proměnné {\tt RandSource$\sim$\_DEFAULTS}.}.
+				\end{itemize}
+				\paragraph{Poznámka}
+				Při změně datového zdroje mějte na paměti, že se při obnovení webové aplikace v prohlížeči projeví jen tehdy, nenačítá-li prohlížeč soubory JavaScriptu z cache. Takovému chování lze obvykle předejít obnovou stránky kláve\-sovou zkratkou {\sf Ctrl+F5} nebo zapnutím vývojářských nástrojů.
+				
+			
+		
+	

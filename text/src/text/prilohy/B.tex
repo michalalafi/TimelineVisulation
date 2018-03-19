@@ -1,0 +1,267 @@
+\pagestyle{empty}
+\chapter*{B\ \ Uživatelská příručka}   % nečíslováno
+	\thispagestyle{empty}   % nestránkováno
+	Tato příručka má poskytnout podrobnější informace těm, kteří chtějí widget časové osy používat ve své aplikaci nebo snaží jej rozšířit o~další funkce. Dokumentuje metody vnějšího rozhraní a~popisuje také konfigurační objekt časové osy.
+	
+	\section*{Integrace widgetu do HTML aplikace}
+	Ovládací prvek vzniklý v~rámci práce, jejíž přílohou je tato dokumentace, závisí na několika knihovnách popsaných v~kapitolách \ref{pouzite-knihovny} a~\ref{vlastni-moduly}, které jsou k~dispozici na připojeném médiu. Obzvlášť podstatnou je pak {\sf RequireJS}, jež zajišťuje asynchronní načtení všech potřebných tříd, a~framework {\sf oop.js}, který definice tříd umožňuje. Tyto dva moduly musí být načteny v~HTML stránce, proto umístíme do hlavičky následující úsek kódu\footnote{Umístění odkazu na externí JavaScript soubory v~tomto případě nijak načtení stránky nezpomalí, jelikož ta potřebuje ke své inicializaci, aby byly oba skripty načteny hned při startu.}: 
+	{\small\begin{verbatim}
+<script src="js/oop.js"></script>
+<script data-main="js/main" src="js/lib/require/require.js">
+</script>
+	\end{verbatim}}
+	Aby se osa korektně zobrazovala, neměla by chybět ani definice jejích CSS stylů. Do hlavičky HTML souboru aplikace tedy přidáme ještě následující řádky:
+	{\small\begin{verbatim}
+<link href="css/cz.kajda.timeline.css" type="text/css"
+  rel="stylesheet" />
+	\end{verbatim}}
+	
+	Všimněte si speciálního atributu {\tt data-main} u~prvku odkazujícího na skript knihovny {\sf RequireJS}. Uvádí cestu k~hlavnímu JavaScript souboru (bez přípony), jehož příkazy jsou při načtení aplikace provedeny jako první -- jde vlastně o~jakousi alternativu \emph{main class} v~Javě.
+	
+	\subsection*{Hlavní skript {\sf main.js}}
+	V rámci hlavního skriptu definujeme aliasy pro používané knihovny a~zároveň také uvádíme jejich vzájemné závislosti. V~hlavní funkci pak voláme všechny operace potřebné ke spuštění aplikace. Soubor {\sf src/js/main.js} již tuto konfiguraci obsahuje, při integraci widgetu do jiné aplikace tedy doporučuji z~něj kompletní podobu níže uvedených řádků zkopírovat. Více informací o~konfiguraci {\sf RequireJS} lze získat přímo na stránkách vydavatele \url{requirejs.org}.
+	{\small\begin{verbatim}
+	require.config({
+    // výchozí cesta k~root adresáři JS souborů
+    baseUrl: "js",
+	
+    // cesty k jednotlivým knihovnám (bez přípony) a jejich aliasy
+    paths: {
+        jquery : "lib/jquery/jquery-2.1.4.min",
+        jqueryui : "lib/jqueryui/jquery-ui.min",
+        ...
+    },
+	
+    // závislosti a další konfigurace
+    shim: {
+        "jqueryui" : {
+            export: "$" ,
+            deps: ['jquery']
+        },
+        ...
+    }}
+});
+
+requirejs([...], function(...) {
+    // volání inicializačních funkcí 
+});
+\end{verbatim}
+
+\section*{Konfigurace časové osy}
+Časová osa je konfigurována okamžitě při její inicializaci, spousta jejích vlastností lze však měnit i~při běhu aplikace, do níž je integrována.
+	Widget inicializujeme voláním konstruktoru třídy {\tt cz.kajda.timeline.Timeline}, jemuž předáme jednak {\sf jQuery} objekt nesoucí HTML prvek dokumentu, do něhož má být osa vložena, ale také konfigurační objekt popsaný v~následující podkapitole.
+	{\small\begin{verbatim}
+		var config = {...};
+		var timeline = new Timeline($("#timelineContainer"), config);
+	\end{verbatim}}
+	\pagebreak
+	\subsection*{Konfigurační objekt}
+	Následující tabulka uvádí jednotlivé atributy konfiguračního objektu a~jejich výchozí hodnoty.
+	\begin{longtable}{|p{0.23\textwidth}p{0.73\textwidth}|}
+		\hline
+		{\tt bands} & {\tt Object}\hfill({\tt \{\}})\\
+		& Popisuje vlastnosti jednotlivých pásů (více informací o~struktuře v~podkapitole Konfigurace pásu).\\
+		
+		\hline
+		{\tt bandAssignMethod} & {\tt function(timeline, entity)}\hfill({\tt function()\{\}})\\[-7mm]
+		& \begin{itemize}
+		\item[--] {\tt cz.kajda.timeline.Timeline} {\it timeline}
+		\item[--] {\tt cz.kajda.data.AbstractEntity} {\it entity}
+		\item[--] {\tt return cz.kajda.timeline.band.Band}
+		\end{itemize}
+		Na základě vlastností {\it entity} rozhodne, do kterého pásu bude zařazena, a~ten vrátí.\\
+		
+		\hline
+		{\tt cssPrefix} & {\tt String} \hfill ({\tt timeline})\\
+		& Prefix společný pro všechny komponenty widgetu.\\
+		
+		\hline
+		{\tt defaultZoomLevel} & {\tt Number} \hfill ({\tt 0})\\
+		& Výchozí úroveň přiblížení. \\
+		
+		\hline
+		{\tt defaultTime} & {\tt moment} \hfill ({\tt moment().utc()})\\
+		& Výchozí středový čas. \\
+		
+		\hline
+		{\tt data} & {\tt cz.kajda.data.AbstractDataSource} \hfill ({\tt null})\\
+		& Instance zdroje dat, je-li ve chvíli inicializace osy připravena k~použití. \\
+		
+		\hline
+		{\tt events} & {\tt Object} \hfill ({\tt \{\}})\\
+		& Objekt výchozích posluchačů událostí generovaných časovou osou (více informací v~podkapitole Události widgetu). \\
+		
+		\hline
+		{\tt locale} & {\tt Object} \hfill ({\tt \{...\}})\\
+		& Řetězce překladu widgetu (více informací v~podkapitole Lokalizace). \\
+		
+		\hline
+		{\tt maxDataPriority} & {\tt Number} \hfill ({\tt 100})\\
+		& Stanovuje maximální možnou prioritu záznamů, přičemž minimální je pevně nastavena na 1. \\
+		
+		\hline
+		{\tt popoverDelay} & {\tt Number} \hfill ({\tt 500})\\
+		& Určuje, s~jakým zpožděním (milisekundy) mají být zobrazovány náhledy entit a~vztahů.\\
+		
+		\hline
+		{\tt popoverOffset} & {\tt Number} \hfill ({\tt 10})\\
+		& Posun náhledu relace či entity o~daný počet pixelů vertikálně i~horizontálně.\\
+		
+		\hline
+		{\tt popoverTemplate\-Factory} & {\tt Object} \hfill ({\tt \{\}})\\[-5mm]
+		& Definuje funkce, pomocí nichž jsou vykreslovány náhledy entit a~relací (více informací v~podkapitole Náhledy dat). \\
+		
+		\hline
+		{\tt safeZoomLevel} & {\tt Number} \hfill ({\tt 5})\\
+		& Index úrovně přiblížení, při níž by již měly být viditelné všechny záznamy bez ohledu na jejich prioritu. \\
+		
+		\hline
+		{\tt showBandLabels} & {\tt Boolean} \hfill ({\tt true})\\
+		& Říká, zda mají být zobrazeny popisky pásů osy. \\
+		\hline
+		{\tt showGuidelines} & {\tt Boolean} \hfill ({\tt true})\\
+		& Říká, zda se mají při najetí kurzoru nad záznam zobrazit vodicí linky. \\
+		\hline
+		{\tt showItemPopovers} & {\tt Boolean} \hfill ({\tt true})\\
+		& Říká, zda se má při podržení kurzoru nad záznamem zobrazit jeho náhled. \\
+		\hline
+		{\tt showRelation\-Popovers} & {\tt Boolean} \hfill ({\tt true})\\
+		& Říká, zda se má při podržení kurzoru nad vztahem zobrazit jeho náhled. \\
+		\hline
+		{\tt showRelations} & {\tt Boolean} \hfill ({\tt true})\\
+		& Říká, zda se má při výběru záznamu v~ose zobrazovat vrstva vztahů. \\
+		\hline
+		{\tt showTimePointer} & {\tt Boolean} \hfill ({\tt true})\\
+		& Říká, zda se má v~ose zobrazit ukazatel středového času. \\
+		\hline
+		{\tt slideCoeficient} & {\tt Number} \hfill ({\tt 0.2})\\
+		& Udává, o~jakou část šířky průhledu se má jím zobrazené časové období posunout při použití tlačítek či kláves. \\
+		\hline
+		{\tt zoomLevels} & {\tt Array} \hfill ({\tt [...]})\\
+		& Pole úrovní přiblížení (od nejmenší k~největší), tj. pole instancí třídy {\tt cz.kajda.timeline.ZoomLevel}. \\
+		\hline
+	\end{longtable}
+	
+	\subsection*{Konfigurace pásu}
+	Popisuje atributy objektu, jenž stanovuje parametry pásu osy.
+	\begin{longtable}{|p{0.23\textwidth}p{0.73\textwidth}|}
+		\hline
+		{\tt color} & {\tt String}\\
+		& Barva pozadí pásu. \\
+		\hline
+		{\tt id} & {\tt String}\\
+		& Řetězcový identifikátor pásu. \\
+		\hline
+		{\tt itemRenderer} & {\tt cz.kajda.timeline.render.AbstractItemRenderer}\\
+		& Renderer položek pásu. \\
+		\hline
+		{\tt label} & {\tt String}\\
+		& Lokalizovaný nadpis pásu. \\
+		\hline
+	\end{longtable}
+	
+	\subsection*{Události widgetu}
+	Časová osa generuje několik typů událostí, při nichž posluchači předává vybrané parametry. 
+	\begin{longtable}{|p{0.23\textwidth}p{0.73\textwidth}|}
+		\hline
+		{\tt dataChanged} & ({\tt cz.kajda.data.AbstractDataSource} \emph{data})\\
+		& Došlo ke změně dat zobrazených v~ose (předána nová data). \\
+		\hline
+		{\tt itemClick} & ({\tt cz.kajda.data.AbstractEntity} \emph{entity})\\
+		& Klepnutí na záznam reprezentující \emph{entity} v~ose. \\
+		\hline
+		{\tt itemEnter} & ({\tt cz.kajda.data.AbstractEntity} \emph{entity})\\
+		& Vstup kurzoru na záznam reprezentující \emph{entity} v~ose. \\
+		\hline
+		{\tt itemLeave} & ({\tt cz.kajda.data.AbstractEntity} \emph{entity})\\
+		& Odsunutí kurzoru ze záznamu reprezentujícího \emph{entity} v~ose. \\
+		\hline
+		{\tt itemFocus} & ({\tt cz.kajda.data.AbstractEntity} \emph{entity})\\
+		& Označení záznamu reprezentujícího \emph{entity} v~ose. Událost je generována před {\tt itemClick}.\\
+		\hline
+		{\tt itemBlur} & ({\tt cz.kajda.data.AbstractEntity} \emph{entity})\\
+		& Zrušení označení záznamu reprezentujícího \emph{entity} v~ose. \\
+		\hline
+		{\tt relationClick} & ({\tt cz.kajda.data.AbstractRelation} \emph{rel})\\
+		& Klepnutí na reprezentaci vztahu \emph{rel} v~ose. \\
+		\hline
+		{\tt relationEnter} & ({\tt cz.kajda.data.AbstractRelation} \emph{rel})\\
+		& Vstup kurzoru nad reprezentaci vztahu \emph{rel} v~ose. \\
+		\hline
+		{\tt relationLeave} & ({\tt cz.kajda.data.AbstractRelation} \emph{rel})\\
+		& Odsunutí kurzoru z~reprezentace vztahu \emph{rel} v~ose. \\
+		\hline
+		{\tt resize} & ({\tt cz.kajda.timeline.Timeline} \emph{timeline})\\
+		& Vznikne, pokud byl vynucen přepočet rozměrů widgetu. \\
+		\hline
+		{\tt timeChanged} & ({\tt moment} \emph{newTime}, {\tt moment.duration} \emph{offset})\\
+		& Došlo ke změně středového času na novou hodnotu \emph{newTime}, která se od předchozí liší o~dobu \emph{offset}. \\
+		\hline
+		{\tt zoomChanged} & ({\tt Number} \emph{dir}, {\tt Number} \emph{nLevel}, {\tt Number} \emph{offset})\\
+		& Došlo ke změně úrovně přiblížení. Argument \emph{dir} určuje o~kolik úrovní a~v jakém směru bylo přiblížení změměno, \emph{nLevel} informuje o~nově nastavené úrovni a~\emph{offset} udává počet pixelů od levého okraje widgetu k~bodu, kde bylo přiblížení inicializováno. \\
+		\hline
+	\end{longtable}
+	
+	\subsection*{Lokalizace}
+	Widget časové osy používá několik řetězců, které by měly být lokalizovány do prostředí integrující aplikace. Následující tabulka uvádí identifikátory frází a~jejich výchozí hodnotu.
+	\begin{longtable}{|p{0.23\textwidth}p{0.33\textwidth}p{0.35\textwidth}|}
+		\hline
+		{\tt btnSlideBack} & \emph{back} & (tlačítko posunu vzad)\\
+		\hline
+		{\tt btnSlideForward} & \emph{forward} & (tlačítko posunu vpřed)\\
+		\hline
+		{\tt btnZoomIn} & \emph{zoom in (Num +)} & (tlačítko pro přiblížení)\\
+		\hline
+		{\tt btnZoomOut} & \emph{zoom out (Num -)} & (tlačítko pro oddálení)\\
+		\hline
+	\end{longtable}
+	
+	\subsection*{Náhledy dat}
+	Při podržení kurzoru nad záznamem či vztahem zobrazí widget standardně náhled. Ten je konstruován pomocí speciálních funkcí, přičemž uživatel má možnost stanovit pro entity a~relace s~odlišnými stereotypy různé šablony náhledu.
+	
+	Šablona je tvořena funkcí, která příjímá jako argument objekt entity či vztahu, pro nějž má náhled vzniknout. Navrací pak {\sf jQuery} objekt obsahující DOM reprezentaci náhledu. Všechny funkce generující náhledy sdružuje atribut konfiguračního objektu časové osy {\tt popoverTemplateFactory}, jehož struktura je následující:
+
+\noindent\vbox{\small\begin{verbatim}
+{
+  "entity" : {
+     "nazev-stereotypu" : function(entity) { ... },
+	 ...
+  },
+  "relation" : {
+     "nazev-stereotypu" : function(entity) { ... },
+	 ...
+  }
+}
+	\end{verbatim}}
+	přičemž místo názvu stereotypu lze použít zástupný symbol *, který widget informuje, že konkrétní funkce má být použita pro vykreslení náhledu jakéhokoliv typu vztahu či záznamu, který nemá definovanou šablonu pro vlastní typ.
+	
+\section*{Vnější rozhraní}
+	Časová osa poskytuje navenek několik užitečných metod, pomocí nichž lze ovlivnit její chování či vzhled.
+	\begin{longtable}{|p{0.23\textwidth}p{0.73\textwidth}|}
+		\hline
+		{\tt addListener} & {\tt void} ({\tt String} \emph{eName}, {\tt Closure} \emph{handler})\\
+		& Zaregistruje pro událost \emph{eName} posluchače \emph{handler}.\\
+		\hline
+		{\tt adjustTo} & {\tt Boolean} ({\tt cz.kajda.data.AbstractEntity} \emph{entity}[, {\tt Boolean} \emph{zoom}])\\
+		& Umístí grafickou reprezentaci předané entity do středu průhledu a~je-li \emph{zoom} nastaveno na {\tt true} provede maximální možné přiblížení tak, aby byl záznam viditelný celý. Vratí {\tt true}, pokud se akce podařila.\\
+		\hline
+		{\tt blur} & {\tt void}\\
+		& Zruší označení záznamu. \\
+		\hline
+		{\tt focusItem} & {\tt Boolean} ({\tt cz.kajda.data.AbstractEntity} \emph{entity}[, {\tt Boolean} \mbox{\emph{adjust}})[, {\tt Boolean} \emph{zoom}]])\\
+		& Označí předanou entitu. Je-li \emph{adjust} nastaveno na {\tt true}, provede její vystředění, a~pokud je i~\emph{zoom} nastaveno na {\tt true}, pohled na entitu maximálně přiblíží. Vratí {\tt true}, pokud se akce podařila.\\
+		\hline
+		{\tt getFocused\-Item} & {\tt cz.kajda.data.AbstractEntity} ([{\tt Boolean} \emph{itemNeeded}])\\
+		& Vrátí aktuálně označený záznam. Je-li \emph{itemNeeded} nastaveno na {\tt true}, vrátí přímo jeho grafickou reprezentaci.\\[7mm]
+		\hline
+		{\tt goTo} & {\tt void} ({\tt moment} \emph{nTime})\\
+		& Změní středový čas osy. \\
+		\hline
+		{\tt slide} & {\tt void} ({\tt Number} \emph{direction})\\
+		& Posune časový interval zobrazený v~průhledu, přičemž o~směru posunu rozhodne \emph{dir} ($+1$/$-1$). \\
+		\hline
+		{\tt zoom} & {\tt void} ({\tt Number} \emph{direction}[, {\tt Number} \emph{offset}[, {\tt Boolean} \emph{specificLevel}]])\\
+		& Na základě argumentu \emph{dir} ($+1$/$-1$) provede přiblížení nebo oddálení. Je-li stanoven \emph{offset}, vezme jej v~potaz, v~opačném případě použije střed osy jako výchozí bod přibližování. Pokud je \emph{specificLevel} nastaveno na {\tt true}, pak se místo argumentu \emph{direction} očekává index konkrétní úrovně přiblížení. \\
+		\hline
+		
+	\end{longtable}

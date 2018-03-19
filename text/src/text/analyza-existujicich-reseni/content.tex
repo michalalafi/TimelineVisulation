@@ -1,0 +1,159 @@
+% nastavení cesty k~obrázkům této kapitoly
+\graphicspath{{text/analyza-existujicich-reseni/img/}}
+
+\chapter{Analýza existujících řešení}
+\label{analyza-existujicich-reseni}
+	
+	Na základě požadavků stanovených v~kapitole \ref{analyza-pozadavku} lze již provést rešerši dostupných hotových řešení. Vzhledem k~zvolené technologii (JavaScript a~HTML) se okruh dostupných produktů zmenšil pouze na několik zástupců, které detailněji zkoumá tato kapitola.
+	
+	\section{\sf TimelineJS}
+	\label{analyza-timelinejs}
+		{\sf TimelineJS} sice už kvůli tomu, že jde o~službu a~nikoliv o~knihovnu, není možné použít, ale její podoba a~funkce jsou velmi inspirativní. Uživatel této službě předá například jen tabulku vytvořenou v~online nástrojích Google a~ta nad ní vygeneruje časovou osu. Mimo obyčejné tabulky lze použít i~formáty pro pokročilejší uživatele, jako je JSON, nebo ostatní webové služby a~zdroje (Twitter, Flickr, Vimeo, ...).
+		
+		{\sf TimelineJS} je nepochybně skvělým pomocníkem pro běžné uživatele, kteří chtějí zobrazit svá videa nebo fotografie chronologicky v~čase, či pro zpravodajské servery k mapování vybrané skupiny událostí. Pro účely této práce však není použitelný, nedovoluje do zobrazení nijak zasahovat, načítat data průběžně z~externého zdroje apod.
+		
+		\subsubsection*{Poznatky} 
+		Popisovaná služba umožňuje přidat do objektu reprezentujícího záznam v~časové ose fotografii (obrázek \ref{img:timeline-knightlab}). To může uživateli usnadnit orientaci, na druhou stranu ale takový objekt zabírá v~prostoru osy větší plochu. {\sf TimelineJS} nijak neřeší překrývání těchto objektů, pouze je při podržení kurzoru nad jejich plochou přenese do popředí. Pokud by se tedy vyskytlo více záznamů v~krátkém časovém úseku, začne osa ztrácet svoji přehlednost.
+		
+		Při testování bylo odhaleno, že úroveň přiblížení není možné měnit pomocí rolovacího tlačítka myši ani klávesami $+$ a~$-$. Naopak uživatelsky přívětivou možností je procházení záznamů prostřednictvím kurzorových kláves. Stiskem některé z~nich se osa neposune o~staticky danou vzdálenost (časový úsek), ale přesune svůj střed k~začátku další události.
+		
+		\vspace{\baselineskip}
+		\renewcommand{\arraystretch}{1.3}
+		\noindent
+		\begin{tabularx}{\textwidth}{|lX|}
+		\hline
+		\bf Vydavatel & North Western University Knight Lab \\
+		\bf Domovská stránka & http://timeline.knightlab.com \\
+		\bf Licence & Mozilla Public License 2.0 \\
+		\bf Poslední vydaná verze & 2.35.6 \\
+		\bf Vydána dne & 25.\ts března 2015 \\
+		\hline
+		\end{tabularx}
+		
+		\image{img:timeline-knightlab}
+		  {width=\textwidth}
+		  {timeline-knight.eps}
+		  {Náhled služby {\sf TimelineJS}}
+		  {h!}
+		
+	\section{\sf Dipity}
+	\label{analyza-dipity}
+		{\sf Dipity} funguje na podobném principu jako {\sf TimelineJS}, narozdíl od něj ale umož\-ňuje vytvoření časové osy pouze registrovaným uživatelům. Ačkoliv na své domovské stránce nabízí ukázku toho, jak osa vygenerovaná touto službou vypadá, neposkytuje mnoho dalších informací. 
+		
+		I~zde jde o~užitečnou pomůcku pro uživatele, kteří potřebují jednorázově vizualizovat svá data. Oproti předchozí alternativě však výrazně zaostává svým vzhledem (obrázek \ref{img:dipity}).
+		
+		\subsubsection*{Poznatky} 
+		Díky široce využitému prostoru může {\sf Dipity} vkládat do osy více informací -- v~ukázkovém příkladu videa, obrázky a~datum. Po klepnutí na záznamy zobrazí lightbox, v~němž prezentuje detailní informace o~zvolené položce. Nevýhodou tohoto zobrazení ale je, že lightbox se nachází přímo v~časové ose -- je jejím potomkem.
+		
+		Stejně jako v~předchozím případě i~{\sf Dipity} nereaguje na kolečko myši a~stisk kláves pro přiblížení. Oproti {\sf TimelineJS} ale při použití navigačních tlačítek pro změnu úrovně přiblížení uživatele informuje o~délce zobrazeného časového rozmezí. Podobně jako předchozí služba i~tato dovoluje procházet záznamy pomocí kurzorových kláves, bohužel ale nemění pozici osy v~závislosti na zobrazeném záznamu.
+		
+		
+		\vspace{\baselineskip}
+		\renewcommand{\arraystretch}{1.3}
+		\noindent
+		\begin{tabularx}{\textwidth}{|lX|}
+		\hline
+		\bf Vydavatel & Underlying, Inc.\\
+		\bf Domovská stránka & http://www.dipity.com \\
+		\bf Licence & vlastní podmínky užití (není distribuováno) \\
+		\hline
+		\end{tabularx}
+		
+		\image{img:dipity}
+		  {width=\textwidth}
+		  {dipity.eps}
+		  {Náhled služby {\sf Dipity}}
+		  {h!}
+		
+	\section{\sf Timeglider}
+	\label{analyza-timeglider}
+		{\sf Timeglider} se na první pohled sice prezentuje jako služba, avšak zároveň nabízí svoji časovou osu formou jQuery widgetu. Ten poskytuje přístup k~základním metodám, jako je přidání záznamu nebo přiblížení. Součástí widgetu ale není přímá podpora načítání událostí pomocí technologie AJAX. Oproti předchozím variantám je {\sf Timeglider} evidentně přizpůsobitelnější a~není určen pouze běžným uživatelům.
+		
+		\subsubsection*{Poznatky} 
+		{\sf Timeglider} dovoluje uživateli využít celou plochu viewportu prohlížeče a~získat tak spoustu prostoru pro zobrazení dat (obrázek \ref{img:timeglider}). Stejně dobře lze ale widget umístit i~do HTML prvku s~omezenou velikostí. Díky dostatku místa nedochází k~překryvu záznamů; pokud se dvě události časově prolínají, umístí je nad sebe.
+		
+		Narozdíl od předchozí konkurence lze v~případě tohoto widgetu použít kolečko myši pro změnu úrovně přiblížení. {\sf Timeglider} rovněž pracuje s~prioritou záznamů a~podle ní rozhoduje, zda se má položka ještě zobrazit, či nikoliv.
+		
+		\vspace{\baselineskip}
+		\renewcommand{\arraystretch}{1.3}
+		\noindent
+		\begin{tabularx}{\textwidth}{|lX|}
+		\hline
+		\bf Vydavatel & Mnemograph LLC\\
+		\bf Domovská stránka & http://timeglider.com \\
+		\bf Licence & vlastní podmínky užití \\
+		\bf Cenový program & nekomerční (zdarma) \\
+		 & omezený komerční (500 USD) \\
+		 & OEM/SaaS (3\ts000 USD + 300 USD ročně) \\
+		\bf Poslední vydaná verze & 1.0.3 \\
+		\bf Vydána dne & 28.\ts března 2015 \\
+		\hline
+		\end{tabularx}
+		
+		\image{img:timeglider}
+		  {width=\textwidth}
+		  {timeglider.eps}
+		  {Náhled služby a jQuery widgetu {\sf Timeglider}}
+		  {h!}
+		
+	\section{\sf vis.js}
+	\label{analyza-visjs}
+		{\sf vis.js} je knihovna, která nabízí širokou škálu vizualizací pro webové stránky; mezi jednu z~nich patří i~časová osa. Disponuje jednoduchou grafikou, takže působí zcela přehledně. {\sf vis.js} již nelze považovat za alternativu pro úplné laiky. Použití této knihovny předpokládá znalost Javascriptu. 
+		
+		\subsubsection*{Poznatky} 
+		Jako první z~testovaných produktů umožňuje {\sf vis.js} přidávat do časové osy pásy shlukující položky se společnými vlastnostmi. Speciální vlastností této knihovny je podpora inline editace záznamů a~šablony pro vykreslování jednotlivých událostí, které mohou obsahovat i~HTML data (obrázek \ref{img:visjs}).
+		
+		Domovské stránky tohoto widgetu nabízí řadu ukázek jeho použití a~přizpů\-sobení doplněné o~(ve srovnání s~ostatními) rozsáhlou dokumentaci.
+	
+		\vspace{\baselineskip}
+		\renewcommand{\arraystretch}{1.3}
+		\noindent
+		\begin{tabularx}{\textwidth}{|lX|}
+		\hline
+		\bf Vydavatel &  Almende B.\ts V. \\
+		\bf Domovská stránka & http://visjs.org \\
+		\bf Licence & Apache 2.0 nebo MIT \\
+		\bf Poslední vydaná verze & 3.11.0 \\
+		\bf Vydána dne & 5.\ts března 2015 \\
+		\hline
+		\end{tabularx}
+		
+		\image{img:visjs}
+		  {width=\textwidth}
+		  {visjs.eps}
+		  {Náhled widgetu {\sf vis.js}}
+		  {h!}
+		
+	\section{\sf Timeline ({\sf SimileWidgets})}
+	\label{analyza-timeline-simile}
+		{\sf Timeline} z~balíku {\sf SimileWidgets} (obrázek \ref{img:timeline-simile}) je starší knihovnou, jejíž vývoj skončil poslední verzí v~roce 2009. Od té doby neprodělala žádné změny a~i~její podpora pravdě\-podobně zanikla.
+		
+		\subsubsection*{Poznatky} 
+		Již při prvních pokusech o~testování byly odhaleny problémy znemožňující její úspěšné zprovoznění. Knihovna se pokoušela asynchronně načíst externí JS soubor (umís\-těním očekávaný na jejím domovském serveru), který však neexistoval (požadavek selhal se stavovým kódem 404). Zároveň do DOMu HTML stránky vkládala rámec (iframe), jenž se odkazoval na rovněž neexistující soubor. Dalším nedostatkem byl problém s~kódováním – ačkoliv {\sf Timeline} disponuje lokalizací do češtiny a~automaticky ji podle prostředí použije, vybrané české znaky nezobrazí správně.
+	
+		\vspace{\baselineskip}
+		\renewcommand{\arraystretch}{1.3}
+		\noindent
+		\begin{tabularx}{\textwidth}{|lX|}
+		\hline
+		\bf Vydavatel &  MIT and Contributors \\
+		\bf Domovská stránka & http://www.simile-widgets.org/timeline \\
+		\bf Licence & BSD \\
+		\bf Poslední vydaná verze & 2.3.0 \\
+		\bf Vydána dne & březen 2009 \\
+		\hline
+		\end{tabularx}
+		
+		\image{img:timeline-simile}
+		  {width=\textwidth}
+		  {timeline-simile.eps}
+		  {Náhled widgetu z balíku {\sf SimileWidgets}}
+		  {h!}
+		
+	\section{Shrnutí}
+	Průzkum ukázal, že produkty {\sf TimelineJS} a~{\sf Dipity} lze vyřadit z~možných řešení, protože jde pouze o~webové služby, nikoliv použitelné knihovny.
+	Ani {\sf Timeline} z~balíku {\sf SimileWidgets} nezahrneme mezi potenciálně použitelné knihovny, protože od roku 2009 není dále vyvíjena a~jak ukázaly testy, obsahuje několik chyb. Z~uvedených kandidátů tedy zbývají {\sf vis.js} a~{\sf Timeglider}.
+	
+	Obě knihovny splňují velkou část požadavků zmíněných v~kapitole \ref{analyza-pozadavku}, ne ale všechny. U {\sf Timeglider} nelze příliš ovlivnit parametry zobrazení. Jeho rozhraní poskytuje jen základní metody pro obsluhu widgetu, neumožňují však příliš zasahovat do jeho samotné funkčnosti. Naproti tomu {\sf vis.js} nabízí širokou škálu možností, jak widget přizpůsobit či ovládat, a~tak lze tuto knihovnu považovat za prakticky vyhovující. Nemá ale prostředky k tomu, aby jednotlivé záznamy propojila -- vizualizovala vztahy mezi nimi. Tato vlastnost je stěžejní pro popisovaný projekt, proto v~rámci této diplomové práce vznikne nový widget. Z~velké části bude čerpat inspiraci ze zmíněných kandidátů, avšak rozšíří popsanou funkčnost o~zbývající popsané požadavky.
+			
+			

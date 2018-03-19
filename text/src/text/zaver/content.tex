@@ -1,0 +1,16 @@
+\chapter{Závěr}
+\label{zaver}
+
+	Tato diplomová práce si kladla za cíl vytvořit ovládací prvek časové osy pro stránku zobrazitelnou v~HTML prohlížeči, který by umožnil uživatelům pohodlně a~přehledně procházet ohodnocené historické záznamy, sledovat jejich datování, popis a~přede\-vším pak vzájemné vztahy.
+	
+	Ve své první části čtenáře stručně seznamuje s~historií vizualizace dat, prezentuje přístupy, kterými se lidé dříve snažili záznamy o~osobách a~událostech uspořádat, přičemž poukazuje na to, že princip časové osy zůstal ve velmi blízké podobě zachován dodnes. Zároveň se zabývá tím, jak mohou být taková data reprezentována pomocí precedenčního grafu a~jakým způsobem je můžeme klasifikovat podle jejich povahy.
+		
+	Poté, co je čtenář seznámem s~charakterem historických záznamů a~se způsoby, jak rozlišovat jejich typ, přináší tato práce základní informace o~tom, co je to vizualizace a~jak se odlišuje její realizace ve webovém prohlížeči od standardních principů. Současně také upozorňuje na problémy, které při zobrazování časových záznamů mohou vzniknout. Zabývá se například problematickým rokem nula, jenž je používám standardy ISO, nikoliv ale naším gregoriánským kalendářem, či způsoby, jak prezentovat nepřesnosti datování událostí.
+	
+	V návaznosti na poodhalenou problematiku vizualizace historických záznamů stanovuje základní požadavky na výsledný produkt -- ovládací prvek časové osy. Definuje, jakým způsobem má být koncipováno uživa\-telské rozhraní, jaké technologie budou použity pro jeho implementaci a~přede\-vším pak popisuje to, jak má časová osa zobrazovat vzájemné vztahy mezi entitami.
+	
+	V další části představuje tato práce vybrané knihovny, které nabízí hotovou implementaci časové osy. Uvádí jejich základní vlastnosti, informace o~podpoře a~zejména pak posuzuje do jaké míry se shodují s~definovanými požadavky na finální řešení.
+	
+	Jelikož žádná z~analyzovaných knihoven nenabízí možnost vizualizace vztahů mezi daty, je náplní další části rozsáhlý popis zcela nového ovládacího prvku, který se snaží vyhovět všem stanoveným podmínkám. Kapitola návrhu detailně rozebírá algoritmy a~vzorce, které výsledná aplikace použije k~výpočtu ideální pozice záznamů v~časové ose. Na teoretické principy pak navazuje implementační část, jež čtenáře seznamuje s~podobou již realizovaného ovládacího prvku.
+
+	V samotném závěru se pak práce zabývá tím, jak lze nově vzniklý produkt adekvátně otestovat, a~to jak z~hlediska uživatelského, tak i~výkonnostního. Prověřuje kompatibilitu napříč nejpoužívanějšími prohlížeči, popisuje zátěžové testy a~prezentuje jejich výsledky. V~poslední řadě se věnuje zpětné vazbě získané od uživatelů, upozorňuje na oblasti, které testery příjemně překvapily, ale zároveň zmiňuje i~jejich připomínky, na jejichž základě pak doporučuje možné úpravy rea\-lizovatelné při budoucím vývoji.

@@ -1,0 +1,193 @@
+% nastavení cesty k~obrázkům této kapitoly
+\graphicspath{{text/teoreticky-uvod/img/}}
+
+\chapter{Historie grafické reprezentace dat}
+\label{historie}	
+	\section{Vizualizace}
+	\label{teorie-vizualizace}
+		Vizualizace je oborem, který má poměrně dlouhou historii, navzdory tomu ale funguje jako nezávislá oblast výzkumu na poli výpočetní techniky jen pár desítek let. V~roce 1987 ji McCormick, americký věděc zabývající se počítačovými technologiemi, definoval následovně:
+		\begin{mydef}
+		\label{def:vizualizace}
+		\emph{Vizualizace} je metoda výpočtu. Transformuje symbolické objekty na geometrické, čímž výzkumným pracovníkům umožňuje sledovat jejich simulace a~výpočty. Vizualizace nabízí způsob, jak spatřit nevídané detaily. Obohacuje proces vědeckého objevu a~podporuje hluboké a~neočekávané poznatky~\cite{cormick-1987}.
+		\end{mydef}
+		Tehdejším cílem se stalo spojení obrovských schopností lidského vnímání a~síly výpočetní techniky, jež umožní uživatelům snáze data analyzovat a~porozumět jim. V~souvislosti s~tímto záměrem vznikly tři základní podmínky, které by měla vizualizace splňovat \cite{aigner-2011}:
+		\begin{itemize}
+			\item \emph{významnost (expressiveness)}, schopnost vyjádřit přesně informaci, kterou data nesou -- nic nevynechat ani nic nepřidat,
+			\item \emph{efektivita (effectiveness)}, jež uvažuje úroveň lidského vnímání a~další as\-pekty tak, aby bylo možné jednotlivé prvky vizualizace snadno rozpoznat a~interpretovat,
+			\item \emph{vhodnost (appropriateness)} zabývající se náklady nutnými k~tomu, aby vizualizace dosáhla s~ohledem na daný úkol požadovaných výsledků.
+		\end{itemize}
+		Mimo výše uvedené nás při vizualizaci rovněž zajímá, \emph{co} a~\emph{proč} budeme zobrazovat -- aby mohla být data vizuálně reprezentována tak, že jim člověk skutečně porozumí, je potřeba zcela pochopit jejich význam, podobu a~důvod, proč vůbec jejich grafická podoba vzniká.
+
+	\section{Časová osa}
+	\label{casova-osa}
+		\begin{mydef}
+			\label{def:casova-osa}
+			\emph{Časová osa (timeline)} představuje způsob, jakým lze zobrazit skupiny událostí či záznamů uspořádaných chronologicky podle jejich časového zasazení \cite{grafton-2013} obvykle za pomoci \emph{pravítka} (legendy) a~jejich grafické reprezentace umístěné na odpovídajících pozicích.
+		\end{mydef}
+					
+		Za první moderní (tj. do jisté míry interaktivní) časovou osu lze považovat \emph{Carte chronographique} popsanou v~roce 1753 Jacquesem Barbeu-Dubourgem. Šlo o~více než šestnáctimetrový papír zobrazující v~čase události od \emph{stvoření světa} do období, v~němž Dubourg žil, celý skrytý v~rozkládatelném pouzdře (obrázek~\ref{img:timeline-dubourg}). To jednak papír chránilo před porušením, při rozevření ale díky postranním madlům rovněž umožňovalo časové záznamy rolovat.
+					
+		\image{img:timeline-dubourg}
+		  {width=7cm}
+		  {dubourg-timeline.eps}
+		  {Pohled na Dubourgovu časovou osu a~ukázka tabulky používaných symbolů
+		  (zdroj: blog.dhpp.org, \cite{ferguson-1991})}
+		  {h!}
+		
+		Pozornosti by neměl uniknout výraz \emph{chronographie}\footnote{tj. podstatné jméno odvozené od \emph{chronographique}}, jenž vznikl spojením slov \emph{chronos} (čas) a~\emph{graphein} (psát), podobně jako \emph{geographie} (zeměpis). Dubourgovou snahou totiž bylo učinit reprezentaci chronologicky uspořádaných dat stejně dobře čitelnou, jako umožňují v~zeměpisu mapy snadno získat informace o~poloze \cite{ferguson-1991}. Možná právě proto lze v~\emph{Carte chronographique} pozorovat, že Dubourg použil pro určité typy událostí, charaktery osobností či jejich povolání symboly (obrázek \ref{img:timeline-dubourg}), podobně jako mapy obsahují geografické značky. I~díky tomu můžeme \emph{Carte chronographique} považovat za předchůdce dnešních exemplářů.
+		
+		Časové osy, které vznikaly v~následujících letech, se rovněž velmi podobaly těm dnešním interaktivním. Jejich autorem byl anglický teolog Joseph Priestley. Obrá\-zek~\ref{img:timeline-priestley} obsahuje náhled jeho dvou děl -- biografické mapy z~roku 1765 a~pozdější \emph{New Chart of History} (1769), v~němž můžeme pozorovat práci s~velikostí písma v~závislosti na prioritě dané informace \cite{trettien-2009}. 
+
+		Při pohledu do historie, který tato kapitola poskytla, zřetelně vidíme, že dnešní časové osy zcela vycházejí ze svých o~několik stovek let starších předchůdců a~zachovávají tehdy nastavené principy, jako je použití symbolů pro označení odlišností, velikost či změna řezu písma zdůrazňující priority apod. 
+
+		\image{img:timeline-priestley}
+		  {width=12cm}
+		  {priestley-timeline.eps}
+		  {Priestův \emph{A Chart of Biography} (nahoře) a~\emph{New Chart of History}\\(zdroj: \mbox{commons.wikimedia.org}, davidrumsey.com)}
+		  {h!}
+		
+		
+\chapter{Data historických záznamů}
+\label{historicka-data}
+	\section{Precedenční graf}
+		\begin{mydef}
+			\label{def:precedencni-graf}
+			\emph{Precedenční graf} (alternativně diagram) je orientovaný, acyklický graf $G$, jehož množina vrcholů $V(G)$ reprezentuje postupně uspořádané činnosti a~každá hrana $\{i,j\} \in E(G)$ vedoucí z~vrcholu $i \in V(G)$ do vrcholu $j \in V(G)$ vyžaduje, aby byla činnost reprezentovaná vrcholem $i$ dokončena, než započne činnost charakterizovaná vrcholem $j$ \cite{temple}.
+		\end{mydef}
+		
+		Obvykle jsme zvyklí pomocí takto definovaného precedenčního grafu popisovat plánování výrobního procesu nebo synchronizaci paralelních procesů. V~této práci ovšem nemanipulujeme ani z~jedním z~uvedených, zabýváme se událostmi nebo záznamy určenými v~čase. I~na ty ale můžeme pohlížet podobně jako výše uvedená charakteristika precedenčního grafu. Na místo činností zasazujeme historické události, postavy, dokumenty nebo lokace -- v~této práci dále označované jako \emph{záznamy} nebo \emph{entity}. Mezi entitami definujeme \emph{vztahy}, případně \emph{relace}.
+		
+		Podmínku precedence ale nelze brát při aplikaci na historická data tak, jak ji uvádí předchozí odstavec, např. u~osob ve vztahu rodič-potomek by totiž znamenala, že rodič musí nejdříve zemřít a~až tehdy se může narodit jeho potomek, což je samozřejmě nesmysl. Proto upravíme znění definice \ref{def:precedencni-graf} do této podoby:
+		
+		\begin{mydef}
+			\label{def:precedencni-graf-historicky}
+			\emph{Precedenční graf historických dat} je orientovaný, \emph{pseudo-acyklický} graf $G$, jehož mno\-žina vrcholů $V(G)$ reprezentuje entity určené v~čase a~každá hrana $\{i,j\} \in E(G)$ vedoucí z~vrcholu $i \in V(G)$ do vrcholu $j \in V(G)$ popisuje relaci mezi těmito vrcholy, přičemž tou může být například \emph{účast na události}, \emph{konání v~místě}, \emph{příbuzenský vztah} a~další.
+		\end{mydef}
+		
+		\image{img:precedence-rozdil}
+		  {width=10cm}
+		  {precedence-difference.eps}
+		  {Rozdíly v~interpretaci precedenčního grafu. Diagramy vpravo uvádějí sled záznamů v~čase a) dle definice \ref{def:precedencni-graf}, b) dle definice \ref{def:precedencni-graf-historicky}}
+		  {h!}
+		
+		Vezmeme-li dva uzly, kde jeden reprezentuje otce a~druhý syna, získáme mezi nimi dva vztahy odpovídající dvěma hranám se vzájemně opačnou orientací -- jednu ve významu \emph{potomek} (ve směru od syna k~otci) a~druhou vyjadřující \emph{rodičovství} (ve směru od otce k~synovi). Ty zřejmě vytvoří v~grafu cyklus, čímž při vycházení z~definice \ref{def:precedencni-graf} poruší podmínku acykličnosti. Zmíněné relace jsou ale v~jistém smyslu symetrické, sice v~každém směru popisujeme jejich význam jinými slovy, avšak ve skutečnosti vyjadřují jediný vztah. Takové páry hran tedy budeme vnímat jakou samotnou hranu směřující od vrcholu se starším datováním k~mladšímu a~graf, jehož součástí jsou, označíme jako \emph{pseudo-acyklický}.
+		
+		Takže zatímco podle definice \ref{def:precedencni-graf} všechny činnosti předcházející té v~součas\-nosti aktivní musí být již dokončené a~jejich graf lze označit za čistě precedenční, definice \ref{def:precedencni-graf-historicky} tuto podmínku nevyža\-duje, a~dokonce připouští možnost, že entita, která existovala před součas\-nou entitou, tuto \uv{přežije} -- příkladem může být situace, kdy otec žije déle než jeho potomek. V~takovém případě je graf precedenční z~hlediska kauzality jeho vrcholů. Rozdíl mezi těmito dvěma způsoby interpretace ilustruje obrázek \ref{img:precedence-rozdil}.
+
+		
+	\section{Povaha dat}
+	\label{povaha-historickych-dat}
+		Vzhledem k~tomu, že se tato práce zabývá pouze vizualizační stránkou, a~nachází se tedy na samém konci procesu prezentujícího data uživateli, sama o~sobě nedefinuje podobu datových struktur. Jejich popis je součástí prací\footnote{Souběžně realizované diplomové práce, jejichž vydání je plánováno v~roce 2015.\\
+		MERUNKO, D. \emph{Generování a~vizualizace časové osy}. ZČU, Plzeň.\\
+		HRBÁČEK, D. \emph{Zpracování časových údajů pro jejich vizualizaci}. ZČU, Plzeň.\\
+		}, na něž tato navazuje, a~datové typy použité v~rámci výsledné aplikace staví právě na něm.
+		Nicméně, jak uvedla kapitola \ref{teorie-vizualizace}, musíme stanovit, co představuje cíl vizualizace, co je vlastně jejím předmětem.
+		
+		Pro tento projekt byly na databázové úrovni stanoveny čtyři základní typy entit, z~nichž vycházely datové struktury i~na dalších vrstvách:
+		\begin{itemize}
+			\item[--] \emph{osoba} obvykle charakterizovaná jménem, příjmením nebo titulem,
+			\item[--] \emph{objekt}, jímž může být například dokument nebo korunovační klenoty,
+			\item[--] \emph{místo} popsané názvem, případně i~GPS\footnote{\emph{Global Positioning System} -- globální vojenský drůžicový systém umožňující určení polohy kdekoliv na Zemi} souřadnicemi
+			\item[--] a~\emph{událost} reprezentující jakýkoliv okamžik, kdy něco vzniklo, zaniklo, pro\-bíhalo apod.
+		\end{itemize}
+		Každá entita disponuje mimo výše zmíněné vlastnosti také datem (a časem) začátku, tedy okamžiku, kdy vznikla, začala nebo se v~případě lidské bytosti narodila. Dalo by se očekávat, že v~sobě rovněž zahrnuje datum ukončení. To však není případ každé entity. Nelze popřít, že u~entit typu \emph{osoba} musí datum ukončení (nebo lépe úmrtí) existovat. Podívejme se ale například na korunovaci krále -- můžeme vždy říct, v~kolik hodin začala a~v kolik skončila? Pokud nahlédneme do učebnic či jiné literatury, vyčteme pravděpodobně jediné datum či dokonce jen rok. Událost takového typu totiž není chápána jako časový interval, neuvádí se v~žádném rozmezí, byť fyzicky nějakou dobu musela trvat. Definujeme ji následovně:
+		\begin{mydef}
+			\label{def:momentova-entita}
+			\emph{Momentová entita} je historický záznam, který navzdory jeho sku\-tečnému časovému trvání považujeme za jediný okamžik, jenž může být po\-psán jak malou (sekundy), tak i~velkou (roky, století) časovou jednotkou.
+		\end{mydef}
+		Řekněme, že zmíněná korunovace proběhla v~nějaký srpnový den roku 1220. Protože jde o~momentovou entitu (korunovaci považujeme za jediný okamžik), budeme její čas uživateli prezentovat jako \emph{srpen 1220}, přičemž vhodnou formou zobrazení naznačíme, že ve skutečnosti její trvání nedosáhlo 31 dnů, nýbrž jen několika hodin.
+		
+		Při pohledu na definici \ref{def:momentova-entita} vidíme, že její podstata nepopisuje podobu entit typu \emph{osoba} ani některých dalších entit jiných typů. Nikdy patrně nebudeme historické postavy časově charakterizovat jediným okamžikem, naopak zde přímo vyžadujeme, aby takový záznam disponoval jak informací o~svém začátku, tak i~konci. Proto zavádíme pojem \emph{intervalové entity}.
+		\begin{mydef}
+			\label{def:intervalova-entita}
+			\emph{Intervalová entita} je historický záznam, jehož začátek i~konec můžeme datovat dvěma odlišnými časovými údaji určenými v~libovolně velkých časových jednotkách. Dobu uplynulou mezi datem začátku a~konce záznamu pak označujeme jako \emph{trvání entity}.
+		\end{mydef}
+		Mezi intervalové entity tedy budeme řadit jak všechny osoby, tak i~války, obléhání, dobývání či jiné události s~trváním.
+		
+\chapter{Poznámky k~vizualizaci}
+	Jak již zmiňoval poslední odstavec úvodní kapitoly, výsledkem této práce bude wid\-get\footnote{ovládací prvek pro interakci aplikace s~uživatelem, který obvykle slouží pro manipulaci s~používanými daty} pro webovou aplikaci doplněný o~vnější prostředí potřebné k~jeho testování a~demonstraci. Další kapitoly textu této diplomové práce se tedy budou zabývat výhradně vizualizací v~prostředí webového prohlížeče.
+	
+	\section{Vizualizace na webu}
+		Vizualizace spadá do oblasti počítačové grafiky, která řeší, jak prostorová data (ať už dvourozměrná nebo trojrozměrná) prezentovat uživateli přirozenou formou. I~v~případě tohoto projektu jde o~to, jak databázi historických záznamů transformovat do takové podoby, která lidem umožní jejich snadné čtení.
+		
+		Při vývoji grafických aplikací v~běžných programovacích jazycích, kterými mohou být Java nebo C++, lze uplatnit princip \emph{renderování grafických objektů}\footnote{proces tvorby reálného obrazu na základě počítačového modelu}. Jedna vrstva aplikace mapuje data na objekty, další těmto objektům přiřazuje grafickou podobu a~poslední pak rozhoduje o~tom, co a~jak má být vykresleno. Uživateli se tak prezentují pouze ty grafické informace, jež jsou z~jeho pohledu v~daný okamžik relevantní -- jen ty jsou \uv{přeměněny na pixely} a~zobrazeny prostřednictvím \emph{viewportu}, části zobrazovacího zařízení, která funguje jako zorné pole.
+		
+		Tento přístup lze zachovat i~u webové aplikace za předpokladu, že se vývojář rozhodne použít tzv. \emph{canvas}, který představuje alternativu zmíněného viewportu a~jenž se stal součástí HTML5\footnote{\emph{HyperText Markup Language} -- značkovací jazyk, který umožňuje sémanticky popisovat hypertextové dokumenty} \cite{w3c-2014}. V~takovém případě se však vzdává možnosti interakce s~obsahem -- jakmile je jednou do canvasu něco vykresleno, změní se veškeré informace na pouhé pixely. Proto se canvas hodí především pro realizaci her, úprav rastrových obrázků a~obecně pro úlohy vyžadující manipulaci s~pixely. Druhou alternativu představuje použití SVG\footnote{\emph{Scalable Vector Graphics} -- značkovací jazyk pro popis vektorové grafiky (vychází z~XML)} \cite{opera-2010}, které pracuje s~DOM\footnote{\emph{Document Object Model} -- objektová reprezentace HTML (obecně XML) dokumentu}. Ten vývojáři poskytuje možnost přistupovat ke všem objektům, jež jsou součástí SVG dokumentu, a~zachycovat události, které nad nimi vznikají.
+		
+	 S~volbou SVG již tedy nelze mluvit o~\emph{renderování} v~pravém slova smyslu, protože je vývojář odstíněn od samotného vykreslení pixelů (ve své podstatě operuje pouze na úrovni grafické reprezentace dat), a~úloha vizualizace tak zcela mění svoji podobu.
+	
+	\section{Komplikace spojené s~vizualizací}
+		\label{komplikace-vizualizace}
+		\subsection{Rok 1 př. n. l.}
+		\label{1bc}
+			Specifikace ISO 8601 \cite{iso-8601} pro práci s~datem, časem a~časovými intervaly (v grego\-riánském kalendáři) definuje několik standardů zápisu takových informací pomocí řetězce. Protože tento projekt bude pracovat i~s daty před naším letopočtem, zaměříme se pře\-devším na následující formát {\tt +YYYYY-MM-DD}\footnote{Dle normy vyžaduje vyhrazení více číslic pro zápis roku ({\tt YYYYY}) dohodu mezi stranami, které budou formát používat \cite{iso-8601}.}, kde {\tt +} (příp. {\tt -}) definuje, zda jde o~rok před naším letopočtem nebo našeho letopočtu.
+			
+			Zde ovšem dochází ke komplikaci. ISO norma shledává totiž následující zápisy
+			\begin{verbatim}+00000-01-01
+-00000-01-01
+0000-01-01\end{verbatim}
+			standardními, což je v~rozporu se skutečností, že rok 0 v~gregoriánském kalendáři neexistuje. ISO 8601 používá astronomický systém číslování roků, jenž se právě liší tím, že rok nula akceptuje a~reprezentuje jím gregoriánský rok 1~př.~n.~l.~\cite{iso-8601}. Jelikož literatura běžně používá pro zápis historických dat systém gregoriánského kalendáře, i~tento projekt by měl uživateli zobrazovat veškeré informace v~této formě. V~takovém případě ale dochází k~tomu, že v~celé éře před naším letopočtem se ISO interpretace bude o~rok lišit od gregoriánského zápisu.
+			
+			To na první pohled nemusí působit jako problém, nicméně představme si tuto situaci: Na časové ose chceme zobrazit jednotlivá století kolem počátku našeho letopočtu. Protože rok nula neexistuje, zvolíme jako střed rok $-1$ (tj. 1~př.~n.~l.). Pokud od tohoto středu pak vyznačíme sto let v~obou směrech, v~levé části osy budou popisky mezi stoletími končit jedničkou (obrázek \ref{img:iso-8601-issue}), protože dle ISO jsme od roku 0 odečetli 100 a~získali tak $-100$, což ale odpovídá roku 101~př.~n.~l. Vizualizace pak vyvolá dojem, že první století př.~n.~l. začalo již v~tomto roce.
+			
+			Problematice \emph{korekce roku nula} se bude později věnovat kapitola týkající se implementace.
+			
+			\image{img:iso-8601-issue}
+			  {width=14cm}
+			  {iso8601.eps}
+			  {Časová osa zobrazující století a) při úpravě 1. st. př. n. l. na trvání 99 let, b) bez úprav}
+			  {h!}
+			  
+		\subsection{Letní čas}
+			\label{selc}
+			Potíže s~vytvářením časové osy nezpůsobuje jen zmíněný problém s~rokem nula, ale rovněž zavedení letního času, k~němuž vedla snaha o~větší využití světla za účelem úspory energie. Na území České rebupliky se pravidelně používá od roku~1979 \cite{poupa-2008}.
+			
+			Lze očekávat, že nástroje pro práci s~časovými daty nebudou brát v~potaz období, v~němž se letní čas (středoevproský letní čas, dále jen SELČ) používal a~kdy ne. Navíc se jeho užití liší i~časovými pásmy, či dokonce jen zemí (např. v~Německu a~Británii akceptovali SELČ v~jiných obdobích, než kdy byl používán v~Čechách). Pokud se tedy podíváme blíže na několikrát zmiňovaný rok nula, kdy SELČ neexistoval, nástroje pro práci s~časem nám budou i~tak vracet hodnoty závislé na dnešních standardech časových pásem. 
+			
+			Ačkoliv přechod z~běžného středoevropského času (SEČ) na SELČ fyzicky počítání času nezmění, tj. nedojde k~\uv{zahození} hodiny, způsobí na časové ose změny v~interpretaci. Dílek, který by byl za normálních okolností označen jako 2.~hodina ranní, nástroje přeznačí na 3.~hodinu ranní. Při přiblížení na úroveň jednotlivých hodin tato skutečnost nehraje roli, pokud se však oddálíme na úroveň, kdy jeden dílek osy reprezentuje např. 12~hodin, odhalíme nepříjemný posun v~popisu dílků, tento případ popisuje obrázek \ref{img:letni-cas}. 
+						
+			\image{img:letni-cas}
+			  {width=14cm}
+			  {selc.eps}
+			  {Ukázka posunu zapříčiněného změnou ze SEČ na SELČ}
+			  {h!}
+			  
+		\subsection{Přesnost datování}
+			\label{presnost-datovani}
+			Problematika této oblasti úzce souvisí s~charakterem historických dat popisovaným v~kapitole \ref{povaha-historickych-dat}. Definice \ref{def:momentova-entita} a~\ref{def:intervalova-entita} v~souvislosti se způsobem datování záznamů zmiňují \emph{libovolně velké časové jednotky}, za něž mohou být považovány například roky, staletí,  ale i~dny, hodiny či dokonce minuty. ISO norma \cite{iso-8601}, jíž se zabývala i~kapitola \ref{1bc}, nám však neumožňuje popsat datum částečně, tj. třeba použitím výhradně roků. Přikazuje zaznamenávat datum v~celé jeho podobě (případně doplněné o~čas), což je samozřejmě i~z pohledu aplikační logiky vhodnější -- vyžaduje se jednotný formát datování pro všechny historické záznamy.
+			
+			Zde tedy narážíme na potíže. Jestliže nám ISO norma i~logická stránka aplikace přikazují zaznamenávat veškerá data a~časy jednotně, jak odlišíme událost, o~níž víme pouze to, že nastala v~roce 1918, a~záznam z~konkrétního dne, například 1.~ledna 1918? Hlavní problém představuje zápis samotného roku 1918. Norma vyžaduje uvedení měsíce a~dne, ale ten neznáme. Použijeme tedy první leden, nebo den, jenž připadá na polovinu roku?
+			
+			Ať už se přikloníme k~první nebo druhé variantě, v~obou případech se nám snadno stane, že některé události najednou budou disponovat stejnou časovou hodnotou, byť vybrané z~nich datujeme s roční přesností a~jiné zas s přesností na jednotlivé dny.
+			
+			Druhou možností, jak k~tomuto problému přistupovat, je uchovávat ve vrstvě modelu pro momentovou entitu popsanou pouze rokem začáteční i~koncové datum. Tyto dvě hodnoty uložíme interně pro účely aplikace a~navenek dále budeme propagovat pouze jediný časový údaj. Abychom pak zpětně získali informaci o~tom, v~jakých jednotkách datum formátovat, musíme zavést \emph{přesnost data a~času}. Pro snazší porozumění této alternativě uvádí tabulka \ref{tab:precision-example} několik příkladů.
+			
+			\begin{table}[h!]
+			\footnotesize
+			\centering
+				\begin{tabular}{|cl|lr|lr|}
+				  \hline
+					  & vnější formát & \multicolumn{2}{l|}{začátek} & \multicolumn{2}{l|}{konec} \\
+					  &  & přesnost & ISO & přesnost & ISO \\
+				  \hline\\[-3mm]
+					M & 1918 & rok & \tt 1918-01-01T00:00 & -- & \tt 1918-12-31T23:59\\
+					I & 1918--1919 & rok & \tt 1918-01-01T00:00 & rok & \tt 1919-12-31T23:59\\
+					M & 2. ledna 1918 & den & \tt 1918-01-02T00:00 & -- & \tt 1918-01-02T23:59\\
+					I & 1917--5. ledna 1918 & rok & \tt 1917-01-01T00:00 & den & \tt 1918-01-05T23:59\\
+					M & 20. století & století & \tt 1901-01-01T00:00 & -- & \tt 2000-31-12T23:59\\
+				  \hline
+				\end{tabular}
+				\caption{Příklady uchování informací o~datu odlišně časově zasazených záznamů (M -- momentová entita, I -- intervalová entita)}
+				\label{tab:precision-example}
+			\end{table}	
+			
+		 Z~tabulky snadno vyčteme, že pro momentové entity sice uchováváme dvě data, ale přesnost uvádíme jen pro jedno. Zde totiž není potřeba zaznamenávat informaci o~přesnostech obou časových údajů, protože jak koncové, tak i~počáteční datum spadají do téhož časového období, které bude ve výsledku vyjádřeno vnějším formátem, tj. formátem prezentovaným uživateli (tento případ ilustruje první řádek tabulky). Toho, že na základě popsaného principu bude každá entita obsahovat dva časové údaje vymezující její (byť jen přibližné) trvání, využijeme právě při vizualizaci v~časové ose -- jejím způsobem a~dalšími podrobnostmi se zabývá kapitola týkající se implementace a~návrhu aplikace.
+			
+		\subsection{Entita typu \emph{místo}}
+		\label{misto-entita}
+		
+			Kapitola \ref{povaha-historickych-dat} popisuje 4 základní typy entit na základě toho, jaké historické záznamy reprezentují. Součástí tohoto výčtu je rovněž typ \emph{místo}, jenž by měl fungovat jako reprezentace každé lokace, která se v~historii vyskytla a~na niž se relacemi vážou jiné entity, např. osoby či události.
+			
+			Budeme-li uvažovat, že záznamy zobrazujeme v~časové ose jako obdélníky různé šířky v~závislosti na jejich trvání, narazíme právě u~typu \emph{místo} na problém. Většina historických lokací existovala po stovky let, nebo dokonce stále existuje. Pokud je tedy budeme chtít zmíněným způsobem reprezentovat, musíme v~jednom časovém okamžiku zobrazit spoustu takových záznamů. Ačkoliv předpokládáme, že výsledná aplikace bude pracovat s~prioritami jednotlivých záznamů, pravdě\-podobně i~tak nedokáže jejich počet snížit na takový, aby uživateli ukázala vše podstatné při zachování přehlednosti.
+			
+			Jestliže záznamy reprezentující místo doplníme o~GPS souřadnice (což lze očekávat), získáme novou možnost vizualizace -- kombinaci časové osy a~mapy. V~takovém případě popisovaný problém zcela eliminujeme, protože pro zobrazení entit použijeme terčíky umístěné na odpovídající poloze v~mapě. Při změně vizualizovaného období pak pouze upravíme viditelnost terčíků historických oblastí. Tento přístup ale bohužel nelze uplatnit pro zbylé typy entit, tj. pro \emph{osobu, událost a~objekt}, už jen proto, že nemusí obsahovat informaci o~GPS souřadnicích.

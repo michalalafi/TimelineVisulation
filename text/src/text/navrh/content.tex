@@ -1,0 +1,535 @@
+% nastavení cesty k~obrázkům této kapitoly
+\graphicspath{{text/navrh/img/}}
+
+\chapter{Návrh nového widgetu}
+\label{navrh}
+	Žádné z~existujících řešení popsaných na předchozích stránkách nesplňo\-valo pod\-mínky uvedené v~kapitole \ref{analyza-pozadavku}. Především však ani jedno nenabízí možnost vizualizace vztahů mezi historickými záznamy, jež je pro tento projekt klíčová. Z~toho důvodu vznikne v~rámci dimplové práce nový ovládací prvek, který bude čerpat inspiraci z~existujících produktů, a~navíc zobrazená data obohatí i~o~vizualizaci vztahů mezi nimi.
+
+	\section{Obecná charakteristika}
+		\label{obecna-charakteristika}
+		
+		\subsection{Rozsah projektu}
+		\label{rozsah-projektu}
+			Widget vyvíjený v~rámci této diplomové práce umožní uživateli procházet historická data chronologicky uspořádaná v~časové ose. K~dispozici budou standardní prostředky navigace a~interakce, jako je posun zobrazeného rozsahu, přiblížení či oddálení (tj. změna používaného měřítka časové osy). Oproti jiným ovládacím prvkům z~této kategorie bude produkt této práce disponovat také vizualizací vztahů mezi historickými záznamy, a~to na vyžádání uživatele (klepnutím na vybraný záznam).
+			
+			Cílem této práce není vytvořit widget s~kompletní funkcionalitou, nýbrž nastí\-nit, jak takový prvek může fungovat, na jaká úskalí lze při jeho implementaci narazit, a~tyto informace doplnit o~funkční kostru, která splňuje požadavky uvedené v~kapitole \ref{analyza-pozadavku}.  V~samotném závěru práce se pak čtenář dozví, o~jakou další funkcionalitu by v~budoucím vývoji mohl být widget obohacen.
+			
+		\subsection{Kontext widgetu}
+		\label{kontext-widgetu}
+			Výsledný widget bude implementován pro webové stránky či aplikace a~jeho použití takřka na ničem nezávisí. Uživatel však musí zajistit zdroj dat dle později popsané specifikace v kapitole~\ref{format-dat} tak, aby je mohl ovládací prvek osy v~pořádku načítat. Souběžně s~touto vznikají další dvě práce, jejichž vydání je plánováno v~roce 2015 a~na nichž tato závisí. Konkrétně se jedná o:
+			\begin{itemize}
+				\item[--] MERUNKO, D. \emph{Generování a~vizualizace časové osy}. ZČU, Plzeň.
+				\item[--] HRBÁČEK, D. \emph{Zpracování časových údajů pro jejich vizualizaci}. ZČU, Plzeň.
+			\end{itemize}
+		 V~jejich rámci je vyvíjena databáze spolu s~aplikací, jež vytváří pro časovou osu potřebný kontext, tedy načítá a~předzpracovává informace k~použití ve widgetu.
+			
+		\subsection{Omezení návrhu a~implementace}
+		\label{omezeni-navrhu}
+			Vývoj widgetu je časově omezen termínem odevzdání diplomové práce a~v~jeho rámci vznikne pouze kostra výsledného widgetu. Zůstává zde však otevřena mož\-nost, že vývoj bude pokračovat i~po jejím obhájení.
+			
+			Návrh a~z~něho vycházející implementace jsou omezeny především nekompatibilitou webových prohlížečů. Vzhledem ke komplexnosti widgetu zde zřejmě dojde k~problémům nejen se zobrazením, ale také se samotným ovládáním prvku ve vybraných verzích prohlížečů. Podrobněji o~tomto omezení pojednává následující poznámka.
+
+			\subsubsection*{Poznámka ke cross-browser kompatibilitě}
+			\label{kompatibilita}
+				Tato práce se věnuje tomu, jakým způsobem lze reprezentovat historická data ve webovém prohlížeči, a~doplňuje popsané alternativy widgetem, který tyto principy implementuje, a~demonstruje je tak v~praxi. Vzhledem k~tomu, že jde o~první verzi tohoto projektu, nezaručuje se, že bude widget kompatibilní se všemi vydanými prohlížeči, a~není ani cílem této práce 100\% cross-browser kompatibilitu zajistit.
+				
+				Výsledná aplikace není webovou stránkou, nepředpokládá se (aspoň v~této její verzi) veřejný přístup z~libovolného prohlížeče, a~proto bude její implementace během vývoje testována prioritně v~prohlížeči {\sf Chrome} ($63,\!9\ \%$ uživatelů k~dubnu 2015~\cite{w3c-browser}), jenž je v~současnosti nejpoužívanější aplikací pro procházení webových stránek. Nevylučuje se však, že bude aplikace zpětně kompatibilní i~s~jinými prohlížeči, např. {\sf Mozilla Firefox} ($21,\!6\ \%$ uživatelů k~dubnu 2015 \cite{w3c-browser}) -- tuto skutečnost ověří závěrečné testování kompatibility.
+		
+	\section{Demo aplikace}
+	\label{demo-aplikace}
+		Součástí této práce bude aplikace, která demonstruje použití widgetu. Vlastní produkt sice představuje pouze ovládací prvek časové osy, ale k~prokázání jeho použitelnosti v~praxi musí být zasazen do aplikace, jež obstará externí záležitosti. Mezi ty můžeme zařadit například připojení ke vzdálenému serveru, reakci na kliknutí na entitu uvnitř widgetu a~podobně. Časovou osu lze použít i~samostatně, uživatele však ochudíme o~pohodlnější získávání informací.
+		
+	 Z~předchozího odstavce plyne, že widget neposkytne sofistikované pro\-středky pro prezentaci detailních informací spojených s~entitami, dovolí ale vývo\-jáři registraci posluchačů příslušných událostí, které osa při manipulaci s~ní generuje, a~při jejich vzniku veškerá data z~entity účastnící se události předá obsluze. Ta má pak možnost je vizualizovat prostřednictvím \emph{lightboxu}\footnote{ovládací prvek zobrazující obrázek nebo galerii obrázků, popř. jiná data (např. HTML obsah) v~prvku webové stránky překrývajícím její původní obsah}, zobrazit je v~postranním panelu aplikace a~podobně.
+		
+	\section{Uživatelské rozhraní}
+	\label{gui}
+		Widget časové osy se omezuje na vizualizaci historických dat chronologicky v~čase, přičemž poskytuje základní možnosti, jak měnit zobrazené časové rozmezí, filtrovat prezentovaná data a~jak mezi nimi zkoumat vazby. Uživatelské rozhraní odpovídající tomuto popisu a~stejně tak požadavkům kapitoly \ref{pozadavky-na-uzivatelske-rozhrani} demonstruje obrázek \ref{img:design}.
+		
+		\image{img:design}
+			{width=12cm}
+			{design.eps}
+			{Návrh uživatelského rozhraní widgetu časové osy}
+			{h!}
+		
+	\section{Značení parametrů}
+	V následujících kapitolách se budeme setkávat se vzorci, které popisují, jakými způsoby probíhá výpočet pozic a~rozměrů objektů. Z~toho důvodu zavedeme zna\-čení podle tabulky \ref{znaceni}.
+	\begin{table}[b!]
+	\centering
+		\begin{tabular}{|p{0.25\textwidth}|p{0.65\textwidth}|}
+		\hline
+			$w_{o}$ & šířka objektu $o$ \\
+			$h_{o}$ & výška objektu $o$ \\
+			$x_{o}$ & horizontální pozice objektu $o$\\
+			$y_{o}$ & vertikální pozice objektu $o$\\
+			$e$ & entita / časový záznam \\
+			$t_{e_s}$, $t_{e_e}$ & čas začátku a~konce doby trvání entity \\
+			$d_{e}$ & doba trvání entity\\
+			$t_c$ & středový čas zobrazený ukazatelem widgetu \\
+			$d_{px}$ & počet sekund odpovídajících jednomu pixelu při aktuální úrovni přiblížení\\
+			$item$ & komponenta grafické reprezentace entity (kapitola~\ref{banditem})\\
+			$viewport$ & komponenta průhledu (kapitola~\ref{viewport}) \\
+			$wrapper$ & komponenta obálky  (kapitola~\ref{wrapper})\\
+			$ruler$ & komponenta pravítka  (kapitola~\ref{ruler})\\
+			$band$ & komponenta pásu (kapitola \ref{band})\\
+			
+			\hline
+		\end{tabular}
+		\caption{Značení parametrů a~objektů}
+		\label{znaceni}
+	\end{table}
+	
+	\begin{table}
+			\small
+			\centering
+			\begin{tabular}{|r|r|rr||r|r|rr|}
+				\hline
+				 & $d_{px}$ & $d_{maj}$ & $d_{min}$ && $d_{px}$ & $d_{maj}$ & $d_{min}$ \\
+				\hline
+				1 & 10 let & 1\ts000 let & 100 let &
+					14 & 3 hodiny & 1 měsíc & 1 den \\
+				2 & 5 let & 1\ts000 let & 100 let &
+					15 & 1 hodina & 14 dní & 1 den \\
+				3 & 3 roky & 1\ts000 let & 100 let &
+					16 & 30 minut & 1 týden & 1 den \\
+				4 & 1 rok & 100 let & 10 let &
+					17 & 15 minut & 3 dny & 1 den \\
+				5 & 6 měsíců & 100 let & 10 let &
+					18 & 10 minut & 1 den & 12 hodin \\
+				6 & 3 měsíce & 50 let & 5 let &
+					19 & 5 minut & 12 hodin & 1 hodina \\
+				7 & 1 měsíc & 25 let & 1 rok &
+					20 & 1 minuta & 6 hodin & 1 hodina \\
+				8 & 14 dní & 10 let & 1 rok &
+					21 & 30 sekund & 3 hodiny & 1 hodina \\
+				9 & 1 týden & 5 let & 1 rok &
+					22 & 15 sekund & 1 hodina & 15 minut \\
+				10 & 3 dny & 1 rok & 3 měsíce &
+					23 & 10 sekund & 30 minut & 5 minut \\
+				11 & 1 den & 1 rok & 1 měsíc &
+					24 & 5 sekund & 15 minut & 1 minuta \\
+				12 & 12 hodin & 6 měsíců & 1 měsíc &
+					25 & 1 sekunda & 5 minut & 1 minuta \\
+				13 & 6 hodin & 3 měsíce & 1 měsíc &
+					26 & 0,5 sekundy & 1 minuta & 15 sekund \\
+				\hline
+			\end{tabular}
+			\caption{Specifikace výchozích úrovní přiblížení}
+			\label{tab:urovne-priblizeni}
+		\end{table}
+	
+	\section{Úrovně přiblížení, transformace}
+		\label{urovne-priblizeni}
+		Časová osa umožňuje svůj obsah přibližovat a~oddalovat, tedy měnit rozsah období, jež zobrazuje. Pro tento účel definuje několik úrovní přiblížení, které disponují následujícími atributy:
+		\begin{itemize}
+			\item[--] doba vyjádřená jedním pixelem $d_{px}$,
+			\item[--] doba, která představuje jeden dílek hlavní osy $d_{maj}$,
+			\item[--] doba, která představuje jeden dílek vedlejší osy $d_{min}$,
+			\item[--] formát pro popisek dílku hlavní osy a~pro časovou lištu (kapitola \ref{casova-lista}).
+		\end{itemize}
+		
+		Počet úrovní a~jejich vlastnosti jsou zcela v~rukou vývojáře, jenž widget použil. Pokud však žádné vlastní nedefinuje, použije časová osa vestavěné, jejichž popis uvádí tabulka \ref{tab:urovne-priblizeni}.
+		
+		Díky těmto jejich vlastnostem lze pak snadno provádět tranformace z~pozice vyjádřené v~pixelech na časový moment a~vice versa. Označíme-li časový rozsah pokrytý obálkou widgetu jako $I$, můžeme zavést dvě funkce:
+		\begin{equation}
+		\label{eq:tx}
+		T_{x}(t) = \frac{t - \min\{I\}}{d_{px}}
+		\end{equation}
+		\begin{equation}
+			\label{eq:tt}
+			T_{t}(x) = x\cdot d_{px} + \min\{I\}
+		\end{equation}
+		\vskip \baselineskip
+		kde $T_{x}$ vyjadřuje pro daný čas horizontální polohu uvnitř obálky widgetu a~$T_{t}$ pak čas pro danou polohu uvnitř obálky, jde tedy o~inverzní funkci $T_{x}^{-1}$. Analogicky pak mohou existovat funkce pro převod doby $\tau$ namísto jediného okamžiku:
+		\begin{equation}
+			\label{eq:dl}
+			D_l(\tau) = \frac{\tau}{d_{px}}
+		\end{equation}
+		\begin{equation}
+			\label{eq:dt}
+			D_\tau(l) = l\cdot {d_{px}}
+		\end{equation}
+		kde $D_l$ vrátí počet pixelů, jemuž odpovídá doba $\tau$, a~naopak $D_\tau$ pro počet pixelů $l$ vrátí korespondující časový rozsah. Tyto funkce často využijeme při pozicování záznamů v~rámci widgetu, generování pravítka a~podobně.
+		
+			
+	\section{Komponenty widgetu a~jejich rozvržení}
+	\label{komponenty-widgetu}
+		Na první úrovni lze widget rozdělit na dva základní prvky – \emph{časovou lištu} (\emph{timebar}), která souvisí s~\emph{časovým ukazatelem} (\emph{time pointer}), a~posuvnou \emph{obálku} (\emph{wrapper}). Časová lišta má jediný úkol, a~sice informovat uživatele o~tom, jaký časový úsek osa zobrazuje, kde v~čase se právě nachází. Zároveň mu umožňuje pomocí navigačních šipek měnit zobrazený časový výřez. Obálka pak představuje zastřešení pro všechny komponenty widgetu, které může uživatel tahem myši posouvat -- jde tedy o~pravítko, samotný obsah, pásy. Následující kapitoly se zabývají specifikací jednotlivých komponent, jejich vlastností, vztahu k~časové ose a~funkčnosti.
+	
+		\subsection{Průhled (viewport)}
+			\label{viewport}
+			Jako viewport či průhled bývá v~grafice označována plocha (na výstupu zobrazovacího zařízení), v~níž se uživateli promítá scéna či obsah, který není možné zobrazit kompletně celý najednou. Jedná se tak o~pohled hlavního hrdiny v~akční hře, o~výřez mapy na webovém portálu poskytujícím mapové podklady, ale i~o~pouhý rámeček textového pole, jehož obsah není možné zobrazit jednorázově, a~tak jej musí uživatel rolovat.
+			
+		 I~v~případě časové osy jde o~výřez celé vizualizace omezený velikostí zobrazovacího zařízení. Jedná se o~kontejner s~pevně stanovenou výškou a~šířkou, který v~sobě zahrnuje časovou lištu, časový ukazatel, wrapper a~komponentu popisků pásů (štítky s~číslováním {\tt band \#1} až {\tt band \#4} na obrázku \ref{img:design}). Způsob, jakým jsou tyto komponenty uspořádány a~jak je průhled zobrazuje, ilustruje obrázek~\ref{img:layers}.
+		
+		\subsection{Časová lišta (timebar)}
+		\label{casova-lista}
+			Časová lišta slouží k~tomu, aby se uživatel snáze orientoval v~rozsahu zobrazeném osou. Uprostřed lišty může vždy sledovat čas, který reprezentuje časový ukazatel. Tuto informaci zprostředkovává lišta ve formátu stanoveném úrovní přiblížení~(kapitola \ref{urovne-priblizeni}). Pokud tedy uživatel sleduje ve widgetu období o~délce stovek let, nepodsouvá mu lišta přesné datum, nýbrž jen století, kterým v~daný okamžik prochází časový ukazatel.
+			
+			Komponenta rovněž disponuje ovládacími prvky pro posun vizualizovaného rozmezí. Ačkoliv tak může uživatel učinit i~pomocí klávesnice a~myši (o interakci pomocí myši a~klávesnice se zmiňuje kapitola \ref{posun-osy}), navigační tlačítka jsou jedinou na první pohled patrnou možností, jak časovou osu posunout. To, o~jaké období se obálka s~vizualizací záznamů posune, určuje jednak úroveň přiblížení a~také koeficient definovaný uživatelem.
+			
+			\image{img:layers}
+				{width=\textwidth}
+				{layers.eps}
+				{Uspořádání komponent do vrstev a~jejich zobrazení v~průhledu}
+				{}
+			
+		\subsection{Obálka (wrapper)}
+			\label{wrapper}
+			Obálka sdružuje veškerý obsah widgetu, který lze posouvat -- z~podstaty časové osy plyne, že jde především o~samotné pásy se záznamy a~pravítko, které uživateli předává informaci o~jejich časovém zasazení.
+			
+			Aby uživatel viděl okamžitě při tažení osy (obálky) záznamy, které se doposud skrývaly mimo plochu průhledu, musí být s~předstihem umístěny do obálky. Z~toho důvodu se její šířka odlišuje od rozměrů viewportu, což orientačně ilustruje i~obrázek \ref{img:layers}. Ve skutečnosti by měla být šíře wrapperu přesně trojnásobná.
+			
+			\subsubsection*{Vodicí linky}
+				\label{guidelines}
+				Kapitola \ref{ruler} uvádí, že součástí obálky je rovněž pravítko informující uživatele o~přibližném časovém zasazení záznamů zobrazených v~průhledu. Aby však osoba, která osu použije, získala větší povědomí o~tom, do jakého časového úseku vybraná entita spadá, zobrazuje widget při podržení kurzoru nad záznamem vodicí linky. Ty vedou od hraničních bodů entity (začátku a~konce jejího trvání) až ke komponentě pravítka. 
+				
+				Linky jsou pozicovány absolutně vzhledem ke komponentě obálky, sou\-řadnice $x_{gl}$ a~$y_{gl}$ a~délka $h_{gl}$ levé vodicí linky (vyznačující začátek doby trvání záznamu) se určí vztahy 
+				\begin{equation}
+					x_{gl} = T_x(t_{e_s})
+				\end{equation}
+				\begin{equation}
+					y_{gl} = y_{band} + y_{item} + h_{item}
+				\end{equation}
+				\begin{equation}
+					h_{gl} = h_{wrapper} - y_{gl}
+				\end{equation}
+				a pro konec doby trvání záznamu pak zcela stejně pouze místo času začátku $t_{e_s}$ použijeme čas konce $t_{e_e}$. Vodicí linky doplňuje i~funkce zvýraznění části pravítka (kapitola~\ref{ruler}), kde funguje výpočet rozměrů na stejném principu.
+			
+			
+		\subsection{Pravítko (ruler)}
+			\label{ruler}
+			Pokud by časová osa nezahrnovala pravítko, jedinou možnost, jak zjistit, kdy se která událost odehrála, by pro uživatele představovalo přímé vybírání záznamů a~čtení u~nich uvedených dat. Proto tato komponenta doplňuje v~rámci obálky soubor pásů, a~dává tak uživateli možnost odečítat časové informace přímo z~ní.
+			
+			Protože je pravítko součástí wrapperu, platí i~pro něj požadavek na trojná\-sobně větší šířku než u~průhledu. Abychom byli schopni zkontruovat jeho obsah, tedy jednotlivé dílky a~popisky, musíme nejdříve zjistit, pro jaké období jej vlastně sestavujeme. To se zřejmě bude odvíjet od data reprezentovaného časovým ukazatelem, který je zároveň středem průhledu.			
+			
+			\subsubsection*{Generování dílků}
+				Pravítko se skládá z~hlavní a~vedlejší osy, přičemž jednotlivé dílky hlavní osy doplňují popisky. O~jejich velikosti a~časových jednotkách rozhoduje aktuální úroveň přiblížení (kapitola \ref{urovne-priblizeni}). Vzhledem k~tomu, že veškerá vizualizace wid\-getu probíhá v~rámci webové stránky (HTML dokumentu), lze předpokládat, že jednotlivé dílky stejně jako celé pravítko nebudou ničím jiným než HTML prvkem v~DOM. Pokud bychom chtěli striktně dodržet trojnásobnou šířku pravítka v~porovnání s~průhledem, mnohdy by to znamenalo, že jej musíme začít konstruovat například v~polovině jednotky, a~HTML prvek prvního dílku by tedy neměl být celý. Situaci ilustruje následující příklad s~doprovodným obrázkem \ref{img:rulerhandling}.
+				
+				Mějme úroveň přiblížení takovou, že jeden dílek hlavní osy (omezíme se pouze na ni, protože na vedlejší osu lze aplikovat tentýž problém) odpovídá jednomu měsíci. V~průhledu jsme schopni zobrazit současně období v~délce šesti měsíců.
+				\begin{enumerate}[a)]
+					\item Nastavili jsme časový ukazatel na přesný začátek měsíce (tj. půlnoc prvního dne), mimo průhled je tedy načteno dalších dvanáct měsíců (6 vlevo, 6 vpravo).
+					\item Táhneme obálku doprava o~polovinu měsíce, čímž měníme zobrazený časový rozsah. Na levé straně pravítka kus dílku chybí, na pravé pak přebývá.
+					\item Narážíme na problém, jak doplnit jen zlomek dílku?
+				\end{enumerate}
+				
+				Z~parametrů widgetu by samozřejmě bylo možné zjistit požadované rozměry necelého dílku a~ty aplikovat. Pravděpodobně by ale tento postup musel být aplikován i~na vedlejší ose -- můžeme totiž předpokládat, že dojde-li k~\uv{useknutí dílku} hlavní osy, nastane podobná situace i~na vedlejší. Z~toho důvodu nebudeme s~velikostí dílku manipulovat, pouze upravíme jejich počet uvnitř pravítka (bod~d) obrázku \ref{img:rulerhandling}).
+				
+				\image{img:rulerhandling}
+					{}{rulerhandling.eps}
+					{Stavy komponenty pravítka při posunu obálky}{h!}
+				
+			\subsubsection*{Korekce pravítka}
+				Abychom mohli určit, z~jakého rozsahu budeme záznamy vizualizovat, a~tedy i~pro jaký musíme vykreslit pravítko, potřebujeme nejdříve znát šířku průhledu~-- označíme ji $w_{viewport}$. Z~předešlých kapitol (\ref{wrapper}) již víme, že šířka pravítka (potažmo obálky) $w_{ruler}$ by měla být trojnásobná v~porovnání s~průhledem.
+				Využijeme-li funkce $D_\tau$ (vzorec \ref{eq:dt}, str. \pageref{eq:dt}), jež převádí počet pixelů na dobu (počet sekund), dokážeme s~pomocí času vyznačeného časovým ukazatelem (dále jen \emph{středový čas}) $t_c$ určit rozsah zobrazený ve wrapperu:
+				
+				\begin{equation}
+					\label{eq:interval}
+					I' = \left\langle t_c - D_\tau \left(\frac{w_{ruler}}{2}\right);\quad t_c + D_\tau\left(\frac{w_{ruler}}{2}\right)\right)
+				\end{equation}
+				
+				$I'$ zde vyjadřuje rozsah před korekcí pravítka, to znamená takový, kdy by si proces generování mohl vyžádat vytvoření necelého dílku. Proto provedeme korekci -- začátek i~konec intervalu upravíme tak, abychom mohli místo části dílku vložit celý a~přitom zachovali minimálně stejně velký rozsah pravítka, jaký byl určen vzorcem \ref{eq:interval}. To znamená, že začátek intervalu zaokrouhlíme na celé jednotky aktuální úrovně přiblížení směrem dolů a~konec intervalu naopak nahoru. Pokud mělo dojít k~začátku generování pravítka například 10. května a~aktuální úroveň přiblížení definuje, že jeden dílek hlavní osy odpovídá jednomu měsíci, pak tuto hodnotu zaokrouhlíme na celé měsíce směrem dolů a~dostaneme 1. května. V~případě, kdy by šlo o~konec intervalu, získali bychom datum 1. června. Zaokrouhlení vyžaduje následující postup:
+				
+				\begin{enumerate}	
+					\item Zvolíme na časové ose pevný bod, například půlnoc 1.\ts ledna roku 1 n. l.
+					\item Zjistíme dobu odpovídající jednomu dílku z~aktuální úrovně přiblížení.
+					\item Určíme, kolikrát se tato doba vejde do intervalu vymezeného pevně stanoveným bodem a~zaokrouhlovaným datem.
+					\item Tento počet zaokrouhlíme dolů/nahoru na celé jednotky.
+					\item Zaokrouhlenou hodnotu zpět přičteme k~pevně stanovenému bodu.
+				\end{enumerate}
+				
+				\paragraph{Příklad} Mějme datum 23.\ts srpna roku 2 n. l., které chceme zaokrouhlit směrem dolů. Úroveň přiblížení přiřazuje jednomu dílku odpovídající dobu jednoho mě\-síce. Do intervalu od 1.\ts ledna roku 1 do 23.\ts srpna roku 2 se tato doba vejde přibližně $20,\!742$krát. Hodnotu zaokrouhlíme směrem dolů ($20$) a~přičteme zpět k~1.\ts lednu roku 1 -- přičteme 20 měsíců. Získáme tak datum 1.\ts srpna roku 2.
+				
+			 S~použitím zaokrouhlování již můžeme přesně určit, jak bude vypadat časový rozsah widgetu přizpůsobený pravítku. Přitom budeme vycházet ze vzorce \ref{eq:interval}.
+				\begin{equation}
+				 I~= \left\langle \left\lfloor t_c - D_\tau \left(\frac{w_{ruler}}{2}\right) \right\rfloor;\quad \left\lceil t_c + D_\tau\left(\frac{w_{ruler}}{2}\right)\right\rceil\right)
+				\end{equation}
+			
+		\subsection{Pás (band)}
+			\label{band}
+			Předcházející kapitoly již několikrát zmiňovaly, že historická data lze bezpochyby kategorizovat. Pokud by měl uživatel pracovat s~časovou osou, která slučuje události, osobnosti i~další objekty do jedné plochy, brzy by se přestal orientovat. Proto se plocha, v~níž widget vizualizuje záznamy, rozděluje na jednotlivé pásy, kde každý obsahuje pouze vybraný typ historických dat. 
+			
+			\subsubsection*{Načtení záznamů}
+				\label{nacteni-zaznamu}
+				Každý pás si uchovává seznam všech záznamů, které do něj díky svému typu spadají. Při překreslení časové osy však nedochází k~zobrazení záznamů (a jejich fyzickému vložení do DOM), protože z~předchozích kapitol už víme, že velikost obálky odpovídá přibližně trojnásobku šíře průhledu. Je tedy zbytečné vkládat do DOM všechny záznamy, když nemá uživatel šanci je spatřit.
+				
+				Proto při manipulaci s~widgetem komponenta pásu zjišťuje, které ze zaregistrovaných záznamů má vložit do objektového modelu a~zobrazit je tak uživateli. Záznam může být svou polohou v~několika různých vztazích vůči časovému intervalu wrapperu -- popisuje je obrázek \ref{img:entity-interval-relation} a~následující definice.
+				
+				\begin{mydef}
+					\label{def:fits}
+					(a) Entita $e$ \emph{vyhovuje (fits)} časovému intervalu $I$, kde $I_s$ je jeho začátek a~$I_e$ konec, pokud $$t_{e_s} \ge I_s\quad\wedge\quad t_{e_e} \le I_e.$$
+					V případě, že jde o~momentovou entitu, pak platí, že $t_{e_e} = t_{e_s}$.
+				\end{mydef}
+				\begin{mydef}
+					(b) Intervalová entita $e$ \emph{prostupuje (protrudes)} do časového intervalu $I$, pokud $$(t_{e_s} < I_s \wedge  t_{e_e} < I_e \wedge  t_{e_e} > I_s) \quad\oplus\quad (t_{e_s} > I_s \wedge  t_{e_e} > I_e \wedge  t_{e_s} < I_e).$$
+				\end{mydef}
+				\begin{mydef}
+					(c) Intervalová entita $e$ \emph{pokrývá (covers)} časový interval $I$, pokud $$t_{e_s} \le I_s \wedge  t_{e_e} \ge I_e.$$
+				\end{mydef}
+				\begin{mydef}
+					\label{entity-presence}
+					Entita \emph{je přítomna} v~časovém intervalu, pokud mu \emph{vyhovuje} nebo do něj \emph{prostupuje} nebo jej \emph{pokrývá}.
+				\end{mydef}
+				
+				Komponenta pásu při vykreslení prochází jednotlivé záznamy, jež jsou k~ní registovány, a~ověřuje, zda jsou podle definice \ref{entity-presence} \emph{přítomny} v~intervalu aktuálně zobrazeném komponentou obálky. Pokud ano, přidá je do pásu, stanou se tedy součástí DOM.
+				
+				\image{img:entity-interval-relation}
+				{}
+				{entity-interval-relation.eps}
+				{Popis vztahů mezi dobou trvání záznamu a~časovým intervalem}
+				{h!}
+				
+			\subsubsection*{Řešení kolizí záznamů}
+				V historických datech pravděpodobně velmi často narazíme na případ, kdy se dva a~více záznamů překrývá v~čase. Tyto překryvy nelze předvídat, protože pás nemá prostředky k~tomu, aby předběžně zjistil, které ze záznamů vzájemně kolidují. To způsobuje především fakt, že počet záznamů přítomných v~DOM se s~každým překreslením mění, a~navíc je závislý i~na aktuální úrovni přiblížení, která jej může na základě priority entit rovněž upravovat.
+				
+				Tento problém řeší \emph{lane algoritmus}. Předpokladem pro jeho úspěšné použití je chronologické řazení záznamů. Protože pás všechny jemu příslušející entity registruje už při inicializaci časové osy, může je již v~tom okamžiku seřadit, a~při neomezeném počtu vykreslení pak už nebude potřeba tuto akci provádět znovu\footnote{Ovšem pouze do okamžiku, kdy se změní data poskytnutá zdrojem. Taková akce totiž invaliduje seřazený seznam záznamů registrovaných v~rámci pásu.}~-- tím pádem proces řazení entit nijak neovlivní čas vykreslení. 
+				
+			\subsubsection{Lane algoritmus}
+				Jako \emph{lane} označujeme jeden řádek záznamů v~rámci pásu (např. řádek č.~1 na obrázku \ref{img:lane-algorithm}).
+					
+				Mějme uspořádanou množinu $L = \emptyset$, která uchovává horizontální souřadnici pravého konce\footnote{tj. $x_{item} + w_{item}$} posledního záznamu pro jednotlivé pruhy, a~proměnnou $i = 0$. Pro každou komponentu uvnitř pásu:
+				\begin{enumerate}
+					\item Pokud $i = |L|$, zařadíme komponentu do $i$-tého pruhu, do množiny $L$ přidáme prvek $l_i = x_{item} + w_{item}$ a~pokračujeme bodem 4.
+					\item Pokud $x_{item} > l_i \in L$, pak zařadíme komponentu do $i$-tého pruhu, nastavíme $l_i = x_{item} + w_{item}$ a~pokračujeme bodem 4.
+					\item Nastavíme $i = i+ 1$ a~pokračujeme bodem 1.
+					\item Nastavíme komponentě vertikální pozici $y_{item} = i \cdot h_{item}$, přičemž před\-pokládáme stejnou výšku všech komponent.
+				\end{enumerate}
+				
+				V případě, že si algoritmus nárokuje větší počet pruhů, než se do pásu vejde, dojde k~jeho přetečení -- uživatel záznamy umístěné v~pruzích, které přetékají, neuvidí a~časová osa na to upozorní generováním příslušné události.
+				
+				Nastane-li nejhorší případ, vznikne pro $n$ komponent stejný počet pruhů, přičemž s každou zpracovávanou komponentou budeme muset projít o jeden pruh více než u předchozí. Pro první komponentu projdeme jedním pruhem, druhá musí projít dva, třetí tři atd. Počet takových průchodů tedy bude $1 + 2 + 3 + ... + n$. Jde o aritmetickou posloupnost, kde $d = 1$ a $a_1 = 1$, jejíž součet můžeme vyjádřit jako \cite{aristotheles}
+				$$ S_n = n \cdot \frac{a_1 + a_n}{2} = n \cdot \frac{1 + n}{2} = \frac{n^2 + n}{2} $$
+				Asymptotická složitost algoritmu odpovídá $O(\frac{n^2 + n}{2}) \sim O(n^2)$, kde $n$ je počet komponent. Naopak ve chvíli, kdy mezi komponentami nedochází k~žádné kolizi, platí, že $m = 1$, a tedy $O(n)$.
+				
+				\image{img:lane-algorithm}
+					{}{lane-algo.eps}
+					{Příklad postupu při zařazení záznamu do pásu pomocí lane algoritmu}
+					{h!}
+			
+		\subsection{Skupina pásů (band group)}
+		\label{skupina-pasu}
+			\vbox{Jednotlivé pásy se sdružují s~historickými záznamy do skupiny, tj. do jedné komponenty, která je pak vložena do obálky. Tím zajistíme, že se při tažení pohybují všechny komponenty pásů současně a~stejně dobře tak máme jistotu, že i~výpočty pro transformaci času na pozici v~pixelech a~opačně budou v~pořádku.} 
+			
+			Tato komponenta rovněž zodpovídá za distribuci volného prostoru v~průhledu mezi jednotlivé pásy. Při každé manipulaci s~obsahem widgetu tedy musí skupina pásů zjistit, jaká je výška volného prostoru v~průhledu a~tu rozdělit mezi pevně stanovený počet pásů.
+		
+		\subsection{Položka pásu (band item)}
+			\label{banditem}
+			Položka pásu představuje pouhou grafickou abstrakci reálného historického zá\-znamu. Jde o~komponentu, která je svázaná s~objektem nesoucím skutečná data, a~funguje tak jako jejich reprezentace -- sama o~sobě žádnou informaci neuchovává.
+			
+			Aby se mohl uživatel mezi záznamy časové osy snáze orientovat, musí se položky pásu nějakým způsobem odlišovat. To, jakým způsobem se položka zobrazí v~pásu, neurčuje přímo sama, využívá k~tomu objekt, jenž na základě informací o~historickém záznamu sám rozhoduje například o~barvě či velikosti. Tento objekt budeme nazývat \emph{renderer}. 
+
+			\subsubsection*{Vykreslení}
+				Renderer při vykreslování položky volí její finální grafickou podobu na základě toho, zda jde o~momentovou či intervalovou entitu. Rozdíl mezi těmito dvěma typy by měl být pro uživatele patrný na první pohled. Zatímco intervalový záznam popisuje dlouhodobý stav\footnote{Rozdíly mezi intervalovou a~momentovou entitou podrobněji popisuje kapitola \ref{povaha-historickych-dat}.}, průběh události nebo život člověka, a~lze tedy vyznačit jeho trvání, momentová entita se odehrává v~jednom okamžiku (byť jím může být i~rok), a~proto pro ni zvolí vizualizaci bodem. Stejně tak by měl uživatele grafickou podobou záznamu informovat, není-li časové rozmezí záznamu přesné (více v~kapitole \ref{presnost-datovani}), například postupným vymizením okrajů do ztracena.
+				Ve všech případech ale musí výslednou komponentu umístit na pozici odpovídající jejímu časovému zasazení. Toho docílí použitím funkcí ze vzorce \ref{eq:tx} (str. \pageref{eq:tx}):
+				$$x_{item} = T_x(t_{e_s})$$
+				U komponenty reprezentující intervalovou entitu je pak potřeba nastavit i~šířku prvku reprezentujícího dobu trvání:
+				$$w_{dur_{item}} = D_l(d_e)$$
+				Pokud však entita \emph{překrývá} interval obálky nebo do něj \emph{prostupuje}, musí renderer její hodnoty $x_{item}$ a~$w_{dur_{item}}$ upravit:
+				$$x_{item} = \max\{0, x_{item}\}$$
+				$$w_{dur_{item}} = \min\{w_{dur_{item}}, w_{wrapper}\}$$
+				
+			\subsubsection*{Vykreslení popisku}
+				Součástí každé položky pásu je i~její popisek, který uživateli poskytuje základní možnost orientace. Forma popisku závisí na podobě zbylé části komponenty, všechny následující alternativy ilustruje obrázek \ref{img:label-position}.
+				\begin{enumerate}[a)]
+					\item Popisek nelze umístit do prvku reprezentujícího dobu trvání entity, protože $w_{label} \ge D_l(d_e)$, kde $w_{label}$ je šířka prvku s~popiskem.
+					\item Popisek lze umístit do prvku reprezentujícího dobu trvání; \mbox{$w_{label} < D_l(d_e)$} a~jeho pozice je relativní vůči komponentě záznamu.
+					\item Komponenta vizualizuje momentovou entitu, popisek se vždy nachází vedle.
+				\end{enumerate}
+				
+				Případ b) můžeme dále rozdělit (obrázek \ref{img:label-centering}). Protože uživatel zřejmě sou\-středí svoji pozornost do středu osy, tedy do okolí časového ukazatele, snaží se renderer pozicovat popisky uvnitř prvku reprezentujícího trvání entity tak, aby se maximálně blížily k~centru osy. A~to podle následujících pravidel:
+				\begin{itemize}
+					\item[--] Pokud $x'_{item} + w_{item} < \frac{1}{2} \cdot (w_{viewport} + w_{label})$, \mbox{pak $x_{label} = w_{item} - w_{label}$}.
+					\item[--] Pokud $x'_{item} > \frac{1}{2} \cdot (w_{viewport} + w_{label})$, pak $x_{label} = 0$.
+					\item[--] V~ostatních případech $x_{label} = \frac{1}{2}\cdot (w_{viewport} - w_{label}) - x'_{item}$,
+				\end{itemize}
+				přičemž $x'_{item} = x_{wrapper} + x_{item}$ a~vyjadřuje buď počet pixelů šířky komponenty, které jsou skryty (vlevo vyčnívají z~průhledu), nebo počet pixelů, o~něž je záznam odsazen od levého okraje průhledu. Význam všech použitých proměnných ilustruje obrázek \ref{img:label-centering-vars}
+				
+				\image{img:label-position}
+				{}{label-pos.eps}
+				{Možnosti pozicování popisku komponenty záznamu}
+				{h!}
+			
+				\image{img:label-centering}
+				{}{label-centering.eps}
+				{Centerování popisků umístěných uvnitř prvku reprezentujícího dobu trvání záznamu}
+				{h!}
+				
+				\image{img:label-centering-vars}
+				{}{label-center-vars.eps}
+				{Ilustrace významu proměnných použitých při centerování popisku}
+				{h!}
+			
+		\subsection{Vrstva vztahů (relation viewer)}
+			\label{relation-viewer}
+			Widget časové osy vytvářený v~rámci této práce je unikátní tím, že mezi vizua\-lizovanými záznamy dokáže zobrazit i~vybrané vztahy. Stejně jako entity i~jejich vzájemné relace se rozlišují podle typu a~obsahují název (popisek). Pokaždé v~sobě nesou také informaci o~tom, z~kterého záznamu do kterého směřují. Díky takové charakteristice můžeme pro jejich grafickou reprezentaci použít šipku, přičemž význam vztahu budeme číst v~jejím směru. Příklad naznačuje obrázek~\ref{img:relation-arrow}.
+			
+			Zatímco případ a) čteme jako \emph{\uv{Svatý Václav je potomek Vratislava II.}}, druhou možnost, kde šipka směřuje zprava doleva, přečteme \emph{\uv{Vratislav I. je potomek Bořivoje I.}}.
+			\image{img:relation-arrow}
+			{}{relation-arrow.eps}
+			{Ilustrace odlišnosti významu vztahu při opačném směru šipky}{}
+			
+			\subsubsection*{Výběr vztahů}
+			\vbox{Komponenta vztahů nemůže současně zobrazit všechny relace mezi entitami -- uživatel by zcela ztratil veškerou orientaci. Z~toho důvodu relation viewer před samotným vykreslením šipek rozhoduje o~jejich počtu na základě následujících podmínek.}
+			\begin{itemize}
+				\item[--] Zobrazí se pouze ty relace, které vychází z označené položky pásu nebo do ní vstupují.
+				\item[--] Komponenta záznamu účastnícího se vztahu musí být přítomna v~objektovém modelu wid\-getu.
+				\item[--] Komponenta, do/z níž vede záznam z/do vybrané položky, musí být viditelná v~rámci pásu, do něhož patří. To znamená, že nesmí být v~pruhu, jenž \emph{přetekl} (kapitola \ref{band}, část Řešení kolizí). Platí pro ni tedy, že $$y_{item} + h_{item} \le h_{band}\ ,$$ kde $band$ je nadřazená komponenta pro $item$.
+			\end{itemize}
+			
+			\subsubsection*{Vykreslení}
+			Splňují-li dva záznamy výše uvedené podmínky, lze mezi nimi vykreslit relaci. Vrstva vztahů se přitom snaží, aby šipka vždy směřovala do (resp. vycházela ze) středu  viditelné části prvku, který reprezentuje dobu trvání. Souřadnice tohoto bodu označíme $x_{c_{item}}$ a~$y_{c_{item}}$ a~bude pro ně platit:
+			\begin{equation}
+			x_{c_{item}} = \frac{D_l(d_e) - o_l + o_r}{2}+x_{item}
+			\end{equation}
+			\begin{equation}
+			y_{c_{item}} = y_{band} + y_{item} + \frac{h_{item}}{2}
+			\end{equation}
+			kde $o_l$ (resp. $o_r$) vyjadřuje velikost části prvku, která vyčnívá z~průhledu vlevo (resp. vpravo) (obrázek \ref{img:rel-center}), a~určí se jako
+			$$o_l = \min\{0, x_{wrapper} + x_{item}\} ,$$
+			$$o_r = \max\{0, x_{item} + D_l(d_e) + x_{wrapper} + w_{viewport}\} .$$
+			
+			\paragraph{Poznámka} Převod doby trvání záznamu $d_e$ na počet pixelů v tomto případě používáme místo $w_{item}$ z~toho důvodu, že je-li prvek reprezentující trvání entity příliš malý, její popisek, který je rovněž součástí komponenty $item$, bude umístěn vedle, a~tím zvýší hodnotu $w_{item}$. My však chceme znát viditelný střed grafické reprezentace doby trvání, nikoliv celé komponenty.
+			
+			\image{img:rel-center}
+			{}{rel-center-vars.eps}
+			{Ilustrace významu proměnných použitých při hledání viditelného středu záznamu}
+			{}
+			
+			
+		\section{Základní interakce}
+		Kapitola popisující základní interakce, jež lze nad widgetem časové osy provádět, uvádí některé vzorce potřebné k~zajištění správného posunu osy či změny úrovně přiblížení.
+		
+		\label{zakladni-interakce}
+			\subsection{Posun osy}
+			\label{posun-osy}
+				Jedná se o~interakci, o~níž se několikrát zmiňují předcházející kapitoly a~která umožňuje uživateli prostřednictvím průhledu pohodlně procházet záznamy.
+				
+				Nejrychlejším a~zároveň nejpřesnějším způsobem, jak měnit prohlížený časový rozsah, je posun obálky metodou \emph{drag\&drop} -- jde o~její uchopení stiknutím levého tlačítka myši a~následné tažení doleva nebo doprava (vertikální směr v~tomto případě není povolen, nemá smysl). Po upuštění komponenty pak časová osa provede operace nutné k~tomu, aby uživatel viděl všechny záznamy z~nově zvoleného období.
+				
+				Druhou možnost představuje použití navigační šipek v~oblasti časové lišty nebo kurzorových kláves. V~takovém případě však uživatel přímo neovlivní velikost posunu -- tu stanovuje úroveň přiblížení a~vývojář, jenž má možnost určit koeficient definujicí právě míru posunutí.
+			
+			\subsection{Změna úrovně přiblížení}
+			\label{zmena-urovne-priblizeni}
+				Větší množství záznamů, které jsou zasazeny do stejného časového období, nelze současně zobrazit v~čitelné podobě při určitých úrovních přiblížení. Z~toho důvodu má uživatel možnost tuto úroveň přizpůsobit.
+				
+			 K~přiblížení nebo oddálení může uživatel použít tlačítka {\sf +} a~$\mathsf{-}$ navigačního panelu umístěného vpravo nahoře nebo jim odpovídající klávesy. Při tomto způsobu manipulace s~úrovní přiblížení nedochází k~žádnému posunu, zůstává zachován původní středový čas časové osy.
+				
+			 K~jinému chování však dochází, použije-li uživatel k~přibližování kolečko myši. Tehdy totiž bere widget v~potaz také pozici kurzoru, při níž k~vyvolání změny úrovně došlo. Uživatel pravděpodobně očekává, že podrží-li kurzor nad konkrét\-ním záznamem během této události, bude jej widget považovat za střed přibli\-žování. Jinými slovy, čas, jemuž odpovídá pozice kurzoru před změnou úrovně přiblížení, by měl zůstat stejný i~pro změně.
+				
+				Pro zachování středu přibližování potřebujeme vědět, jakému času v~ose odpovídá pozice kurzoru. Musíme tedy zjistit polohu kurzoru vůči poloze wrapperu~-- budeme ji označovat $x_z$ a~určíme ji jako
+				$$x_z = x_{event} - x_{wrapper}\ ,$$
+				kde $x_{event}$ je horizontální pozice kurzoru při vzniku události vztažená k~umístění widgetu a~$x_{wrapper}$ pak horizontální pozice obálky vzhledem k~widgetu (vždy záporná) (význam proměnných ilustruje obrázek \ref{img:zoom-centering}). Díky znalosti funkce $T_t$ (vzorec \ref{eq:tt}, str. \pageref{eq:tt}) můžeme z~pozice $x_z$ určit odpovídající čas
+				$$t_z = T_t(x_z)\ .$$
+				
+				Čas odpovídající pozici, v~níž vznikl požadavek na přiblížení, potřebujeme znát především proto, že samotná horizontální pozice přestane mít v~rámci obálky význam ve chvíli, kdy úroveň změníme -- měníme s~ní totiž i~parametr $d_{px}$, který měřítko osy ovlivňuje.
+				
+				Po provedení operací nutných k~zajištění změny úrovně přiblížení musíme nastavit nový středový čas widgetu. Pokud by zůstal stejný, entita, nad níž uživatel držel při rolování kurzor, by pravděpodobně zmizela z~průhledu, protože se měřítko mohlo změnit i~o~desítky let. Nový středový čas $t_c'$ získáme tak, že k~času $t_z$ odpovídajícímu pozici, ve které požadavek na událost vznikl, přičteme dobu, která koresponduje se vzdáleností v~pixelech mezi $x_z$ a~časovým ukazatelem, jenž se nachází uprostřed widgetu:
+				
+				\begin{equation}
+				\label{eq:stred-priblizeni}
+				t_c' = t_z + D_\tau\left(\frac{w_{viewport}}{2} - x_z\right)
+				\end{equation}
+				
+				Doba, kterou vrátí funkce $D_\tau$ (vzorec \ref{eq:dt}, str. \pageref{eq:dt}) jako výsledek, může být i~záporná, protože $D_\tau$ zachovává znaménko svého argumentu, tedy předaného počtu pixelů. K~takové situaci dochází, pokud uživatel inicioval přiblížení s~kurzorem umístěným napravo od časového ukazatele.
+				
+				
+				\image{img:zoom-centering}
+					{}
+					{zoom-center.eps}
+					{Význam proměnných použitých ve vzorcích pro vystředění podle pozice kurzoru po změně úrovně přiblížení}
+					{}
+				
+			\subsection{Zaostření}
+				\label{zaostreni}
+				\emph{Zaostření} je speciální funkcí, která kombinuje výše popsaný posun osy a~změnu úrovně přiblížení. Umožňuje totiž přizpůsobit obsah průhledu tak, aby se v~něm vybraný záznam zobrazil celý a~v~co největších rozměrech.
+				
+			 V~případě, že je funkce zaostření zapnuta, zjistí widget, jaké je trvání zvolené entity, a~projde dostupné úrovně přiblížení. Přitom se pokusí najít takovou, pro jejíž parametr $d_{px}$ platí, že je nejmenší možný a~zároveň
+				$$d_{px} \cdot w_{viewport} > d_e\ ,$$
+				kde $d_e$ představuje trvání historického záznamu. Nalezenou úroveň pak widget nastaví jako aktuální a~zároveň obálku posune tak, aby zvolenou entitu vystředil. Nalezne tedy čas $t_{c_e}$ ve středu trvání entity jako
+				$$t_{c_e} = t_{s_e} + \frac{d_e}{2}\ ,$$
+				kde $t_{s_e}$ je čas začátku historického záznamu, a~nastaví jej jako středový čas wid\-getu.
+				
+		\section{Načítání dat a~jejich formát}
+			\label{format-dat}
+			V této práci bylo již několikrát zmíněno, že v~určitých ohledech vychází z~jiných souběžně zpracovávaných diplomových prací. Ty výrazně ovlivnily právě formát dat a~rozhodly po vzájemné konzultaci o~způsobu jejich dodání. To, jak lze standardně klasifikovat historické záznamy, již popisovala kapitola \ref{povaha-historickych-dat}. Tato se věnuje principu, jakým je widget získává a~jak mají být strukturována.
+			
+			\subsection{Datový zdroj}
+				\label{datovy-zdroj}
+				Objekt datového zdroje hraje v~této práci roli prostředníka mezi widgetem časové osy a~poskytovatelem historických záznamů, jež mají být vizualizovány. Jeho pozici lépe přibližuje obrázek \ref{img:dataflow}.
+				
+				Datový zdroj je zodpovědný za načtení dat, a~to ať už se jedná o~data získaná ze vzdáleného serveru (což je případ souběžné diplomové práce Bc. Davida Hrbáčka) nebo o~statický JSON soubor. Protože jde pouze o~abstrakci, nepředepisuje žádný konkrétní formát -- poskytovatel může data zaslat v~libovolné podobě za předpokladu, že na straně klienta existuje implementace datového zdroje, jež takovému formátu dat rozumí. 
+				
+				Načtené záznamy spolu s~relacemi musí objekt datového zdroje transformovat na formát používaný časovou osou -- namapuje entity a~vztahy na odpovídající objektové reprezentace. Další kroky jsou již záležitostmi widgetu, datový zdroj v~tuto chvíli slouží jen jako úložiště, z~něhož časová osa data získává podle potřeby.
+			
+				\image{img:dataflow}
+					{}{dataflow.eps}
+					{Diagram toku dat}
+					{h!}
+					
+			\subsection{Formát vstupních dat}
+				\label{format-vstupnich-dat}
+				Ačkoliv předchozí kapitola uvádí, že formát vstupních dat objektu zdroje může být prakticky libovolný, v~rámci diplomové práce vznikne i~konkrétní implementace datového zdroje, která bude na vstupu vyžadovat množinu záznamů a~vztahů ve formátu JSON, tak jak uvádí požadavky v~kapitole \ref{format-dat}. Podobu této reprezentace uvádí obrázek \ref{img:data-format}.
+				
+				Z obrázku zároveň plynou základní požadavky na objekt záznamu a~objekt vztahu. Oba zmíněné musí disponovat
+				
+				\vbox{\begin{itemize}
+					\item[--] unikátním číselným identifikátorem, 
+					\item[--] označením (stereo)typu
+					\item[--] a~názvem.
+				\end{itemize}}
+				
+				Entita musí obsahovat i~informaci o~začátku jejího trvání ve formátu dle normy ISO 8601 \cite{iso-8601}, volitelně pak (v případě, že jde o~momentovou entitu) čas konce trvání rovněž dle normy. Reprezentace vztahu vyžaduje identifikátory záznamů, které se ho účastní.
+				
+				Atribut {\tt properties} slouží k~předání dalších libovolných informací, jejichž zpracování je pak zcela v~rukou vývojáře. Za zmínku však stojí speciální vlastnosti entity {\tt startPresicion} a~{\tt endPrecision}, které umožňují definovat, s~jakou přesností má být čas začátku, resp. konce, prezentován. Pokud nastavíme čas začátku trvání záznamu na {\tt 1956-05-27T23:10:43} a~hodnota {\tt startPrecision} bude {\tt decade}, pak se uživateli informace o~čase zobrazí ve formě řetězce \emph{50. léta 20. st.} V~rámci této práce akceptuje entita jako platné přesnosti času hodnoty uvedené v~tabulce~\ref{tab:precisions}.
+				
+				\vskip\baselineskip
+				\begin{table}[h!]
+					\centering
+					\begin{tabular}{|ll|}
+						\hline
+						hodnota atributu {\tt precision} & výstup\\
+						\hline
+						\tt century & 20. st. \\
+						\tt decade & 50. léta 20. st\\
+						\tt year & 1956\\
+						\tt month & květen 1956\\
+						\tt day & 27. květen 1956\\
+						\tt none & 27. květen 1956 23.10:43\\
+						\hline
+					\end{tabular}
+					\caption{Příklady výstupů pro jednotlivé hodnoty vlastnosti {\tt precision} \mbox{(vzorový} čas {\tt 1956-05-27T23:10:43})}
+					\label{tab:precisions}
+				\end{table}
+				
+				\begin{figure}
+					\small
+					\begin{verbatim}{
+  "nodes" : [
+    {
+      "id" :          <Number>,
+      "stereotype" :  <String>,
+      "name" :        <String>,
+      "begin" :       <String ISO8601>,
+      "end" :         <String ISO8601>, // nepovinné
+      "description" : <String>,         // nepovinné
+      "properties" : { ... }            // nepovinné
+    }, ...
+  ],
+  "edges" : [
+    {
+      "id" :         <Number>,
+      "stereotype" : <String>,
+      "from" :       <Number>,
+      "to" :         <Number>,
+      "name" :       <String>,
+      "properties : { ... }    // nepovinné
+    }, ...
+  ]
+}
+	  
+					\end{verbatim}
+					\caption{Formát dat pro reprezentaci množiny záznamů a~vztahů vyžadovaný standardní implementací datového zdroje časové osy}
+					\label{img:data-format}
+				\end{figure}
+				
+				
+			

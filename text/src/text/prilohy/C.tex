@@ -1,0 +1,22 @@
+\chapter*{C\ \ Obsah přiloženého CD}   % nečíslová
+\thispagestyle{empty}
+
+\section*{Obsah disku}
+\renewcommand*\DTstyle{\sf}
+\dirtree{%
+.1  . 
+.2 bin. 
+.3 {\it timeline-rest.war}\DTcomment{WAR soubor REST serveru}. 
+.2 src\DTcomment{zdrojové soubory widgetu a~vzorová data (kapitola \ref{fyzicka-struktura})}. 
+.2 text. 
+.3 src\DTcomment{TEX soubory textu práce}. 
+.3 text.pdf\DTcomment{kompletní text práce včetně příloh}. 
+}
+
+\section*{Zprovoznění}
+\begin{itemize}
+\item[--] Pro prohlížení vzorových dat použitých při testování (období Českého kní\-žectví) nebo pro generování náhod. dat stačí otevřít soubor {\sf src/index.html}.
+\item[--] Úpravou (zakomentováním/odkomentováním) posledních řádků souboru {\sf src\\/js/main.js} můžete rozhodnout o~tom, který datový zdroj bude použit pro získání záznamů (více v~kapitole \ref{zmena-zdroje}).
+\item[--] Chcete-li testovat komunikaci s~REST rozhraním, nasaďte WAR soubor umístěný ve složce {\sf bin} na server (testováno na Apache Tomcat 7.0.61). Soubor je produktem práce Bc. Davida Hrbáčka (Zpracování časových údajů pro jejich vizualizaci. 2015, ZČU, Plzeň.), která poskytuje podrobnější informace. Při změně řádku v~souboru {\sf src/js/main.js} nezapomeňte na stejném místě upravit také výchozí URL REST požadavků v~závislosti na umístění nasazeného WAR souboru.
+\item[--] {\bf Upozornění:} Při použití datového zdroje načítajícího data prostřednictvím REST rozhraní je nutné, aby i~sama aplikace s~widgetem časové osy běžela na stejném serveru, popř. aby byl v~prohlížeči povolen \emph{cross-origin mode}.
+\end{itemize}

@@ -1,0 +1,82 @@
+\documentclass[]{required/thesis}
+% atribut [draft] odstrant před tiskem
+
+\usepackage[utf8]{inputenc} % kódování UTF-8
+\usepackage[czech]{babel}   % lokalizace
+\usepackage{fancyhdr}       % styly záhlaví a zápatí
+\usepackage{graphicx}       % grafika (EPS)
+\usepackage{tabularx}
+\usepackage{url}
+\usepackage{amsthm}
+\usepackage[font=it]{caption}
+\usepackage{enumerate}\usepackage{float}
+\usepackage{multirow}
+\usepackage{dirtree}
+\usepackage{longtable}
+
+\widowpenalty=10000
+\clubpenalty=10000
+
+% informace o závěrečné práci
+\author{Bc. Michal Kacerovský}
+\title{Vizuální reprezentace precedenčního grafu}
+\titlet{} % 1. podtitul
+\titlett{} % 2. podtitul
+\university{Západočeská univerzita v~Plzni}
+\faculty{Fakulta aplikovaných věd}
+\department{Katedra informatiky a~výpočetní techniky}
+\subject{Diplomová práce}
+\town{Plzeň}
+\theoremstyle{definition}
+\newtheorem{mydef}{Definice}[chapter]
+
+% vlastní dokument
+\begin{document}
+	\newcommand*\OK{$\bullet$}
+
+    % nastavení záhlaví a zápatí
+    \pagestyle{fancy}
+    \renewcommand{\chaptermark}[1]{\markboth{\textit{#1}}{}}
+    \renewcommand{\sectionmark}[1]{\markright{\textit{#1}}{}}
+    \cfoot{\thepage}
+    \lhead{\leftmark}
+    \rhead{\rightmark}
+
+    % vytvoření titulní stránky %
+    \maketitle
+	
+	\input{text/prohlaseni/content}
+    \input{text/abstract/content}
+    \input{text/podekovani/content}
+
+    % obsah práce
+    \pagestyle{empty}   % nestránkováno
+    \tableofcontents
+    \pagebreak
+    \pagestyle{fancy}
+	
+    \input{text/uvod/content}
+    \input{text/teoreticky-uvod/content}
+    \input{text/analyza-pozadavku/content}
+    \input{text/analyza-existujicich-reseni/content}
+    \input{text/navrh/content}
+    \input{text/implementace/content}
+    \input{text/testovani/content}
+    %\input{text/specifikace-projektu/content}
+	% zde vložit další kapitoly
+    \input{text/zaver/content} 
+    
+    % přílohy (bez záhlaví práce)
+    \pagestyle{plain}
+	\input{text/literatura/content}
+%	\bibliographystyle{required/csplainnat}
+%	\bibliography{dp}
+    % zde vložit přílohy
+	\input{text/seznam-zkratek/content}
+    \input{text/prilohy/content} 
+    \input{text/prilohy/A} 
+    \input{text/prilohy/B} 
+    \input{text/prilohy/C} 
+
+
+\end{document}

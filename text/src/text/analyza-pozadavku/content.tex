@@ -1,0 +1,92 @@
+% nastavení cesty k~obrázkům této kapitoly
+\graphicspath{{text/analyza-pozadavku/img/}}
+
+\chapter{Analýza požadavků}
+	\label{analyza-pozadavku}
+	
+	Následující seznam požadavků byl sestaven pouze na základě konzultací s~vedoucím práce a~ostatními členy týmu realizujícího tento projekt, přičemž je doplněn o~mé vlastní návrhy toho, jak by mohl výsledný widget vypadat či fungovat. Níže uvedené požadavky formulují vlastnosti prvotního konceptu, slouží však především jako kritéria pro případný výběr již existující knihovny -- ať už pouze pro inspiraci nebo pro implementaci části této práce.
+
+	Knihovna nebo nástroj použitelný pro realizaci widgetu v~rámci této práce by měly splňovat následující body.
+
+	\section{Technické požadavky}
+		\label{technicke-pozadavky}
+
+		\subsection*{Jazyk implementace}
+			\label{jazyk-implementace}
+
+			Uvážíme-li, že widget bude používán v~rámci webového prohlížeče, a~tedy musí být součástí webových stránek, pak můžeme výrazně zúžit okruh technologií, které lze pro jeho implementaci použít.
+
+			Jako první vezmeme v~úvahu {\sf Flash}, jenž byl svého času přítomen na 99~\% zařízení používaných k~prohlížení webu. Dominantní pozici si vydobyl díky absenci konkurence a~tomu, že v~porovnání s~tehdejší kombinací HTML a~JavaScriptu se osvobozoval od různých omezení \cite{simpson-2012}. Takovou podporou se však nemůže pochlubit na mobilních zařízeních, která se stala majoritním bodem pro přístup k~webu \cite{smart-insights-2015}.
+
+			Novější obdobu zmíněné technologie představuje {\sf SilverLight} vytvořený společ\-ností Microsoft. I~zde se ale jedná o~zásuvný modul, a~jeho podpora tak není stoprocentní.
+
+			Z~předchozích odstavců vyplývá, že použití HTML spolu s~JavaScriptem skýtá nějaká omezení. Taková ovšem byla situace před několika lety, přesněji předtím, než organizace W3C oficiálně ohlásila dokončení standardu HTML5 (v~říjnu 2014)~\cite{w3c-2014} a~CSS3 (postupně v~letech 2011--2012). HTML5 spolu s~JavaScriptem nabízí spoustu nových možností interakce, a~eliminuje tak potřebu technologií, jako jsou výše zmíněný {\sf Flash} nebo {\sf Silverlight}. HTML5 rovněž nově disponuje tzv. \emph{canvasem}, jenž umožňuje přímo v~prohlížeči programově vykreslovat rastry.
+
+			Z úvodu práce plyne, že uživatel bude mít možnost zobrazit vztah vybraného záznamu a~jeho okolí. Pokud si představíme vizualizaci chronologicky uspořáda\-ných dat jako časovou osu, pak zřejmě vztahy můžeme zobrazit pomocí linek propojujících jednotlivé záznamy na ose. K~tomu lze využít zmiňovaného canvasu. Měli bychom ovšem vzít v~potaz, že zobrazení vztahů pravděpodobně budeme chtít stylovat jako ostatní prvky widgetu a~rovněž s~ním bude nutné manipulovat. Chceme tedy, aby se vizualizace vztahů mezi záznamy chovala jako ostatní prvky, aby byla také součástí DOM. Pro takový případ se přímo nabízí SVG -- XML popis vektorové grafiky, který lze vložit do HTML stránky.
+
+			Shrneme-li předchozí odstavce, výchozím požadavkem na technické zpracování bude implementace pomocí {\bf HTML}, {\bf Javascriptu} a~{\bf SVG}. V~dalších odstavcích tyto jazyky doplní ještě datový formát {\bf JSON} užitý pro přenos informace mezi datovou vrstvou a widgetem.
+		
+		\subsection*{Responzivní zobrazení}
+			\label{responzivni-zobrazeni}
+			Widget by měl být schopen reagovat na změnu rozměrů zobrazovacího zařízení a~stejně tak i~na jeho rozdílnou hustotu pixelů. Jde především o~to, aby výsledek této práce mohl být umístěn kamkoliv do stránky -- ať už do celé její plochy nebo jen vybrané části -- a~přitom si zachoval vlastnosti své grafické podoby. 
+		
+		\subsection*{Formát dat}	
+			\label{format-dat}
+			Jeden z~nejdůležitějších požadavků představuje formát dat, v~němž bude widget přijímat informace k~vizualizaci -- tedy historické záznamy. 
+			
+			Vzhledem k~tomu, že aplikace sama nebude mít přímý přístup k~databázi, ale informace z~ní získá přes mezivrstvu (která je předmětem jiné diplomové práce), musí být stanoven formát sloužící právě k~výměně dat mezi aplikací a~zmíněnou mezivrstvou. 
+			
+			Jako prostředník mezi widgetem a~databází poslouží server. Vezmeme-li v~potaz technologie zvolené pro implementaci widgetu, nabízí se jako ideální formát {\bf JSON}. Už jen díky tomu, že vychází z~JavaScriptu, a~je tak i~snadno zpracovatelný. Alternativou by mohlo být užití XML, které lze rovněž poměrně snadno zpracovat JavaScriptem. Jeho nevýhodou je však podstatně větší velikost (oproti JSON například kvůli syntaxi uzavírajících značek), tím pádem i~větší velikost dat přenášených mezi serverem a~widgetem \cite{kogent-2008}.
+			
+	\section{Funkční požadavky}
+		\label{funkcni-pozadavky}
+		
+		\subsection*{Paralelní zobrazení záznamů}
+			\label{paralelni-zobrazeni-zaznamu}
+			Lze předpokládat, že rozdělení historických záznamů pouze na události a~osoby nebude stačit. Existuje větší množství základních typů, do nichž můžeme data roztřídit. Při analýze historických záznamů zcela jistě odhalíme množinu ozna\-čující místa nebo předměty.
+			
+			Chceme-li, aby se uživatel v~časové ose snadněji orientoval, musí widget podporovat oddělené zobrazení jednotlivých typů záznamů. Toho docílíme vizualizací dat v~souběžných pásech, kde každý pás slouží pouze pro vybraný typ.
+			
+		\subsection*{Chronologické uspořádání}
+			\label{chronologicke-usporadani}
+			Základním požadavkem, který zajistí to, že data budou vizualizována tak, jak pravděpodobně uživatel očekává, je jejich chronologické uspořádání v~čase.	Vzni\-ká v~podstatě automaticky, má-li vizualizace fungovat jako časová osa.
+			
+		\subsection*{Vizualizace vztahu}
+			\label{vizualizace-vztahu}
+			Předchozím bodem by splňovala tato práce zadání jen z~části. Nemá za cíl pouze uspořádat historické záznamy v~čase, ale rovněž musí uživateli umožnit procházení vazeb mezi nimi. Protože není reálné zobrazit všechny vztahy mezi daty současně, umožní widget uživateli procházet aspoň jejich podmnožinu, a~sice ty vazby, jež jsou spojeny se zvoleným (označeným) záznamem.
+		
+%		\subsection*{Momentový a~intervalový záznam}
+%			\label{momentovy-a-intervalovy-zaznam}
+%			Při analýze historických dat narážíme na zásadní rozdíl mezi libovolnými zázna\-my, a~to i~u~takových, které jsou stejného typu. Jedná se o~způsob jejich datování.
+%			\begin{enumerate}
+%				\item Událost, která je svázána s~jediným okamžikem v~čase, může být reprezentována jednoduše bodem. Nastala v~daný okamžik a~dále nepokračovala. Může jít například o~bitvu, která proběhla v~jeden den.
+%				\item Naproti tomu existují události trvající roky, např. husitské války.
+%			\end{enumerate}
+%			V~prvním případě budeme hovořit o~\emph{momentové události} a~v~případě druhém pak o~\emph{intervalové události}. Widget musí být schopen vizualizovat oba tyto typy záznamů.
+			
+%			Tento pohled na způsob datování ale nepředstavuje jediný problém. Na další totiž narazíme při určování délky života některých panovníků. Zatímco v~moderní historii obvykle známe přesný den narození i~úmrtí, a~tím pádem jsme schopni snadno vyznačit život takového člověka v~ose, u~historických postav se mnohdy stane, že přesné datum narození známo není. Nabízí se pak otázka, kde přesně vyznačit narození, známe-li jen rok.
+		
+	\section{Požadavky na uživatelské rozhraní}
+		\label{pozadavky-na-uzivatelske-rozhrani}
+		
+		\subsection*{Navigace}
+			\label{navigace}
+			Uživatel, který pracuje s~časovou osou, samozřejmě musí mít možnost měnit parametry jejího zobrazení. Potřebuje upravovat úroveň přiblížení a~také časový rozsah výřezu osy, který pozoruje, tzv. \emph{viewportu}.
+			
+			Jednu z~možností představuje ovládání pomocí hardwarových zařízení, tj. myší nebo klávesnicí. V~případě myši přikazují konvence použít pro přibližování rolovací tlačítko a~pro posun pak metodu drag\&drop. U~klávesnice lze očekávat, že změna úrovně přiblížení proběhne při stisku kláves {\sf +} a~{\sf $-$}, zatímco posun osy zajistí kurzorové klávesy.
+			
+			Widget by měl ale nabídnout i~navigační tlačítka pro případ, kdy uživatel z~nějakého důvodu nechce používat klávesnici a~myš.
+			
+		\subsection*{Filtry}
+			\label{filtry}
+			Při tak velkém množství dat, které bylo několikrát zmiňováno v~předcházejících odstavcích, můžeme očekávat, že bude chtít uživatel data filtrovat. Filtr nebude přímou součástí widgetu, protože jeho účelem je pouze data zobrazit a~umožnit jejich procházení. Bude ale napojen na datový zdroj, z~něhož položky k~vizualizaci čerpá. Filtry jsou tedy spíše předmětem týkajícím se datového zdroje, zatímco widget musí zajistit to, že při změně datového zdroje dojde i~k~jeho přizpůsobení. V~praxi může jít o~to, že uživatel upraví filtry dat do takové podoby, kdy se změní počet pásů zobrazujících jednotlivé typy záznamů. Widget na to musí samozřejmě reagovat, tj. musí poskytnout odpovídající metody.
+			
+			Z~výše uvedeného plyne, že filtry budou součástí HTML stránky obsahující widget časové osy. Je tedy zcela na autorovi, jak formuláře filtrů navrhne, pouze pak k~jejich aplikaci musí použít metody datového zdroje a~widgetu.
+			
+			\paragraph{Příklady filtrů}
+			\begin{itemize}
+				\item[--] Uživatel zvolí pouze jeden typ záznamů, o~který se zajímá.
+				\item[--] Vybere časový rozsah období, které chce studovat.
+				\item[--] Stanovením hledaných hodnot pro vybrané atributy protřídí zá\-znamy jen na ty, které splňují okruh jeho zájmů.
+			\end{itemize}
+			
