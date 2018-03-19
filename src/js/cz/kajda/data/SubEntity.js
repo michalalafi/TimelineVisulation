@@ -26,11 +26,13 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
          this._startTime = moment.utc(data.begin);
          this._continuous = isset(data.end);
          this._endTime = isset(data.end) ? moment.utc(data.end) : null;
+         this._cssClasses = data.css ? /*this._createCssClasses(data.css)*/ data.css : null;
     },
 
     _startTime : null,
     _endTime : null,
     _continuous : null,
+    _cssClasses : null,
    
     /**
      * Checks whether the entity represents a moment or an interval.
@@ -54,13 +56,15 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
     getEnd : function() {
         return this._endTime;
     },
-
-    /* FIALA */
-    getDiffTimeFromAbsoluteStart : function(absoluteStart)
+    getCssClasses : function() 
     {
-        var diffTime = moment.duration(this._startTime.diff(absoluteStart));
-        return diffTime;
+        return this._cssClasses;
+    },
 
+    _createCssClasses : function(rawCssClasses)
+    {
+        var split = rawCssClasses.split(" ");
+        return split;
     },
     //</editor-fold>
     

@@ -36,6 +36,7 @@ var Entity = new Class("cz.kajda.data.Entity", {
          this._description = data.description;
          /* FIALA */
          this._subEntities = data.subItems ? this.createSubEntities(data.subItems) : null;
+         this._css = data.css ? data.css : null;
 
          // set default precision if none is present
          data.properties.startPrecision = this.has("startPrecision") ? this.property("startPrecision") : this._DEF_PRECISION;
@@ -82,6 +83,7 @@ var Entity = new Class("cz.kajda.data.Entity", {
         _description : null,
         /* FIALA */
         _subEntities : null,
+        _css : null,
     //</editor-fold>  
    
     //<editor-fold defaultstate="collapsed" desc="private methods">

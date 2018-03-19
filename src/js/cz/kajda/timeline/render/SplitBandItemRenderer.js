@@ -71,18 +71,28 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                         "background-color" : /*this._color.getRgba()*/ "transparent",
                         "border-color" : this._color.darken(20).getRgba()
                     }); 
-
+            
             for(var i=0; i < subEntities.length; i++)
             {
                 var subEntity = subEntities[i];
+                var cssClasses = subEntity.getCssClasses();
                 var element = new $("<div>")
                     .attr("id",subEntities[i].getId())
                     .addClass(this.SUB_ITEM_CLASS)
                     .css({
-                        "background-color" : "#ff0000",
                         "border-color" : this._color.darken(20).getRgba(),
                         "height": 13
                     });
+                /* pridani css class */
+                if(cssClasses)
+                {
+                    /*for(var k=0; k < cssClasses.length; k++)
+                    {
+                        var cssClass = cssClasses[k];
+                        element.addClass(cssClass); 
+                    } */
+                    element.addClass(cssClasses);
+                }
                 wrapper.append(element);    
             }
                    
@@ -180,25 +190,25 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 /* Rozdil zacatku cele entity od zacatku subEntity */
                 var duration = moment.duration(subEntity.getStart().diff(entity.getStart()));
                 /* Podil subEntity vuci Entite */
-                var diveded = duration._milliseconds / entityDuration._milliseconds;
+               // var diveded = duration._milliseconds / entityDuration._milliseconds;
 
-                leftPos = entityWidth * diveded;
+               // leftPos = entityWidth * diveded;
                 /* Druhy zpusob je prevedeni rozdilu zacatku subEntity od zacatku Entity na px */
-                leftPos =  projection.duration2px(duration);
+               // leftPos =  projection.duration2px(duration);
                 /* Treti zpusob je nalezeni vzdalenosti Entity od zacatku a SubEntity od zacatku a pak odecteni techto vzdalenosti */
-                var entityLeft = projection.moment2px(startTime);
-                var subEntityLeft = projection.moment2px(startTimeSubEntity);
-                leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); 
+              //  var entityLeft = projection.moment2px(startTime);
+               // var subEntityLeft = projection.moment2px(startTimeSubEntity);
+               // leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); 
                 /* Ctvrty zpusob left pozice subEntity v celem kontextu - left pozice entity */
                 var itemLeft = item.getPosition().left;
                 leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
-
+                var width = projection.duration2px(subEntity.getDuration());
                 var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
 
                 $(htmlElement).css({
                     "position" : "absolute",
                     "left" : leftPos,
-                    "width" : 5
+                    "width" : width
                 });
             }
 
