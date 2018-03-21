@@ -56,6 +56,9 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
     getEnd : function() {
         return this._endTime;
     },
+    /**
+     * @returns {Array} css classes of sub item
+     */
     getCssClasses : function() 
     {
         return this._cssClasses;

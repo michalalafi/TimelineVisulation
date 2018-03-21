@@ -7,7 +7,7 @@ function(moment, AbstractItemRenderer, Color) {
     
     
 /**
- * Default entity renderer.
+ * Renderer for entity with subentities.
  * Renders items as a bar in the passed color 
  * that contain label inside if possible, otherwise puts the label aside.
  * @memberOf cz.kajda.timeline.render
@@ -27,7 +27,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
     INTERVAL_CLASS : "interval",
     DURATION_CLASS : "duration",
     LABEL_CLASS : "title",
-    /* FIALA */
     SUB_ITEM_CLASS : "subitem",
 
     

@@ -213,14 +213,22 @@ var Entity = new Class("cz.kajda.data.Entity", {
             return this._PRECISION_DURATION[this.property(precisionProp)];
         },
 
-        /* FIALA */
+        /**
+         * @author Michal Fiala
+         * @returns {Array<SubEntity>} subEntities of Entity
+         */ 
         getSubEntities : function()
         {
             if(this._subEntities === null) return null;
             
             return this._subEntities;
         },
-        /* FIALA */
+        /**
+         * @author Michal Fiala
+         * Process data.SubItems and create from them Array of SubEntities
+         * @param {data.SubItems} subItems in data Entity
+         * @returns {Array<SubEntity>} 
+         */
         createSubEntities : function(subItems)
         {
             var subEntities = [];
