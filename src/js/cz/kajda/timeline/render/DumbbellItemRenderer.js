@@ -12,7 +12,7 @@ function(moment, AbstractItemRenderer, Color) {
  * that contain label inside if possible, otherwise puts the label aside.
  * @memberOf cz.kajda.timeline.render
  */
-var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRenderer", {
+var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRenderer", {
     
     _extends : AbstractItemRenderer,
     
@@ -62,40 +62,49 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
          * @returns {jQuery}
          */
         _renderContinuous : function(item) {
-            var subEntities = item.getEntity().getSubEntities();
-
             var wrapper = new $("<div>")
-                    .addClass(this.INTERVAL_CLASS)
+                    // .addClass(this.INTERVAL_CLASS)
                     .css({
                         "background-color" : /*this._color.getRgba()*/ "transparent",
-                        "border-color" : this._color.darken(20).getRgba()
-                    }); 
-            
-            for(var i=0; i < subEntities.length; i++)
-            {
-                var subEntity = subEntities[i];
-                var cssClasses = subEntity.getCssClasses();
-                var element = new $("<div>")
-                    .attr("id",subEntities[i].getId())
-                    .addClass(this.SUB_ITEM_CLASS)
+                        // "border-color" : this._color.darken(20).getRgba()
+                    });
+                    
+            var element = new $("<div>")
+                    // .addClass(this.SUB_ITEM_CLASS)
                     .css({
-                        "border-color" : this._color.darken(20).getRgba(),
-                        "height": 13
+                        // "border-color" : this._color.darken(20).getRgba(),
+                        "height": 13,
+                        "width": 15,
+                        "border-radius": "50%",
+                        "float": "left",
+                        "background-color": "black"
                     });
-                /* pridani css class */
-                if(cssClasses)
-                {
-                    element.addClass(cssClasses);
-                }
-                else
-                {
-                    element.css({
-                        "background": "rgba(59, 58, 58, 0.5)"
-                    });
-                }
-                wrapper.append(element);    
-            }
-                   
+            wrapper.append(element);        
+            var element1 = new $("<div>")
+            // .addClass(this.SUB_ITEM_CLASS)
+            .css({
+                // "border-color" : this._color.darken(20).getRgba(),
+                "height": 13,
+                "width": 15,
+                "border-radius": "50%",
+                "float": "right",
+                "background-color": "black"
+            });
+            wrapper.append(element1);
+
+            var element2 = new $("<div>")
+            // .addClass(this.SUB_ITEM_CLASS)
+            .css({
+                // "border-color" : this._color.darken(20).getRgba(),
+                "height": 1,
+                "width": "98%",
+                "position" : "absolute",
+                "margin-top" : 5,
+                "background-color": "black"
+            });
+            wrapper.append(element2);
+            
+            
             return wrapper;
         },
         
@@ -154,78 +163,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 left : leftPos,
                 width : width 
             };
-
-        },
-
-        _correctProtrusionSubEntity: function(subEntity, item) {
-
-                var itemLeft = item.getPosition().left,
-                    projection = item.getTimeline().getProjection(),
-                    startTimeSubEntity = subEntity.getStart();
-                /*
-                    Prvni zpusob vypočet left pozice podle šířky celeho divu
-
-                    Vypočteno začatek subEntity -  začátek entity 
-
-                    Vypočtení jakou část zabírá od začátku subEntita 
-
-                    Left pozice bude násobek koeficientu s aktuální šírkou Entity
-                */
-                        /* Rozdil zacatku cele entity od zacatku subEntity */
-                        /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                        /* Podil subEntity vuci Entite */
-                        /*var diveded = duration._milliseconds / entityDuration._milliseconds;
-                        leftPos = entityWidth * diveded; */
-                /* Druhy zpusob je prevedeni rozdilu zacatku subEntity od zacatku Entity na px */
-                        /* Rozdil zacatku cele entity od zacatku subEntity */
-                        /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                        /*leftPos =  projection.duration2px(duration); */
-                /* Treti zpusob je nalezeni vzdalenosti Entity od zacatku a SubEntity od zacatku a pak odecteni techto vzdalenosti */
-                        /* var entityLeft = projection.moment2px(startTime);
-                        var subEntityLeft = projection.moment2px(startTimeSubEntity);
-                        leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); */
-                /* Ctvrty zpusob left pozice subEntity v celem kontextu - left pozice entity */
-                var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
-                var width = projection.duration2px(subEntity.getDuration());
-                var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
-
-                $(htmlElement).css({
-                    "position" : "absolute",
-                    "left" : leftPos,
-                    "width" : width
-                });
-        },
-        _correctProtrusionSubEntityMoment: function(subEntity,item) {
-            var itemLeft = item.getPosition().left,
-                projection = item.getTimeline().getProjection(),
-                startTimeSubEntity = subEntity.getStart();
-
-            var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
-            var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
-            $(htmlElement).css({
-                    "position" : "absolute",
-                    "left" : leftPos,
-                    "width" : 15,
-                    "border-radius": "50%",
-                    "border-style": "solid",
-                    "border-width": 1
-
-                });
-             /* border-radius: 50%; 
-              border-style: solid;
-              border-width: 1; */
-        },
-        _correctProtrusionSubEntities: function(item){
-            var entity = item.getEntity(),
-                subEntities = entity.getSubEntities();
-
-            for(var i = 0; i < subEntities.length; i++)
-            {
-                if(subEntities[i].isContinuous())
-                    this._correctProtrusionSubEntity(subEntities[i],item);
-                else 
-                    this._correctProtrusionSubEntityMoment(subEntities[i],item);
-            }
 
         },
         
@@ -313,11 +250,14 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 
             item.getHtmlElement().css({
                 "position" : "absolute",
-                "left" : leftPos
+                "left" : leftPos,
             });
 
             if(entity.isContinuous())
-                item.getHtmlElement().find("." + this.DURATION_CLASS).css("width", width);
+                item.getHtmlElement().find("." + this.DURATION_CLASS).css({
+                    "width": width,
+                    "border-color" : "transparent"
+                });
             
             if(item.isFocused())
                 item.getHtmlElement().addClass("focused");
@@ -325,9 +265,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 item.getHtmlElement().removeClass("focused");
 
             this._redrawLabel(item);
-
-            if(entity.isContinuous())
-                this._correctProtrusionSubEntities(item);
         }
         
     //</editor-fold>
@@ -335,5 +272,5 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
 });
 
 
-return SplitBandItemRenderer;
+return DumbbellItemRenderer;
 });

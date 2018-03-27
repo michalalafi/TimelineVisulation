@@ -27,6 +27,7 @@ requirejs([
     'jquery',
     'cz/kajda/timeline/render/BandItemRenderer', 
     'cz/kajda/timeline/render/SplitBandItemRenderer',
+    'cz/kajda/timeline/render/DumbbellItemRenderer',
     'auxiliary/App',
     'cz/kajda/timeline/Timeline'
 ],
@@ -37,7 +38,7 @@ requirejs([
  * To decide which data source should be used,
  * (un)comment one of the last lines in this function.
  */
-function($, BandItemRenderer, SplitBandItemRenderer, App, Timeline) {
+function($, BandItemRenderer, SplitBandItemRenderer, DumbbellItemRenderer, App, Timeline) {
     
     // create new instance of app support
     var app = new App();
@@ -76,6 +77,13 @@ function($, BandItemRenderer, SplitBandItemRenderer, App, Timeline) {
                 label: "Rozdeleni",
                 itemRenderer: new SplitBandItemRenderer("#03f945"),
                 color: "#fafafa"
+            },
+            {
+                id: "dumbbell-entity",
+                label: "Cinka",
+                itemRenderer: new DumbbellItemRenderer("#03f945"),
+                color: "#fafafa"
+
             }
         ],
 

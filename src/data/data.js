@@ -65,7 +65,9 @@ return{
 				{"id":55,"begin":"2120-01-01T00:00:00","end":"2150-06-21T23:59:59","css":"queen fancy"},
 				{"id":56,"begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"}
 			]
-		}
+		},
+		{"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"}}
+
 		],
 	"edges":
 		[{"id":1,"stereotype":"relationship","from":3,"to":2,"name":"synovec"},
