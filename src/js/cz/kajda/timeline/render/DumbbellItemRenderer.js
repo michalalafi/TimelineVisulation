@@ -27,7 +27,11 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
     INTERVAL_CLASS : "interval",
     DURATION_CLASS : "duration",
     LABEL_CLASS : "title",
-    SUB_ITEM_CLASS : "subitem",
+    DUMBBELL_ELEMENT_CLASS : "dumbbell-element",
+    DUMBBELL_JOIN_CLASS : "dumbbell-join",
+    DUMBBELL_NODE_CLASS : "dumbbell-node",
+
+
 
     
     //<editor-fold defaultstate="collapsed" desc="private members">
@@ -62,47 +66,56 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
          * @returns {jQuery}
          */
         _renderContinuous : function(item) {
+
+            var subEntities = item.getEntity().getSubEntities();
             var wrapper = new $("<div>")
                     // .addClass(this.INTERVAL_CLASS)
                     .css({
                         "background-color" : /*this._color.getRgba()*/ "transparent",
                         // "border-color" : this._color.darken(20).getRgba()
                     });
-                    
-            var element = new $("<div>")
-                    // .addClass(this.SUB_ITEM_CLASS)
+            
+
+            for(var i=0; i < subEntities.length; i++)
+            {
+                var subEntity = subEntities[i];
+                var cssClasses = subEntity.getCssClasses();
+                var element = new $("<div>")
+                    .attr("id",subEntities[i].getId())
+                    .addClass(this.DUMBBELL_ELEMENT_CLASS)
+                    .addClass(this.DUMBBELL_NODE_CLASS)
                     .css({
-                        // "border-color" : this._color.darken(20).getRgba(),
                         "height": 13,
                         "width": 15,
                         "border-radius": "50%",
-                        "float": "left",
+                        // "float": "left",
+                    });
+                /* pridani css class */
+                if(cssClasses)
+                {
+                    element.addClass(cssClasses);
+                }
+                else
+                {
+                    element.css({
                         "background-color": "black"
                     });
-            wrapper.append(element);        
-            var element1 = new $("<div>")
-            // .addClass(this.SUB_ITEM_CLASS)
-            .css({
-                // "border-color" : this._color.darken(20).getRgba(),
-                "height": 13,
-                "width": 15,
-                "border-radius": "50%",
-                "float": "right",
-                "background-color": "black"
-            });
-            wrapper.append(element1);
+                }
+                wrapper.append(element);    
+            }
 
-            var element2 = new $("<div>")
-            // .addClass(this.SUB_ITEM_CLASS)
-            .css({
-                // "border-color" : this._color.darken(20).getRgba(),
-                "height": 1,
-                "width": "98%",
-                "position" : "absolute",
-                "margin-top" : 5,
-                "background-color": "black"
-            });
-            wrapper.append(element2);
+            var dumbbellJoin = new $("<div>")
+                    .addClass(this.DUMBBELL_ELEMENT_CLASS)
+                    .addClass(this.DUMBBELL_JOIN_CLASS)
+                    .css({
+                        // "border-color" : this._color.darken(20).getRgba(),
+                        "height": 1,
+                        "position" : "absolute",
+                        "margin-top" : 5,
+                        "background-color": "black",
+                        "z-index": -1,
+                    });
+            wrapper.append(dumbbellJoin);
             
             
             return wrapper;
@@ -163,6 +176,41 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 left : leftPos,
                 width : width 
             };
+
+        },
+        _correctProtrusionSubEntityMoment: function(subEntity,item) {
+            var itemLeft = item.getPosition().left,
+                projection = item.getTimeline().getProjection(),
+                startTimeSubEntity = subEntity.getStart(),
+                itemWidth = item.getWidth();
+
+            var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
+
+            // if((leftPos > itemWidth ))
+            //     leftPos = leftPos - 15;
+
+            var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
+            $(htmlElement).css({
+                    "position" : "absolute",
+                    "left" : leftPos,
+                    // "width" : 15,
+                    // "border-radius": "50%",
+                    "border-style": "solid",
+                    "border-width": 1
+
+                });
+             /* border-radius: 50%; 
+              border-style: solid;
+              border-width: 1; */
+        },
+        _correctProtrusionSubEntities: function(item){
+            var entity = item.getEntity(),
+                subEntities = entity.getSubEntities();
+
+            for(var i = 0; i < subEntities.length; i++)
+            {
+                this._correctProtrusionSubEntityMoment(subEntities[i],item);
+            }
 
         },
         
@@ -253,11 +301,15 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 "left" : leftPos,
             });
 
-            if(entity.isContinuous())
+            if(entity.isContinuous()){
                 item.getHtmlElement().find("." + this.DURATION_CLASS).css({
                     "width": width,
                     "border-color" : "transparent"
                 });
+                item.getHtmlElement().find("." + this.DUMBBELL_JOIN_CLASS).css({
+                    "width": width //- 2
+                });
+            }
             
             if(item.isFocused())
                 item.getHtmlElement().addClass("focused");
@@ -265,6 +317,27 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 item.getHtmlElement().removeClass("focused");
 
             this._redrawLabel(item);
+
+            /**
+             * Pokud je sirka itemu mensi jak 30px schovame caru a pravou cast "cinky"
+             */
+            if(width < 30)
+            {
+                var dumbelItems = item.getHtmlElement().find("." + this.DUMBBELL_ELEMENT_CLASS);
+                for(var i = 1; i<dumbelItems.length ;i++)
+                    $(dumbelItems[i]).hide();
+            }
+            /**
+             * Jinak je zobrazime
+             */
+            else
+            {
+                this._correctProtrusionSubEntities(item);
+                item.getHtmlElement().find("." + this.DUMBBELL_ELEMENT_CLASS).each(function()
+                {
+                    $(this).show();
+                });
+            }
         }
         
     //</editor-fold>

@@ -315,6 +315,25 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 "position" : "absolute",
                 "left" : leftPos
             });
+            /**
+             * Pokud je sirka itemu mensi jak 30px vsechny sub-itemy
+             */
+            if(width < 30)
+                item.getHtmlElement()
+                    .find("." + this.DURATION_CLASS).css("background-color","#03f945")
+                    .find("." + this.SUB_ITEM_CLASS).each(function(){
+                    $(this).hide();
+                    });
+            /**
+             * Jinak je zobrazime
+             */
+            else
+                item.getHtmlElement()
+                .find("." + this.DURATION_CLASS).css("background-color","transparent")
+                .find("." + this.SUB_ITEM_CLASS).each(function()
+                    {
+                        $(this).show();
+                    });
 
             if(entity.isContinuous())
                 item.getHtmlElement().find("." + this.DURATION_CLASS).css("width", width);

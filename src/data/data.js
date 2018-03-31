@@ -66,7 +66,13 @@ return{
 				{"id":56,"begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"}
 			]
 		},
-		{"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"}}
+		{"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
+		[
+			{"id":58,"begin":"2010-09-27T00:00:00","css":"dumbbell-king"},
+			{"id":59,"begin":"2150-06-21T23:59:59","css":"dumbbell-person"},
+			{"id":60,"begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
+		]
+		}
 
 		],
 	"edges":
