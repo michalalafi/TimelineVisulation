@@ -10,6 +10,7 @@ function(moment, AbstractItemRenderer, Color) {
  * Renderer for entity with subentities.
  * Renders items as a bar in the passed color 
  * that contain label inside if possible, otherwise puts the label aside.
+ * Renders subitems as bars or circle
  * @memberOf cz.kajda.timeline.render
  */
 var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRenderer", {
@@ -67,14 +68,17 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             var wrapper = new $("<div>")
                     .addClass(this.INTERVAL_CLASS)
                     .css({
-                        "background-color" : /*this._color.getRgba()*/ "transparent",
+                        "background-color" : "transparent",
                         "border-color" : this._color.darken(20).getRgba()
-                    }); 
-            
+                    });
+            // Foreach subEntity in Array
+            // Create div element and append it to wrapper
             for(var i=0; i < subEntities.length; i++)
             {
                 var subEntity = subEntities[i];
+                // GET CSS of subEntity
                 var cssClasses = subEntity.getCssClasses();
+                // Create div element
                 var element = new $("<div>")
                     .attr("id",subEntities[i].getId())
                     .addClass(this.SUB_ITEM_CLASS)
@@ -82,11 +86,12 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                         "border-color" : this._color.darken(20).getRgba(),
                         "height": 13
                     });
-                /* pridani css class */
+                // Add css to element
                 if(cssClasses)
                 {
                     element.addClass(cssClasses);
                 }
+                // Set default background, TODO vyreseni podle css tridy?
                 else
                 {
                     element.css({
@@ -98,17 +103,14 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                    
             return wrapper;
         },
-        
-
         /**
          * @private
          * Renders a moment entity.
          * @param {cz.kajda.timeline.AbstractItem} item
          * @returns {jQuery}
          */
-         _renderMoment : function(item) {
+        _renderMoment : function(item) {
             
-            var properties = item.getEntity().getSubItems();
             var element = new $("<div>")
                     .addClass(this.MOMENT_CLASS)
                     .css({
@@ -118,7 +120,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             
             return element;
         },
-
         /**
          * @private
          * Checks whether the item protrudes from the wrapper on the left or right
@@ -156,7 +157,12 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             };
 
         },
-
+        /**
+         * @private
+         * Recalculates left position and width in wrapper for continuous subentity
+         * @param {cz.kajda.data.AbstractEntity} subEntity
+         * @param {cz.kajda.timeline.AbstractItem} item
+         */
         _correctProtrusionSubEntity: function(subEntity, item) {
 
                 var itemLeft = item.getPosition().left,
@@ -195,6 +201,12 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                     "width" : width
                 });
         },
+        /**
+         * @private
+         * Recalculates left position and width in wrapper for moment subentity
+         * @param {cz.kajda.data.AbstractEntity} subEntity
+         * @param {cz.kajda.timeline.AbstractItem} item
+         */
         _correctProtrusionSubEntityMoment: function(subEntity,item) {
             var itemLeft = item.getPosition().left,
                 projection = item.getTimeline().getProjection(),
@@ -211,10 +223,12 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                     "border-width": 1
 
                 });
-             /* border-radius: 50%; 
-              border-style: solid;
-              border-width: 1; */
         },
+        /**
+         * @private
+         * Correct protusion of sub-entities
+         * @param {cz.kajda.timeline.AbstractItem} item
+         */
         _correctProtrusionSubEntities: function(item){
             var entity = item.getEntity(),
                 subEntities = entity.getSubEntities();
@@ -315,25 +329,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 "position" : "absolute",
                 "left" : leftPos
             });
-            /**
-             * Pokud je sirka itemu mensi jak 30px vsechny sub-itemy
-             */
-            if(width < 30)
-                item.getHtmlElement()
-                    .find("." + this.DURATION_CLASS).css("background-color","#03f945")
-                    .find("." + this.SUB_ITEM_CLASS).each(function(){
-                    $(this).hide();
-                    });
-            /**
-             * Jinak je zobrazime
-             */
-            else
-                item.getHtmlElement()
-                .find("." + this.DURATION_CLASS).css("background-color","transparent")
-                .find("." + this.SUB_ITEM_CLASS).each(function()
-                    {
-                        $(this).show();
-                    });
 
             if(entity.isContinuous())
                 item.getHtmlElement().find("." + this.DURATION_CLASS).css("width", width);
@@ -345,8 +340,24 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
 
             this._redrawLabel(item);
 
-            if(entity.isContinuous())
+            // If wrapper has width smaller than 30px => hide all subentities   
+            if(width < 30)
+                item.getHtmlElement()
+                    .find("." + this.DURATION_CLASS).css("background-color","#03f945")
+                    .find("." + this.SUB_ITEM_CLASS).each(function(){
+                    $(this).hide();
+                    });
+            // Else recalculate atributes of subentities and show them
+            else{
                 this._correctProtrusionSubEntities(item);
+
+                item.getHtmlElement()
+                .find("." + this.DURATION_CLASS).css("background-color","transparent")
+                .find("." + this.SUB_ITEM_CLASS).each(function()
+                    {
+                        $(this).show();
+                    })
+            }
         }
         
     //</editor-fold>

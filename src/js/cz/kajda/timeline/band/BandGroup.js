@@ -91,6 +91,26 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
          * @returns {cz.kajda.timeline.band.Band}
          */
         getBand : function(id) {
+            var bandIds = Object.keys(this._bands);
+            for(var i = 0; i < bandIds.length; ++i) {
+                var band = this._bands[bandIds[i]];
+
+                if(band.issetTypes()){
+                    
+                    var types = band.getTypes();
+                    var type = null;
+                    for(var j = 0; j < types.length; j++)
+                    {
+                        var atype = types[j];
+
+                        if(atype.id == id)
+                            type = atype;
+                    }
+                    if(type != null)
+                        return band;
+                }
+            }
+
             return this._bands[id];
         },
 
@@ -99,6 +119,26 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
          * @param {Number|String} id 
          */
         hasBand : function(id) {
+            /**FIALA */
+            var bandIds = Object.keys(this._bands);
+            for(var i = 0; i < bandIds.length; ++i) {
+                var band = this._bands[bandIds[i]];
+
+                if(band.issetTypes()){
+                    
+                    var types = band.getTypes();
+                    var type = null;
+                    for(var j = 0; j < types.length; j++)
+                    {
+                        var atype = types[j];
+
+                        if(atype.id == id)
+                            type = atype;
+                    }
+                    if(type != null)
+                        return isset(band);
+                }
+            }
             return isset(this._bands[id]);
         },
 

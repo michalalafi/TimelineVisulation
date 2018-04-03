@@ -7,8 +7,8 @@ function(moment, AbstractItemRenderer, Color) {
     
     
 /**
- * Renderer for entity with subentities.
- * Renders items as a bar in the passed color 
+ * Renderer for dumbbell-entity with subentities.
+ * Renders items as a circle and interspace them with line
  * that contain label inside if possible, otherwise puts the label aside.
  * @memberOf cz.kajda.timeline.render
  */
@@ -69,17 +69,18 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
 
             var subEntities = item.getEntity().getSubEntities();
             var wrapper = new $("<div>")
-                    // .addClass(this.INTERVAL_CLASS)
                     .css({
-                        "background-color" : /*this._color.getRgba()*/ "transparent",
-                        // "border-color" : this._color.darken(20).getRgba()
+                        "background-color" : "transparent",
                     });
             
-
+            // Foreach subEntity in Array
+            // Create div element and append it to wrapper
             for(var i=0; i < subEntities.length; i++)
             {
                 var subEntity = subEntities[i];
+                // GET CSS of subEntity
                 var cssClasses = subEntity.getCssClasses();
+                // Create div element
                 var element = new $("<div>")
                     .attr("id",subEntities[i].getId())
                     .addClass(this.DUMBBELL_ELEMENT_CLASS)
@@ -88,13 +89,13 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                         "height": 13,
                         "width": 15,
                         "border-radius": "50%",
-                        // "float": "left",
                     });
-                /* pridani css class */
+                // Add css to element
                 if(cssClasses)
                 {
                     element.addClass(cssClasses);
                 }
+                // Set default background, TODO vyreseni podle css tridy?
                 else
                 {
                     element.css({
@@ -103,12 +104,11 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 }
                 wrapper.append(element);    
             }
-
+            // Create interspace line
             var dumbbellJoin = new $("<div>")
                     .addClass(this.DUMBBELL_ELEMENT_CLASS)
                     .addClass(this.DUMBBELL_JOIN_CLASS)
                     .css({
-                        // "border-color" : this._color.darken(20).getRgba(),
                         "height": 1,
                         "position" : "absolute",
                         "margin-top" : 5,
@@ -178,6 +178,12 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             };
 
         },
+        /**
+         * @private
+         * Recalculates left position and width in wrapper for moment subentity
+         * @param {cz.kajda.data.AbstractEntity} subEntity
+         * @param {cz.kajda.timeline.AbstractItem} item
+         */
         _correctProtrusionSubEntityMoment: function(subEntity,item) {
             var itemLeft = item.getPosition().left,
                 projection = item.getTimeline().getProjection(),
@@ -185,7 +191,6 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 itemWidth = item.getWidth();
 
             var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
-
             // if((leftPos > itemWidth ))
             //     leftPos = leftPos - 15;
 
@@ -193,16 +198,16 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             $(htmlElement).css({
                     "position" : "absolute",
                     "left" : leftPos,
-                    // "width" : 15,
-                    // "border-radius": "50%",
                     "border-style": "solid",
                     "border-width": 1
 
                 });
-             /* border-radius: 50%; 
-              border-style: solid;
-              border-width: 1; */
         },
+        /**
+         * @private
+         * Correct protusion of sub-entities, expect only moment entities
+         * @param {cz.kajda.timeline.AbstractItem} item
+         */
         _correctProtrusionSubEntities: function(item){
             var entity = item.getEntity(),
                 subEntities = entity.getSubEntities();
@@ -318,18 +323,15 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
 
             this._redrawLabel(item);
 
-            /**
-             * Pokud je sirka itemu mensi jak 30px schovame caru a pravou cast "cinky"
-             */
+            // If wrapper has width smaller than 30px => hide all subentities
+            // Let the first entity shown
             if(width < 30)
             {
                 var dumbelItems = item.getHtmlElement().find("." + this.DUMBBELL_ELEMENT_CLASS);
                 for(var i = 1; i<dumbelItems.length ;i++)
                     $(dumbelItems[i]).hide();
             }
-            /**
-             * Jinak je zobrazime
-             */
+            // Else recalculate atributes of subentities and show them
             else
             {
                 this._correctProtrusionSubEntities(item);

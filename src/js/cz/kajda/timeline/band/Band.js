@@ -40,6 +40,8 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         this._laneEnds = [];
         this._bandItemsSorted = false;
         this._contextOverflown = false;
+        /**FIALA  */
+        this._types = opts.types == null ? null : opts.types;
     },
     
     //<editor-fold defaultstate="collapsed" desc="private members">
@@ -74,6 +76,9 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         
         /** @member {Boolean} indicates that the items inside of the band overflow */
         _contentOverflow : false,
+
+        /** FIALA */
+        _types : {},
         
     //</editor-fold>
 
@@ -274,8 +279,20 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         if(isset(this._bandItems[entity.getId()]))
             this.__exception("Ambiguous item", "Attempt to add item with duplicate identifier (" + entity.getId() + ")");
         
-        var bandItem = new BandItem(this._timeline, entity, this._itemRenderer);
-        
+        /**FIALA */
+        var renderer = null
+        if(this.issetTypes())    
+            for(var i = 0;i < this._types.length; i++)
+            {
+                var type = this._types[i];
+                if(type.id == entity.getType())
+                    renderer = type.itemRenderer;
+            }
+        if(renderer == null)
+            renderer = this._itemRenderer;
+        var bandItem = new BandItem(this._timeline, entity, renderer);
+        // var bandItem = new BandItem(this._timeline, entity, this._itemRenderer);
+
         this._bandItems[bandItem.getId()] = bandItem;
         this._bandItemIds.push(bandItem.getId());
         this._bandItemsSorted = false;
@@ -303,7 +320,20 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
             this._bandItems.splice(0, Number.MAX_VALUE);
             this._bandItemsSorted = false;
         }
+    },
+
+    /**FIALA */
+    issetTypes : function() {
+      if(this._types == null) return false;
+      
+      return true;
+    },
+
+    getTypes : function()
+    {
+        return this._types;
     }
+
         
 });
 
