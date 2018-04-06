@@ -60,7 +60,7 @@ return{
 		},*/
 		{"id":52,"stereotype":"split-event","name":"Test2","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
 			[
-				{"id":53,"begin":"2010-09-27T00:00:00","end":"2111-01-21T23:59:59","css":"king"},
+				{"id":53,"begin":"2010-09-27T00:00:00","end":"2111-01-21T23:59:59"},
 				{"id":54,"begin":"2080-05-27T00:00:00","end":"2100-06-21T23:59:59","css":"person"},
 				{"id":55,"begin":"2120-01-01T00:00:00","end":"2150-06-21T23:59:59","css":"queen fancy"},
 				{"id":56,"begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"},
@@ -69,9 +69,10 @@ return{
 		},
 		{"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
 		[
-			{"id":58,"begin":"2010-09-27T00:00:00","css":"dumbbell-king"},
-			{"id":59,"begin":"2150-06-21T23:59:59","css":"dumbbell-person"},
+			{"id":58,"type": "start","css":"dumbbell-king"},
+			{"id":59,"type": "end"/*,"css":"dumbbell-person"*/},
 			{"id":60,"begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
+			{"id":62,"begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
 		]
 		}
 

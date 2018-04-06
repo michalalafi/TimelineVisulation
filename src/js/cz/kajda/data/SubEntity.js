@@ -26,12 +26,15 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
          this._startTime = moment.utc(data.begin);
          this._continuous = isset(data.end);
          this._endTime = isset(data.end) ? moment.utc(data.end) : null;
-         this._cssClasses = data.css ? /*this._createCssClasses(data.css)*/ data.css : null;
+         this._cssClasses = data.css ? data.css : null;
+
+         this._type = data.type ? data.type : null;
     },
 
     _startTime : null,
     _endTime : null,
     _continuous : null,
+    _type: null,
     _cssClasses : null,
    
     /**
@@ -56,22 +59,17 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
     getEnd : function() {
         return this._endTime;
     },
-    /**
-     * @returns {Array} css classes of sub item
-     */
-    getCssClasses : function() 
-    {
+    getCssClasses : function() {
+        if(this._cssClasses === null)
+            return "";
         return this._cssClasses;
     },
     /**
-     * Parse rawCssClasses into array of strings
-     * @returns {Array<String>} parsed array of strings
+     * @returns {type} type of subEntity
      */
-    _createCssClasses : function(rawCssClasses)
-    {
-        var split = rawCssClasses.split(" ");
-        return split;
-    },
+    getType : function(){
+        return this._type;
+    }
     //</editor-fold>
     
 });

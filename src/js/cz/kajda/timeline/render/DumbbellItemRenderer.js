@@ -27,9 +27,13 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
     INTERVAL_CLASS : "interval",
     DURATION_CLASS : "duration",
     LABEL_CLASS : "title",
+
+    SUB_ITEM_CLASS : "subitem",
     DUMBBELL_ELEMENT_CLASS : "dumbbell-element",
     DUMBBELL_JOIN_CLASS : "dumbbell-join",
     DUMBBELL_NODE_CLASS : "dumbbell-node",
+    DUMBBELL_MOMENT_CLASS : "dumbbellitem-moment",
+    DEFAULT_COLOR_CLASS : "default-color",
 
 
 
@@ -72,7 +76,6 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                     .css({
                         "background-color" : "transparent",
                     });
-            
             // Foreach subEntity in Array
             // Create div element and append it to wrapper
             for(var i=0; i < subEntities.length; i++)
@@ -82,42 +85,25 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 var cssClasses = subEntity.getCssClasses();
                 // Create div element
                 var element = new $("<div>")
-                    .attr("id",subEntities[i].getId())
+                    .attr("id",subEntity.getId())
+                    .addClass(this.SUB_ITEM_CLASS)
                     .addClass(this.DUMBBELL_ELEMENT_CLASS)
-                    .addClass(this.DUMBBELL_NODE_CLASS)
-                    .css({
-                        "height": 13,
-                        "width": 15,
-                        "border-radius": "50%",
-                    });
+                    .addClass(this.DUMBBELL_NODE_CLASS) 
                 // Add css to element
-                if(cssClasses)
-                {
-                    element.addClass(cssClasses);
-                }
-                // Set default background, TODO vyreseni podle css tridy?
-                else
-                {
-                    element.css({
-                        "background-color": "black"
-                    });
-                }
+                element.addClass((cssClasses) ? cssClasses : this.DEFAULT_COLOR_CLASS);
+                // Add moment dumbbell class
+                if(!subEntity.isContinuous())
+                    element.addClass(this.DUMBBELL_MOMENT_CLASS);
+
                 wrapper.append(element);    
             }
             // Create interspace line
             var dumbbellJoin = new $("<div>")
                     .addClass(this.DUMBBELL_ELEMENT_CLASS)
                     .addClass(this.DUMBBELL_JOIN_CLASS)
-                    .css({
-                        "height": 1,
-                        "position" : "absolute",
-                        "margin-top" : 5,
-                        "background-color": "black",
-                        "z-index": -1,
-                    });
+
             wrapper.append(dumbbellJoin);
-            
-            
+                      
             return wrapper;
         },
         
@@ -180,17 +166,68 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
         },
         /**
          * @private
+         * Recalculates left position and width in wrapper for continuous subentity
+         * @param {cz.kajda.data.AbstractEntity} subEntity
+         * @param {cz.kajda.timeline.AbstractItem} item
+         */
+        _correctProtrusionSubEntity: function(subEntity, item) {
+
+            var itemLeft = item.getPosition().left,
+                projection = item.getTimeline().getProjection(),
+                startTimeSubEntity = subEntity.getStart();
+            /*
+                Prvni zpusob vypočet left pozice podle šířky celeho divu
+
+                Vypočteno začatek subEntity -  začátek entity 
+
+                Vypočtení jakou část zabírá od začátku subEntita 
+
+                Left pozice bude násobek koeficientu s aktuální šírkou Entity
+            */
+                    /* Rozdil zacatku cele entity od zacatku subEntity */
+                    /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
+                    /* Podil subEntity vuci Entite */
+                    /*var diveded = duration._milliseconds / entityDuration._milliseconds;
+                    leftPos = entityWidth * diveded; */
+            /* Druhy zpusob je prevedeni rozdilu zacatku subEntity od zacatku Entity na px */
+                    /* Rozdil zacatku cele entity od zacatku subEntity */
+                    /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
+                    /*leftPos =  projection.duration2px(duration); */
+            /* Treti zpusob je nalezeni vzdalenosti Entity od zacatku a SubEntity od zacatku a pak odecteni techto vzdalenosti */
+                    /* var entityLeft = projection.moment2px(startTime);
+                    var subEntityLeft = projection.moment2px(startTimeSubEntity);
+                    leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); */
+            /* Ctvrty zpusob left pozice subEntity v celem kontextu - left pozice entity */
+            var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
+            var width = projection.duration2px(subEntity.getDuration());
+            var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
+
+            $(htmlElement).css({
+                "position" : "absolute",
+                "left" : leftPos,
+                "width" : width,
+            });
+    },
+        /**
+         * @private
          * Recalculates left position and width in wrapper for moment subentity
          * @param {cz.kajda.data.AbstractEntity} subEntity
          * @param {cz.kajda.timeline.AbstractItem} item
          */
         _correctProtrusionSubEntityMoment: function(subEntity,item) {
-            var itemLeft = item.getPosition().left,
+            var entity = item.getEntity(),
+                itemLeft = item.getPosition().left,
                 projection = item.getTimeline().getProjection(),
                 startTimeSubEntity = subEntity.getStart(),
                 itemWidth = item.getWidth();
-
+            
             var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
+
+
+            if(subEntity.getType() == "start")
+                leftPos = projection.moment2px(entity.getStart()) - itemLeft;
+            else if(subEntity.getType() == "end")
+                leftPos = projection.moment2px(entity.getEnd()) - itemLeft - 15;
             // if((leftPos > itemWidth ))
             //     leftPos = leftPos - 15;
 
@@ -199,8 +236,7 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                     "position" : "absolute",
                     "left" : leftPos,
                     "border-style": "solid",
-                    "border-width": 1
-
+                    "border-width": 1,
                 });
         },
         /**
@@ -214,7 +250,10 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
 
             for(var i = 0; i < subEntities.length; i++)
             {
-                this._correctProtrusionSubEntityMoment(subEntities[i],item);
+                if(subEntities[i].isContinuous())
+                    this._correctProtrusionSubEntity(subEntities[i],item);
+                else
+                    this._correctProtrusionSubEntityMoment(subEntities[i],item);
             }
 
         },
@@ -312,7 +351,7 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                     "border-color" : "transparent"
                 });
                 item.getHtmlElement().find("." + this.DUMBBELL_JOIN_CLASS).css({
-                    "width": width //- 2
+                    "width": width
                 });
             }
             

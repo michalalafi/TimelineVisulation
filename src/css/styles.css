@@ -575,3 +575,28 @@
 .padded-top {
   padding-top: 20px;
 }
+
+/** FIALA */
+.timeline-banditem .subitem{
+  height: 13px;
+}
+
+.timeline-banditem .default-color{
+  background-color:rgb(120, 180, 255);
+}
+.timeline-banditem .splititem-moment{
+  width: 2px;
+}
+
+.timeline-banditem .dumbbellitem-moment{
+  width: 15px;
+  border-radius: 50%;
+}
+.timeline-banditem .dumbbell-join{
+  height: 1px;
+  position : absolute;
+  margin-top : 5px;
+  background-color: black;
+  z-index: -1;
+  left: 0;
+}
