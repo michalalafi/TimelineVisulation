@@ -279,7 +279,7 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 var titleSemiwidth = labelEl.width() / 2;
                 
                 labelEl.css({
-                    "position" : "absolute"
+                    "position" : "absolute",
                 });
                 
                 // item is too left to center the label
@@ -297,7 +297,7 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 // the label can be centered, item matches the time pointer optimally
                 else {
                     labelEl.css({
-                        "left" : timePointerLeft - itemLeft - titleSemiwidth
+                        "left" : timePointerLeft - itemLeft - titleSemiwidth,
                     });
                 }
             }
@@ -335,6 +335,7 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
         /** @see cz.kajda.timeline.render.AbstractItemRenderer#redraw */
         redraw : function(item) {
             if(!item.isInDOM()) return;
+
             var entity = item.getEntity(),
                 dims = this._correctProtrusion(item),
                 leftPos = dims.left,
@@ -348,7 +349,7 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             if(entity.isContinuous()){
                 item.getHtmlElement().find("." + this.DURATION_CLASS).css({
                     "width": width,
-                    "border-color" : "transparent"
+                    "border-color" : "transparent",
                 });
                 item.getHtmlElement().find("." + this.DUMBBELL_JOIN_CLASS).css({
                     "width": width

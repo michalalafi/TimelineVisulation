@@ -592,10 +592,13 @@
   width: 15px;
   border-radius: 50%;
 }
+.timeline-banditem .dumbbell-node{
+  height: 98%
+} 
 .timeline-banditem .dumbbell-join{
   height: 1px;
   position : absolute;
-  margin-top : 5px;
+  top : 50%;
   background-color: black;
   z-index: -1;
   left: 0;
