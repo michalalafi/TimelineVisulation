@@ -26,6 +26,8 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
     _constructor : function(timeline) {
         Component.call(this, timeline);
         this._bands = {};
+        /** FIALA */
+        this._bandTypes = {};
     },
     
     //<editor-fold defaultstate="collapsed" desc="private members">
@@ -38,6 +40,8 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
         
         /** @member {cz.kajda.timeline.RelationViewer} */
         _relationViewer : null,
+        /** FIALA */
+        _bandTypes : null,
     
     //</editor-fold>
     
@@ -91,27 +95,11 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
          * @returns {cz.kajda.timeline.band.Band}
          */
         getBand : function(id) {
-            var bandIds = Object.keys(this._bands);
-            for(var i = 0; i < bandIds.length; ++i) {
-                var band = this._bands[bandIds[i]];
-
-                if(band.issetTypes()){
-                    
-                    var types = band.getTypes();
-                    var type = null;
-                    for(var j = 0; j < types.length; j++)
-                    {
-                        var atype = types[j];
-
-                        if(atype.id == id)
-                            type = atype;
-                    }
-                    if(type != null)
-                        return band;
-                }
-            }
-
-            return this._bands[id];
+            /** FIALA */
+            if(this._bandTypes[id])
+                return this._bandTypes[id];
+            else
+                return this._bands[id];
         },
 
         /**
@@ -120,26 +108,10 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
          */
         hasBand : function(id) {
             /**FIALA */
-            var bandIds = Object.keys(this._bands);
-            for(var i = 0; i < bandIds.length; ++i) {
-                var band = this._bands[bandIds[i]];
-
-                if(band.issetTypes()){
-                    
-                    var types = band.getTypes();
-                    var type = null;
-                    for(var j = 0; j < types.length; j++)
-                    {
-                        var atype = types[j];
-
-                        if(atype.id == id)
-                            type = atype;
-                    }
-                    if(type != null)
-                        return isset(band);
-                }
-            }
-            return isset(this._bands[id]);
+            if(this._bandTypes[id])
+                return isset(this._bandTypes[id])
+            else
+                return isset(this._bands[id]);
         },
 
         /**
@@ -195,6 +167,22 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
         }));
         this._bands[opts.id] = band;
         this.addComponent(band);
+
+
+        /** FIALA */
+        var entityTypes = opts.types;
+        if(entityTypes)
+        {
+            for(var i=0; i< entityTypes.length;i++)
+            {
+                var type = entityTypes[i];
+                this._bandTypes[type.id] = band;
+            }
+        }
+        else
+        {
+            this._bandTypes[opts.id] = band;
+        }    
         return band;
     },
     

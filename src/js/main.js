@@ -74,33 +74,33 @@ function($, BandItemRenderer, SplitBandItemRenderer, DumbbellItemRenderer, App, 
             /* FIALA */
 
             /* Funcki verze */
-            {
-                id: "split-event",
-                label: "Rozdeleni",
-                types: [
-                    {"split-event":"SplitBandItemRenderer"}
-                ],
-                itemRenderer: new SplitBandItemRenderer("#03f945"),
-                color: "#fafafa"
-            },
-            {
-                id: "dumbbell-entity",
-                label: "Cinka",
-                itemRenderer: new DumbbellItemRenderer("#03f945"),
-                color: "#fafafa"
-
-            }
-            /** Testovaci verze */
             // {
-            //     id: "Rozdeleni",
+            //     id: "split-event",
             //     label: "Rozdeleni",
             //     types: [
-            //         {id: "split-event", itemRenderer: new SplitBandItemRenderer("#03f945")},
-            //         {id: "dumbbell-entity", itemRenderer: new DumbbellItemRenderer("#03f945")}
+            //         {"split-event":"SplitBandItemRenderer"}
             //     ],
-            //     // itemRenderer: new SplitBandItemRenderer("#03f945"),
-            //     // color: "#fafafa"
+            //     itemRenderer: new SplitBandItemRenderer("#03f945"),
+            //     color: "#fafafa"
+            // },
+            // {
+            //     id: "dumbbell-entity",
+            //     label: "Cinka",
+            //     itemRenderer: new DumbbellItemRenderer("#03f945"),
+            //     color: "#fafafa"
+
             // }
+            /** Testovaci verze */
+            {
+                id: "Rozdeleni",
+                label: "Rozdeleni",
+                types: [
+                    {id: "split-event", itemRenderer: new SplitBandItemRenderer("#03f945")},
+                    {id: "dumbbell-entity", itemRenderer: new DumbbellItemRenderer("#03f945")}
+                        ],
+                // itemRenderer: new SplitBandItemRenderer("#03f945"),
+                // color: "#fafafa"
+            }
         ],
 
         bandAssignMethod : function(timeline, entity) {

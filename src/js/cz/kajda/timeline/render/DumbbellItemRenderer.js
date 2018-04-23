@@ -267,47 +267,11 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
          */
         _redrawLabel : function(item) {
 
-            var labelEl = item.getHtmlElement().find("." + this.LABEL_CLASS),
-                durationEl = item.getHtmlElement().find("." + this.DURATION_CLASS),
-                timeline = item.getTimeline();
+            var labelEl = item.getHtmlElement().find("." + this.LABEL_CLASS);
         
-            // label width is less than duration width, label can be put in it
-            if(durationEl.width() > labelEl.width()) {
-                var timePointerLeft = timeline.getWidth() / 2;
-                var itemLeft = item.getPosition().left + timeline.getWrapper().getPosition().left;
-                var itemRight = itemLeft + durationEl.width();
-                var titleSemiwidth = labelEl.width() / 2;
-                
-                labelEl.css({
-                    "position" : "absolute",
-                });
-                
-                // item is too left to center the label
-                if(itemRight < timePointerLeft + titleSemiwidth) {
-                    labelEl.css({
-                        "right" : 0
-                    });
-                } else
-                // item is too right to center the label
-                if(itemLeft > timePointerLeft - titleSemiwidth) {
-                    labelEl.css({
-                        "left" : 0
-                    });
-                }
-                // the label can be centered, item matches the time pointer optimally
-                else {
-                    labelEl.css({
-                        "left" : timePointerLeft - itemLeft - titleSemiwidth,
-                    });
-                }
-            }
-            
-            // otherwise, put the label aside
-            else {
-                labelEl.css({
-                    "position" : ""
-                });
-            }
+            labelEl.css({
+                "position" : ""
+            });
         },
 
     //</editor-fold>

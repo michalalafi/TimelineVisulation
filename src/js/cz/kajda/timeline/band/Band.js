@@ -41,7 +41,7 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         this._bandItemsSorted = false;
         this._contextOverflown = false;
         /**FIALA  */
-        this._types = opts.types == null ? null : opts.types;
+        this._types = opts.types == null ? null : this._createTypesDictionary(opts.types);
     },
     
     //<editor-fold defaultstate="collapsed" desc="private members">
@@ -281,13 +281,10 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         
         /**FIALA */
         var renderer = null
-        if(this.issetTypes())    
-            for(var i = 0;i < this._types.length; i++)
-            {
-                var type = this._types[i];
-                if(type.id == entity.getType())
-                    renderer = type.itemRenderer;
-            }
+        if(this.issetTypes())
+        {
+            renderer= this._types[entity.getType()];                 
+        }    
         if(renderer == null)
             renderer = this._itemRenderer;
         var bandItem = new BandItem(this._timeline, entity, renderer);
@@ -323,11 +320,24 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
     },
 
     /**FIALA */
+    _createTypesDictionary : function (types)
+    {  
+        var typesDict = {}; 
+        for(var i = 0; i< types.length ; i++)
+        {
+            var type = types[i];
+            typesDict[type.id] = type.itemRenderer;
+        }
+
+        return typesDict;
+    },
+
     issetTypes : function() {
       if(this._types == null) return false;
       
       return true;
     },
+
 
     getTypes : function()
     {
