@@ -23,13 +23,12 @@ require.config({
     }
 });
 
+
 requirejs([
     'jquery',
-    'cz/kajda/timeline/render/BandItemRenderer', 
-    'cz/kajda/timeline/render/SplitBandItemRenderer',
-    'cz/kajda/timeline/render/DumbbellItemRenderer',
     'auxiliary/App',
-    'cz/kajda/timeline/Timeline'
+    'cz/kajda/timeline/Timeline',
+    '../data/BandsDistribution'
 ],
 
 /**
@@ -38,71 +37,17 @@ requirejs([
  * To decide which data source should be used,
  * (un)comment one of the last lines in this function.
  */
-function($, BandItemRenderer, SplitBandItemRenderer, DumbbellItemRenderer, App, Timeline) {
+function($, App, Timeline, BandsDistribution) {
     
     // create new instance of app support
     var app = new App();
+
+    var bandsDistribution = new BandsDistribution();
     
 	/** @see cz.kajda.timeline.Timeline~_DEFAULTS */
     var timelineOpts = {
         data : null,
-        bands : [
-         /*   {
-                id: "place",
-                label: "Místa",
-                itemRenderer: new BandItemRenderer("#7DD968"),
-                color: "#f5f5f5"
-            },*/
-            {
-                id: "person",
-                label: "Lidé",
-                itemRenderer: new BandItemRenderer("#FFB182"),
-                color: "#fafafa"
-            },
-            {
-                id: "event",
-                label: "Události",
-                itemRenderer: new BandItemRenderer("#F2BC53"),
-                color: "#f5f5f5"
-            },
-            {
-                id: "item",
-                label: "Objekty",
-                itemRenderer: new BandItemRenderer("#78B4FF"),
-                color: "#fafafa"
-            },
-            /* FIALA */
-
-            /* Funcki verze */
-            // {
-            //     id: "split-event",
-            //     label: "Rozdeleni",
-            //     types: [
-            //         {"split-event":"SplitBandItemRenderer"}
-            //     ],
-            //     itemRenderer: new SplitBandItemRenderer("#03f945"),
-            //     color: "#fafafa"
-            // },
-            // {
-            //     id: "dumbbell-entity",
-            //     label: "Cinka",
-            //     itemRenderer: new DumbbellItemRenderer("#03f945"),
-            //     color: "#fafafa"
-
-            // }
-            /** Testovaci verze */
-            {
-                id: "Rozdeleni",
-                label: "Rozdeleni",
-                types: [
-                    {id: "split-event", itemRenderer: new SplitBandItemRenderer("#03f945")},
-                    {id: "dumbbell-entity", itemRenderer: new DumbbellItemRenderer("#03f945")}
-                        ],
-                // itemRenderer: new SplitBandItemRenderer("#03f945"),
-                // color: "#fafafa"
-            }
-        ],
-
+        bands : bandsDistribution.bands,
         bandAssignMethod : function(timeline, entity) {
             if(timeline.getBandGroup().hasBand(entity.getType()))
                 return timeline.getBandGroup().getBand(entity.getType());
