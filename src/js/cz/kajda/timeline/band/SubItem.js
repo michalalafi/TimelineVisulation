@@ -1,5 +1,5 @@
 /**
- * @author Bc. Michal Kacerovský
+ * @author Michal Fiala
  * @version 1.0
  */
 
@@ -12,7 +12,7 @@ define([
  * Visual representation of entity, a child of a band.
  * @memberOf cz.kajda.timeline.band
  */    
-var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
+var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
     
     _extends : AbstractItem,
     
@@ -23,33 +23,26 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
      * @param {cz.kajda.data.AbstractEntity} entity
      * @param {cz.kajda.timeline.render.AbstractItemRenderer} renderer
      */
-    _constructor : function(timeline, entity, renderer) {
-        AbstractItem.call(this, timeline, entity, renderer);
+    _constructor : function(timeline, entity) {
+        AbstractItem.call(this, timeline, entity);
     },
     
     //<editor-fold defaultstate="collapsed" desc="private members">
 
         /** @see cz.kajda.timeline.Component */
-        _cssPrefix :  "banditem",
+        _cssPrefix :  "subitem",
 
         /** @member {jQuery} */
         _labelElement : null,
         
         /** @member {jQuery} */
         _durationElement : null,
-
-        /** FIALA */
-        _subItems : {},
+    
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="overridden">
     
-        /** @see cz.kajda.timeline.Component#build */
         build : function() {
-            var bandItem = this.__super.build.call(this)
-                    .attr("data-band", this.getBand().getId())
-                    .addClass(this.getPrefixedCssClass());
-            return bandItem;
         },
 
     //</editor-fold>
@@ -60,37 +53,37 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
          * Returns band which the item is placed in.
          * @returns{cz.kajda.timeline.Band}
          */
-        getBand : function() {
-            return this.getParent();
-        },
+        // getBand : function() {
+        //     return this.getParent();
+        // },
 
         /**
          * @param {jQuery} el
          */
-        setLabelElement : function(el) {
-            this._labelElement = el;
-        },
+        // setLabelElement : function(el) {
+        //     this._labelElement = el;
+        // },
 
         /**
          * @param {jQuery} el
          */
-        setDurationElement : function(el) {
-            this._durationElement = el;
-        },
+        // setDurationElement : function(el) {
+        //     this._durationElement = el;
+        // },
 
         /**
          * @returns {jQuery}
          */
-        getLabel : function() {
-            return this._labelElement;
-        },
+        // getLabel : function() {
+        //     return this._labelElement;
+        // },
 
         /**
          * @returns {jQuery}
          */
-        getDurationElement : function() {
-            return this._durationElement;
-        },
+        // getDurationElement : function() {
+        //     return this._durationElement;
+        // },
 
         /** @see cz.kajda.timeline.Component */
         getWidth : function(flag) {
@@ -144,7 +137,7 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
 });
 
 
-return BandItem;
+return SubItem;
 });
 
 

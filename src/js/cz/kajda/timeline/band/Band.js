@@ -7,9 +7,10 @@ define([
     'jquery',
     'cz/kajda/timeline/Component',
     'cz/kajda/timeline/band/BandItem',
+    'cz/kajda/timeline/band/SubItem',
     'cz/kajda/common/Identifiable'
 ],
-function($, Component, BandItem, Identifiable) {
+function($, Component, BandItem, SubItem, Identifiable) {
     
 /**
  * A band that merges entities (band items) of the same type into a component.
@@ -42,6 +43,8 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         this._contextOverflown = false;
         /**FIALA  */
         this._types = opts.types == null ? null : this._createTypesDictionary(opts.types);
+        this._subItems = [];
+        this._subItemsIds = [];
     },
     
     //<editor-fold defaultstate="collapsed" desc="private members">
@@ -79,6 +82,10 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
 
         /** FIALA */
         _types : {},
+
+        _subItems: null,
+
+        _subItemsIds: null,
         
     //</editor-fold>
 
@@ -289,6 +296,17 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
             renderer = this._itemRenderer;
         var bandItem = new BandItem(this._timeline, entity, renderer);
         // var bandItem = new BandItem(this._timeline, entity, this._itemRenderer);
+
+        if(entity.issetSubEntities())
+        {
+            var subEntities = entity.getSubEntities();
+            for(var i = 0; i < subEntities.length; i++)
+            {
+                var subItem = new SubItem(this._timeline,subEntities[i]);
+                this._subItems[subItem.getId()] = subItem;
+                this._subItemsIds.push(subItem.getId());
+            }
+        }
 
         this._bandItems[bandItem.getId()] = bandItem;
         this._bandItemIds.push(bandItem.getId());

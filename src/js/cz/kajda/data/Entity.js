@@ -238,7 +238,13 @@ var Entity = new Class("cz.kajda.data.Entity", {
             }
 
             return subEntities;
-        }
+        },
+
+        issetSubEntities : function() {
+            if(this._subEntities == null) return false;
+            
+            return true;
+          }
    
     //</editor-fold>
     
