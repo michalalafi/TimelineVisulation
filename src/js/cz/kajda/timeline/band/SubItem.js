@@ -32,11 +32,13 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
         /** @see cz.kajda.timeline.Component */
         _cssPrefix :  "subitem",
 
-        /** @member {jQuery} */
-        _labelElement : null,
+        _element : null,
+
+        // /** @member {jQuery} */
+        // _labelElement : null,
         
-        /** @member {jQuery} */
-        _durationElement : null,
+        // /** @member {jQuery} */
+        // _durationElement : null,
     
     //</editor-fold>
     
@@ -84,6 +86,12 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
         // getDurationElement : function() {
         //     return this._durationElement;
         // },
+        setElement : function(el){
+            this._element = el;
+        },
+        getElement : function(){
+            return this.element;
+        },
 
         /** @see cz.kajda.timeline.Component */
         getWidth : function(flag) {

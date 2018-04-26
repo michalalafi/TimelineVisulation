@@ -66,6 +66,7 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
          */
         _renderContinuous : function(item) {
             var subEntities = item.getEntity().getSubEntities();
+            var subItems = item.getSubItems();
 
             var wrapper = new $("<div>")
                     .addClass(this.INTERVAL_CLASS)
@@ -73,30 +74,42 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                         "background-color" : "transparent",
                         "border-color" : this._color.darken(20).getRgba()
                     });
-            // Foreach subEntity in Array
+            // Foreach subItem in BandItem
             // Create div element and append it to wrapper
-            for(var i=0; i < subEntities.length; i++)
+            for(var i=0; i < subItems.length; i++)
             {
-                var subEntity = subEntities[i];
-                // GET CSS of subEntity
-                var cssClasses = subEntity.getCssClasses();
-                // Create div element
-                var element = new $("<div>")
-                    .attr("id",subEntity.getId())
-                    .addClass(this.SUB_ITEM_CLASS)
-                    .css({
-                        "border-color" : this._color.darken(20).getRgba()
-                    });
-                // Add css to element
-                element.addClass((cssClasses) ? cssClasses : this.DEFAULT_COLOR_CLASS);
-                // Add moment subentity class
-                if(!subEntity.isContinuous())
-                    element.addClass(this.SPLIT_ITEM_MOMENT_CLASS);
+                var subItem = subItems[i];
+
+                var element = this.renderSubItem(subItem);   
+                
+                subItem.setElement(subItem);
 
                 wrapper.append(element);    
             }
                    
             return wrapper;
+        },
+        renderSubItem : function(subItem)
+        {
+            var subEntity = subItem.getEntity();
+
+            // GET CSS of subEntity
+            var cssClasses = subEntity.getCssClasses();
+            // Create div element
+            var element = new $("<div>")
+                        .attr("id",subEntity.getId())
+                        .addClass(this.SUB_ITEM_CLASS)
+                        .css({
+                            "border-color" : this._color.darken(20).getRgba()
+                        });
+            // Add css to element
+            element.addClass((cssClasses) ? cssClasses : this.DEFAULT_COLOR_CLASS);
+            // Is entity moment?
+            // Add moment subentity class
+            if(!subEntity.isContinuous())
+                element.addClass(this.SPLIT_ITEM_MOMENT_CLASS);
+
+            return element;    
         },
         /**
          * @private
@@ -220,7 +233,8 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
          */
         _correctProtrusionSubEntities: function(item){
             var entity = item.getEntity(),
-                subEntities = entity.getSubEntities();
+                subEntities = entity.getSubEntities(),
+                subItems = item.getSubItems();
 
             for(var i = 0; i < subEntities.length; i++)
             {
@@ -287,7 +301,7 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="overridden">
-        
+      
         /** @see cz.kajda.timeline.render.AbstractItemRenderer#render */
         render : function(item) {
             var itemWrapper = $("<div>");
@@ -301,8 +315,8 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                     .append(titleEl);
             
             item.setLabelElement(titleEl);
-            item.setDurationElement(element);                
-            
+            item.setDurationElement(element);
+
             return itemWrapper;
         },
         
