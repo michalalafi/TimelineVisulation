@@ -25,6 +25,9 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
      */
     _constructor : function(timeline, entity, renderer) {
         AbstractItem.call(this, timeline, entity, renderer);
+
+        /**FIALA */
+        this._subItems = [];
     },
     
     //<editor-fold defaultstate="collapsed" desc="private members">
@@ -39,7 +42,7 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
         _durationElement : null,
 
         /** FIALA */
-        _subItems : {},
+        _subItems : [],
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="overridden">
@@ -137,6 +140,15 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
                 left : (e_w - o_l - o_r) / 2 + e_l,
                 top: e_t + e_h / 2
             };
+        },
+
+        /** FIALA */
+        addSubItem : function(subItem){
+            this._subItems.push(subItem);
+        },
+
+        getSubItems: function(){
+            return this._subItems;
         }
     
     //</editor-fold>
