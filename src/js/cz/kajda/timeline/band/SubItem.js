@@ -86,10 +86,6 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
         //     return this._durationElement;
         // },
 
-        getR : function(){
-            return this._renderer;
-        },
-
         /** @see cz.kajda.timeline.Component */
         getWidth : function(flag) {
             var w = this.__super.getWidth.call(this, flag);

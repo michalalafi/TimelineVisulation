@@ -74,19 +74,7 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                         "background-color" : "transparent",
                         "border-color" : this._color.darken(20).getRgba()
                     });
-            // // Foreach subItem in BandItem
-            // // Create div element and append it to wrapper
-            // for(var i=0; i < subItems.length; i++)
-            // {
-            //     var subItem = subItems[i];
-
-            //     var element = this.renderSubItem(subItem);   
-                
-            //     subItem.setElement(element);
-
-            //     wrapper.append(element);    
-            // }
-                   
+ 
             return wrapper;
         },
         renderSubItem : function(subItem)
@@ -164,76 +152,11 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             };
 
         },
-        /**
-         * @private
-         * Recalculates left position and width in wrapper for continuous subentity
-         * @param {cz.kajda.data.AbstractEntity} subEntity
-         * @param {cz.kajda.timeline.AbstractItem} item
-         */
-        _correctProtrusionSubEntity: function(subEntity, item) {
-
-                var itemLeft = item.getPosition().left,
-                    projection = item.getTimeline().getProjection(),
-                    startTimeSubEntity = subEntity.getStart();
-                /*
-                    Prvni zpusob vypočet left pozice podle šířky celeho divu
-
-                    Vypočteno začatek subEntity -  začátek entity 
-
-                    Vypočtení jakou část zabírá od začátku subEntita 
-
-                    Left pozice bude násobek koeficientu s aktuální šírkou Entity
-                */
-                        /* Rozdil zacatku cele entity od zacatku subEntity */
-                        /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                        /* Podil subEntity vuci Entite */
-                        /*var diveded = duration._milliseconds / entityDuration._milliseconds;
-                        leftPos = entityWidth * diveded; */
-                /* Druhy zpusob je prevedeni rozdilu zacatku subEntity od zacatku Entity na px */
-                        /* Rozdil zacatku cele entity od zacatku subEntity */
-                        /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                        /*leftPos =  projection.duration2px(duration); */
-                /* Treti zpusob je nalezeni vzdalenosti Entity od zacatku a SubEntity od zacatku a pak odecteni techto vzdalenosti */
-                        /* var entityLeft = projection.moment2px(startTime);
-                        var subEntityLeft = projection.moment2px(startTimeSubEntity);
-                        leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); */
-                /* Ctvrty zpusob left pozice subEntity v celem kontextu - left pozice entity */
-                var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
-                var width = projection.duration2px(subEntity.getDuration());
-                var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
-
-                var htmlElement2 = item.getSubItems()[sub]
-
-                $(htmlElement).css({
-                    "position" : "absolute",
-                    "left" : leftPos,
-                    "width" : width
-                });
-        },
-        /**
-         * @private
-         * Recalculates left position and width in wrapper for moment subentity
-         * @param {cz.kajda.data.AbstractEntity} subEntity
-         * @param {cz.kajda.timeline.AbstractItem} item
-         */
-        _correctProtrusionSubEntityMoment: function(subEntity,item) {
-            var itemLeft = item.getPosition().left,
-                projection = item.getTimeline().getProjection(),
-                startTimeSubEntity = subEntity.getStart();
-
-            var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
-            var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
-            $(htmlElement).css({
-                    "position" : "absolute",
-                    "left" : leftPos,
-                });
-        },
-
         _correctProtrusionSubItemContinuous : function(subItem, item)
         {
-
-            var entity = subItem.getEntity();
-            var projection = item.getTimeline().getProjection();
+            var entity = subItem.getEntity(),
+                projection = item.getTimeline().getProjection(),
+                htmlElement = subItem.getHtmlElement();
 
             var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left; 
             var width = projection.duration2px(entity.getDuration());
@@ -260,8 +183,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                     var subEntityLeft = projection.moment2px(startTimeSubEntity);
                     leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); */
             /* Ctvrty zpusob left pozice subEntity v celem kontextu - left pozice entity */
-            var htmlElement = subItem.getHtmlElement();
-            var renderer = subItem.getR();
             $(htmlElement).css({
                 "position" : "absolute",
                 "left" : leftPos,
@@ -270,27 +191,24 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
         },
 
         _correctProtrusionSubItemMoment : function(subItem, item){
-            var entity = subItem.getEntity();
-            var projection = item.getTimeline().getProjection();
+            var entity = subItem.getEntity(),
+                projection = item.getTimeline().getProjection(),
+                htmlElement = subItem.getHtmlElement();
+
             var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left;
 
-            var htmlElement = subItem.getHtmlElement();
             $(htmlElement).css({
                     "position" : "absolute",
                     "left" : leftPos,
                 });
-
         },
         /**
          * @private
          * Correct protusion of sub-entities
          * @param {cz.kajda.timeline.AbstractItem} item
          */
-        _correctProtrusionSubEntities: function(item){
-            var entity = item.getEntity(),
-                subEntities = entity.getSubEntities(),
-                subItems = item.getSubItems();
-
+        _correctProtrusionSubItems: function(item){
+            var subItems = item.getSubItems();
             for(var i = 0; i < subItems.length; i++)
             {
                 var subItem = subItems[i];
@@ -299,14 +217,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 else 
                     this._correctProtrusionSubItemMoment(subItem, item);
             }
-            // for(var i = 0; i < subEntities.length; i++)
-            // {
-            //     if(subEntities[i].isContinuous())
-            //         this._correctProtrusionSubEntity(subEntities[i],item);
-            //     else 
-            //         this._correctProtrusionSubEntityMoment(subEntities[i],item);
-            // }
-
         },
         
         /**
@@ -409,7 +319,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             // If wrapper has width smaller than 30px => hide all subentities   
             if(width < 30)
                 item.getHtmlElement()
-                    // Give BandItem color
                     .find("." + this.DURATION_CLASS).css("background-color",this._color.getRgba())
                     .find("." + this.SUB_ITEM_CLASS).each(function()
                         {
@@ -417,7 +326,7 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                         });
             // Else recalculate atributes of subentities and show them
             else{
-                this._correctProtrusionSubEntities(item);
+                this._correctProtrusionSubItems(item);
 
                 item.getHtmlElement()
                 .find("." + this.DURATION_CLASS).css("background-color","transparent")

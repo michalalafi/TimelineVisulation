@@ -76,27 +76,6 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                     .css({
                         "background-color" : "transparent",
                     });
-            // Foreach subEntity in Array
-            // Create div element and append it to wrapper
-            for(var i=0; i < subEntities.length; i++)
-            {
-                var subEntity = subEntities[i];
-                // GET CSS of subEntity
-                var cssClasses = subEntity.getCssClasses();
-                // Create div element
-                var element = new $("<div>")
-                    .attr("id",subEntity.getId())
-                    .addClass(this.SUB_ITEM_CLASS)
-                    .addClass(this.DUMBBELL_ELEMENT_CLASS)
-                    .addClass(this.DUMBBELL_NODE_CLASS) 
-                // Add css to element
-                element.addClass((cssClasses) ? cssClasses : this.DEFAULT_COLOR_CLASS);
-                // Add moment dumbbell class
-                if(!subEntity.isContinuous())
-                    element.addClass(this.DUMBBELL_MOMENT_CLASS);
-
-                wrapper.append(element);    
-            }
             // Create interspace line
             var dumbbellJoin = new $("<div>")
                     .addClass(this.DUMBBELL_ELEMENT_CLASS)
@@ -134,8 +113,6 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
          * @returns {jQuery}
          */
          _renderMoment : function(item) {
-            
-            var properties = item.getEntity().getSubItems();
             var element = new $("<div>")
                     .addClass(this.MOMENT_CLASS)
                     .css({
@@ -183,98 +160,56 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             };
 
         },
-        /**
-         * @private
-         * Recalculates left position and width in wrapper for continuous subentity
-         * @param {cz.kajda.data.AbstractEntity} subEntity
-         * @param {cz.kajda.timeline.AbstractItem} item
-         */
-        _correctProtrusionSubEntity: function(subEntity, item) {
-
-            var itemLeft = item.getPosition().left,
+        _correctProtrusionSubItemContinuous : function(subItem, item)
+        {
+            var entity = subItem.getEntity(),
                 projection = item.getTimeline().getProjection(),
-                startTimeSubEntity = subEntity.getStart();
-            /*
-                Prvni zpusob vypočet left pozice podle šířky celeho divu
+                htmlElement = subItem.getHtmlElement();
 
-                Vypočteno začatek subEntity -  začátek entity 
-
-                Vypočtení jakou část zabírá od začátku subEntita 
-
-                Left pozice bude násobek koeficientu s aktuální šírkou Entity
-            */
-                    /* Rozdil zacatku cele entity od zacatku subEntity */
-                    /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                    /* Podil subEntity vuci Entite */
-                    /*var diveded = duration._milliseconds / entityDuration._milliseconds;
-                    leftPos = entityWidth * diveded; */
-            /* Druhy zpusob je prevedeni rozdilu zacatku subEntity od zacatku Entity na px */
-                    /* Rozdil zacatku cele entity od zacatku subEntity */
-                    /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                    /*leftPos =  projection.duration2px(duration); */
-            /* Treti zpusob je nalezeni vzdalenosti Entity od zacatku a SubEntity od zacatku a pak odecteni techto vzdalenosti */
-                    /* var entityLeft = projection.moment2px(startTime);
-                    var subEntityLeft = projection.moment2px(startTimeSubEntity);
-                    leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); */
-            /* Ctvrty zpusob left pozice subEntity v celem kontextu - left pozice entity */
-            var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
-            var width = projection.duration2px(subEntity.getDuration());
-            var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
+            var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left;
+            var width = projection.duration2px(entity.getDuration());
 
             $(htmlElement).css({
                 "position" : "absolute",
                 "left" : leftPos,
                 "width" : width,
             });
-    },
-        /**
-         * @private
-         * Recalculates left position and width in wrapper for moment subentity
-         * @param {cz.kajda.data.AbstractEntity} subEntity
-         * @param {cz.kajda.timeline.AbstractItem} item
-         */
-        _correctProtrusionSubEntityMoment: function(subEntity,item) {
-            var entity = item.getEntity(),
-                itemLeft = item.getPosition().left,
+        },
+
+        _correctProtrusionSubItemMoment : function(subItem, item){
+            var entity = subItem.getEntity(),
                 projection = item.getTimeline().getProjection(),
-                startTimeSubEntity = subEntity.getStart(),
-                itemWidth = item.getWidth();
+                htmlElement = subItem.getHtmlElement();
             
-            var leftPos = projection.moment2px(startTimeSubEntity) - itemLeft;
+            var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left;
 
+            if(entity.getType() == "start")
+                leftPos = projection.moment2px(item.getEntity().getStart()) - item.getPosition().left;
+            else if(entity.getType() == "end")
+                leftPos = projection.moment2px(item.getEntity().getEnd()) - item.getPosition().left - 15;
 
-            if(subEntity.getType() == "start")
-                leftPos = projection.moment2px(entity.getStart()) - itemLeft;
-            else if(subEntity.getType() == "end")
-                leftPos = projection.moment2px(entity.getEnd()) - itemLeft - 15;
-            // if((leftPos > itemWidth ))
-            //     leftPos = leftPos - 15;
-
-            var htmlElement = item.getHtmlElement().find("#"+subEntity.getId());
             $(htmlElement).css({
-                    "position" : "absolute",
-                    "left" : leftPos,
-                    "border-style": "solid",
-                    "border-width": 1,
-                });
+                "position" : "absolute",
+                "left" : leftPos,
+                "border-style": "solid",
+                "border-width": 1,
+            });
         },
         /**
          * @private
          * Correct protusion of sub-entities, expect only moment entities
          * @param {cz.kajda.timeline.AbstractItem} item
          */
-        _correctProtrusionSubEntities: function(item){
-            var entity = item.getEntity(),
-                subEntities = entity.getSubEntities();
-
-            for(var i = 0; i < subEntities.length; i++)
+        _correctProtrusionSubItems: function(item){
+            var subItems = item.getSubItems();
+            for(var i = 0; i < subItems.length; i++)
             {
-                if(subEntities[i].isContinuous())
-                    this._correctProtrusionSubEntity(subEntities[i],item);
-                else
-                    this._correctProtrusionSubEntityMoment(subEntities[i],item);
+                var subItem = subItems[i];
+                if(subItem.getEntity().isContinuous())
+                    this._correctProtrusionSubItemContinuous(subItem, item);
+                else 
+                    this._correctProtrusionSubItemMoment(subItem, item);
             }
-
         },
         
         /**
@@ -350,14 +285,18 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             // Let the first entity shown
             if(width < 30)
             {
-                var dumbelItems = item.getHtmlElement().find("." + this.DUMBBELL_ELEMENT_CLASS);
-                for(var i = 1; i<dumbelItems.length ;i++)
-                    $(dumbelItems[i]).hide();
+                var subItems = item.getSubItems();
+                // Hide dumbell join
+                item.getHtmlElement().find("."+ this.DUMBBELL_JOIN_CLASS).hide();
+                // Hide all subItems expect first
+                for(var i = 1; i < subItems.length; i++)
+                    $(subItems[i].getHtmlElement()).hide();
             }
             // Else recalculate atributes of subentities and show them
             else
             {
-                this._correctProtrusionSubEntities(item);
+                this._correctProtrusionSubItems(item);
+                // Find all elements and show them
                 item.getHtmlElement().find("." + this.DUMBBELL_ELEMENT_CLASS).each(function()
                 {
                     $(this).show();
