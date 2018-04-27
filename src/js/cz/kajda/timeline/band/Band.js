@@ -302,7 +302,7 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
             var subEntities = entity.getSubEntities();
             for(var i = 0; i < subEntities.length; i++)
             {
-                var subItem = new SubItem(this._timeline,subEntities[i]);
+                var subItem = new SubItem(this._timeline,subEntities[i], renderer);
                 this._subItems[subItem.getId()] = subItem;
                 this._subItemsIds.push(subItem.getId());
 

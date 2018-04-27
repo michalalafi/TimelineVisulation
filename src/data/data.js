@@ -67,14 +67,14 @@ return{
 				{"id":61,"begin":"2020-01-01T00:00:00","css":"king"}
 			]
 		},
-		{"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
-		[
-			{"id":58,"type": "start","css":"dumbbell-king"},
-			{"id":59,"type": "end"/*,"css":"dumbbell-person"*/},
-			{"id":60,"begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
-			{"id":62,"begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
-		]
-		}
+		// {"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
+		// [
+		// 	{"id":58,"type": "start","css":"dumbbell-king"},
+		// 	{"id":59,"type": "end"/*,"css":"dumbbell-person"*/},
+		// 	{"id":60,"begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
+		// 	{"id":62,"begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
+		// ]
+		// }
 
 		],
 	"edges":

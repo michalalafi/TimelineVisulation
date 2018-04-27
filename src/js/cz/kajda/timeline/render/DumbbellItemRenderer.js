@@ -107,7 +107,26 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             return wrapper;
         },
         
+        renderSubItem : function(subItem)
+        {
+            var subEntity = subItem.getEntity();
 
+            // GET CSS of subEntity
+            var cssClasses = subEntity.getCssClasses();
+            // Create div element
+            var element = new $("<div>")
+                .attr("id",subEntity.getId())
+                .addClass(this.SUB_ITEM_CLASS)
+                .addClass(this.DUMBBELL_ELEMENT_CLASS)
+                .addClass(this.DUMBBELL_NODE_CLASS) 
+            // Add css to element
+            element.addClass((cssClasses) ? cssClasses : this.DEFAULT_COLOR_CLASS);
+            // Add moment dumbbell class
+            if(!subEntity.isContinuous())
+                element.addClass(this.DUMBBELL_MOMENT_CLASS);
+
+            return element;    
+        },
         /**
          * @private
          * Renders a moment entity.

@@ -120,7 +120,7 @@ var AbstractItem = new Class("cz.kajda.timeline.AbstractItem", {
      */
     blur : function() {
         this.focus(false);
-    }
+    },
         
 });
 

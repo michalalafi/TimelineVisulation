@@ -52,6 +52,11 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
             var bandItem = this.__super.build.call(this)
                     .attr("data-band", this.getBand().getId())
                     .addClass(this.getPrefixedCssClass());
+
+            for(var i = 0; i < this._subItems.length; i++)
+            {
+                this._durationElement.append(this._subItems[i].build());
+            }
             return bandItem;
         },
 

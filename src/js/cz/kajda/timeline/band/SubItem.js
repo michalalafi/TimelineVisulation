@@ -23,16 +23,14 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
      * @param {cz.kajda.data.AbstractEntity} entity
      * @param {cz.kajda.timeline.render.AbstractItemRenderer} renderer
      */
-    _constructor : function(timeline, entity) {
-        AbstractItem.call(this, timeline, entity);
+    _constructor : function(timeline, entity, renderer) {
+        AbstractItem.call(this, timeline, entity, renderer);
     },
     
     //<editor-fold defaultstate="collapsed" desc="private members">
 
         /** @see cz.kajda.timeline.Component */
         _cssPrefix :  "subitem",
-
-        _element : null,
 
         // /** @member {jQuery} */
         // _labelElement : null,
@@ -45,6 +43,7 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
     //<editor-fold defaultstate="collapsed" desc="overridden">
     
         build : function() {
+            return this._htmlElement = this._renderer.renderSubItem(this);
         },
 
     //</editor-fold>
@@ -86,11 +85,9 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
         // getDurationElement : function() {
         //     return this._durationElement;
         // },
-        setElement : function(el){
-            this._element = el;
-        },
-        getElement : function(){
-            return this.element;
+
+        getR : function(){
+            return this._renderer;
         },
 
         /** @see cz.kajda.timeline.Component */
