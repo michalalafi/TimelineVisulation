@@ -34,11 +34,6 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
 
         _leftPositionToParent : null,
 
-        // /** @member {jQuery} */
-        // _labelElement : null,
-        
-        // /** @member {jQuery} */
-        // _durationElement : null,
     
     //</editor-fold>
     
@@ -52,42 +47,6 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
 
     //<editor-fold defaultstate="collapsed" desc="getters & setters">
     
-        /**
-         * Returns band which the item is placed in.
-         * @returns{cz.kajda.timeline.Band}
-         */
-        // getBand : function() {
-        //     return this.getParent();
-        // },
-
-        /**
-         * @param {jQuery} el
-         */
-        // setLabelElement : function(el) {
-        //     this._labelElement = el;
-        // },
-
-        /**
-         * @param {jQuery} el
-         */
-        // setDurationElement : function(el) {
-        //     this._durationElement = el;
-        // },
-
-        /**
-         * @returns {jQuery}
-         */
-        // getLabel : function() {
-        //     return this._labelElement;
-        // },
-
-        /**
-         * @returns {jQuery}
-         */
-        // getDurationElement : function() {
-        //     return this._durationElement;
-        // },
-
         getBand : function() {
             return this.getParent().getBand();
         },

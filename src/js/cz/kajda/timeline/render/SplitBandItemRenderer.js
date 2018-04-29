@@ -161,11 +161,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             var absoluteLeftPos = projection.moment2px(entity.getStart());
             var leftPos = absoluteLeftPos - item.getPosition().left; 
             var width = projection.duration2px(entity.getDuration());
-
-
-            var pos = subItem.getPosition();
-
-            var height = subItem.getHeight();
             /*
                 Prvni zpusob vypočet left pozice podle šířky celeho divu
 
