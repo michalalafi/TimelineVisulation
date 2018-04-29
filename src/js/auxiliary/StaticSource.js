@@ -6,9 +6,11 @@
 define([
     'cz/kajda/data/AbstractDataSource',
     'cz/kajda/data/Collection',
-    '../../data/data'
+    '../../data/data',
+    /** FIALA */
+    'cz/kajda/data/SubEntity'
 ],
-function(AbstractDataSource, Collection, __data) {
+function(AbstractDataSource, Collection, __data, SubEntity) {
     
 
 /**
@@ -41,20 +43,34 @@ var StaticSource = new Class("StaticSource", {
             var entities = new Collection(),
                 relations = new Collection();
 
+
+            var allEntities = new Collection();    
             // map entities 
-            for(var i = 0; i < data.nodes.length; i++) {    
-                entities.add(new this._objectMapping.entity(data.nodes[i]));
+            for(var i = 0; i < data.nodes.length; i++) {
+                // Add entity
+                var entity = new this._objectMapping.entity(data.nodes[i]);
+                entities.add(entity);
+                allEntities.add(entity);
+
+                if(data.nodes[i].subItems)
+                    for( var k =0; k < data.nodes[i].subItems.length; k++)
+                    {
+                        // Add subEntity
+                        var subEntity = new SubEntity(data.nodes[i].subItems[k]);
+                        entity.addSubEntity(subEntity);
+                        allEntities.add(subEntity);
+                    }
             }
 
             // map relations
             for(var i = 0; i < data.edges.length; i++) {
                 var edge = data.edges[i],
                     edgeObj = new this._objectMapping.relation(edge); // mapped object
-            
-                if(!entities.get(edge.from).hasRelation(edgeObj.getId()))
-                    entities.get(edge.from).addRelation(edge.id);
-                if(!entities.get(edge.to).hasRelation(edgeObj.getId()))
-                    entities.get(edge.to).addRelation(edge.id);
+                /** FIALA */
+                if(!allEntities.get(edge.from).hasRelation(edgeObj.getId()))
+                    allEntities.get(edge.from).addRelation(edge.id);
+                if(!allEntities.get(edge.to).hasRelation(edgeObj.getId()))
+                    allEntities.get(edge.to).addRelation(edge.id);
                 
                 relations.add(edgeObj);
             }

@@ -254,7 +254,12 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
          * @returns {cz.kajda.timeline.band.BandItem}
          */
         getBandItem : function(id) {
-            return this._bandItems[id];
+            /** FIALA */
+            var bandItem = this._bandItems[id];
+            if(bandItem)
+                return bandItem;
+            else
+                return this._subItems[id];
         },
 
 

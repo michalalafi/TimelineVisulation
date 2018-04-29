@@ -35,7 +35,7 @@ var Entity = new Class("cz.kajda.data.Entity", {
          this._continuous = isset(data.end);
          this._description = data.description;
          /* FIALA */
-         this._subEntities = data.subItems ? this.createSubEntities(data.subItems) : null;
+         this._subEntities = data.subItems ? /*this.createSubEntities(data.subItems)*/ [] : null;
          this._css = data.css ? data.css : null;
 
          // set default precision if none is present
@@ -239,7 +239,10 @@ var Entity = new Class("cz.kajda.data.Entity", {
 
             return subEntities;
         },
-
+        addSubEntity : function(subEntity)
+        {
+            this._subEntities.push(subEntity);
+        },
         issetSubEntities : function() {
             if(this._subEntities == null) return false;
             

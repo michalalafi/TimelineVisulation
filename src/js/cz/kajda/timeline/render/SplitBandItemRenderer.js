@@ -158,8 +158,14 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
 
-            var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left; 
+            var absoluteLeftPos = projection.moment2px(entity.getStart());
+            var leftPos = absoluteLeftPos - item.getPosition().left; 
             var width = projection.duration2px(entity.getDuration());
+
+
+            var pos = subItem.getPosition();
+
+            var height = subItem.getHeight();
             /*
                 Prvni zpusob vypočet left pozice podle šířky celeho divu
 
@@ -188,6 +194,8 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 "left" : leftPos,
                 "width" : width
             });
+
+            subItem.setLeftPositionToParent(leftPos);
         },
 
         _correctProtrusionSubItemMoment : function(subItem, item){
@@ -195,12 +203,15 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
 
-            var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left;
+            var absoluteLeftPos = projection.moment2px(entity.getStart());
+            var leftPos = absoluteLeftPos - item.getPosition().left;
 
             $(htmlElement).css({
                     "position" : "absolute",
                     "left" : leftPos,
                 });
+
+            subItem.setLeftPositionToParent(leftPos);    
         },
         /**
          * @private

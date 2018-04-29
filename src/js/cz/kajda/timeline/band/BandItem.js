@@ -149,6 +149,7 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
 
         /** FIALA */
         addSubItem : function(subItem){
+            subItem.setParent(this);
             this._subItems.push(subItem);
         },
 

@@ -61,9 +61,9 @@ return{
 		{"id":52,"stereotype":"split-event","name":"Test2","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
 			[
 				{"id":53,"begin":"2010-09-27T00:00:00","end":"2111-01-21T23:59:59"},
-				{"id":54,"begin":"2080-05-27T00:00:00","end":"2100-06-21T23:59:59","css":"person"},
-				{"id":55,"begin":"2120-01-01T00:00:00","end":"2150-06-21T23:59:59","css":"queen fancy"},
-				{"id":56,"begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"},
+				// {"id":54,"begin":"2080-05-27T00:00:00","end":"2100-06-21T23:59:59","css":"person"},
+				// {"id":55,"begin":"2120-01-01T00:00:00","end":"2150-06-21T23:59:59","css":"queen fancy"},
+				// {"id":56,"begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"},
 				{"id":61,"begin":"2020-01-01T00:00:00","css":"king"}
 			]
 		},
@@ -162,5 +162,8 @@ return{
 		{"id":82,"stereotype":"relationship","from":24,"to":21,"name":"potomek"},
 		{"id":83,"stereotype":"relationship","from":50,"to":29,"name":"potomek"},
 		{"id":84,"stereotype":"relationship","from":45,"to":50,"name":"potomek"},
-		{"id":85,"stereotype":"relationship","from":29,"to":28,"name":"potomek"}]};
+		{"id":85,"stereotype":"relationship","from":29,"to":28,"name":"potomek"},
+		/**FIALA */
+		{"id":86,"stereotype":"relationship","from":50,"to":53,"name":"zkouska"},
+		{"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"}]};
 	});

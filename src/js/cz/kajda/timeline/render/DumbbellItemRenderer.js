@@ -165,8 +165,9 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             var entity = subItem.getEntity(),
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
-
-            var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left;
+            
+            var absoluteLeftPos = projection.moment2px(entity.getStart());
+            var leftPos = absoluteLeftPos - item.getPosition().left;
             var width = projection.duration2px(entity.getDuration());
 
             $(htmlElement).css({
@@ -174,6 +175,8 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 "left" : leftPos,
                 "width" : width,
             });
+            
+            subItem.setLeftPositionToParent(leftPos);  
         },
 
         _correctProtrusionSubItemMoment : function(subItem, item){
@@ -181,7 +184,8 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
             
-            var leftPos = projection.moment2px(entity.getStart()) - item.getPosition().left;
+            var absoluteLeftPos = projection.moment2px(entity.getStart());
+            var leftPos = absoluteLeftPos - item.getPosition().left;
 
             if(entity.getType() == "start")
                 leftPos = projection.moment2px(item.getEntity().getStart()) - item.getPosition().left;
@@ -194,6 +198,8 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 "border-style": "solid",
                 "border-width": 1,
             });
+
+            subItem.setLeftPositionToParent(leftPos);  
         },
         /**
          * @private

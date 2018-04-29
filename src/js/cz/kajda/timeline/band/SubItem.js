@@ -32,6 +32,8 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
         /** @see cz.kajda.timeline.Component */
         _cssPrefix :  "subitem",
 
+        _leftPositionToParent : null,
+
         // /** @member {jQuery} */
         // _labelElement : null,
         
@@ -86,6 +88,24 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
         //     return this._durationElement;
         // },
 
+        getBand : function() {
+            return this.getParent().getBand();
+        },
+        setLeftPositionToParent : function(left)
+        {
+            this._leftPositionToParent = left;
+        },
+        getLeftPositionToParent : function()
+        {
+            return this._leftPositionToParent;
+        },
+        getPosition(){
+            return{
+                left: this._leftPositionToParent + this.getParent().getPosition().left,
+                top: this.getParent().getPosition().top
+            };
+        },
+
         /** @see cz.kajda.timeline.Component */
         getWidth : function(flag) {
             var w = this.__super.getWidth.call(this, flag);
@@ -106,7 +126,7 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
             var pos = this.getPosition();
             return {
                 left : pos.left,
-                top: this.getParent().getPosition().top + pos.top
+                top: this.getParent().getPosition().top
             };
         },
 
@@ -122,8 +142,8 @@ var SubItem = new Class("cz.kajda.timeline.band.SubItem", {
                 w_l = this._timeline.getWrapper().getPosition().left,
                 e_l = e_pos.left,
                 e_t = e_pos.top,
-                e_h = this.getDurationElement().height(),
-                e_w = this.getDurationElement().width(),
+                e_h = this.getParent().getDurationElement().height(),
+                e_w = this.getHtmlElement().width(),
                 vp_w = this._timeline.getWidth(),
                 o_l = Math.min(0, w_l + e_l),
                 o_r = Math.max(0, e_l + e_w + w_l - vp_w);
