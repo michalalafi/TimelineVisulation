@@ -157,6 +157,7 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
          *  @author Michal Fiala 
          *  @param {SubItem} subItem
          *  Adds subItem to subItems
+         *  Set subItem parent this BandItem
          */
         addSubItem : function(subItem){
             subItem.setParent(this);
@@ -188,6 +189,24 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
             for(var i = 0; i < this._subItems.length; i++)
                 this._subItems[i].undraw();        
         },
+        /**
+         * @author Michal Fiala
+         * Hide all SubItems
+         */
+        hideSubItems : function()
+        {
+            for(var i = 0; i < this._subItems.length; i++)
+                this._subItems[i].hide();
+        },
+        /**
+         * @author Michal Fiala
+         * Show all SubItems
+         */
+        showSubItems : function()
+        {
+            for(var i = 0; i < this._subItems.length; i++)
+                this._subItems[i].show();
+        }
     
     //</editor-fold>
     

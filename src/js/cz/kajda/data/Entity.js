@@ -34,8 +34,7 @@ var Entity = new Class("cz.kajda.data.Entity", {
          this._properties = data.properties ? data.properties : null;
          this._continuous = isset(data.end);
          this._description = data.description;
-         /* FIALA */
-         this._subEntities = data.subItems ? /*this.createSubEntities(data.subItems)*/ [] : null;
+         this._subEntities = data.subItems ? [] : null;
          this._css = data.css ? data.css : null;
 
          // set default precision if none is present
@@ -81,8 +80,15 @@ var Entity = new Class("cz.kajda.data.Entity", {
         _continuous : null,
         _properties : null,
         _description : null,
-        /* FIALA */
+        /**
+         * @author Michal Fiala
+         * Array for subEntities
+         */
         _subEntities : null,
+        /**
+         * @author Michal Fiala
+         * css of entity
+         */
         _css : null,
     //</editor-fold>  
    
@@ -219,32 +225,22 @@ var Entity = new Class("cz.kajda.data.Entity", {
          */ 
         getSubEntities : function()
         {
-            if(this._subEntities === null) return null;
-            
             return this._subEntities;
         },
         /**
          * @author Michal Fiala
-         * Process data.SubItems and create from them Array of SubEntities
-         * @param {data.SubItems} subItems in data Entity
-         * @returns {Array<SubEntity>} 
-         */
-        createSubEntities : function(subItems)
-        {
-            var subEntities = [];
-
-            for(var i = 0; i < subItems.length; i++) {    
-                subEntities[i] = new SubEntity(subItems[i]);
-            }
-
-            return subEntities;
-        },
+         * @param {SubEntity} subEntity to be added
+         */ 
         addSubEntity : function(subEntity)
         {
             this._subEntities.push(subEntity);
         },
+        /**
+         * @author Michal Fiala
+         * @returns {Boolean}
+         */ 
         issetSubEntities : function() {
-            if(this._subEntities == null) return false;
+            if(this._subEntities === null) return false;
             
             return true;
           }

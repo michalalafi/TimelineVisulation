@@ -38,47 +38,63 @@ var StaticSource = new Class("StaticSource", {
             this._fireEvent("dataLoaded", this);
         },
 
-        /** @see cz.kajda.data.AbstractDataSource#_map */
+        /** 
+         * @see cz.kajda.data.AbstractDataSource#_map 
+         * @author Bc. Michal Kacerovský
+         * @author Michal Fiala
+         */
         _map : function(data) {
+            // All entities (Entity for BandItem)
             var entities = new Collection(),
                 relations = new Collection();
+            // All mapped entities (Entity and SubEntity)
+            var allMappedEntities = new Collection();    
+            // Map all entities 
+            for(var i = 0; i < data.nodes.length; i++)
+                this._createEntity(data.nodes[i], entities, allMappedEntities);
 
-
-            var allEntities = new Collection();    
-            // map entities 
-            for(var i = 0; i < data.nodes.length; i++) {
-                // Add entity
-                var entity = new this._objectMapping.entity(data.nodes[i]);
-                entities.add(entity);
-                allEntities.add(entity);
-
-                if(data.nodes[i].subItems)
-                    for( var k =0; k < data.nodes[i].subItems.length; k++)
-                    {
-                        // Add subEntity
-                        var subEntity = new SubEntity(data.nodes[i].subItems[k]);
-                        entity.addSubEntity(subEntity);
-                        allEntities.add(subEntity);
-                    }
-            }
-
-            // map relations
+            // Map relations
             for(var i = 0; i < data.edges.length; i++) {
                 var edge = data.edges[i],
                     edgeObj = new this._objectMapping.relation(edge); // mapped object
-                /** FIALA */
-                if(!allEntities.get(edge.from).hasRelation(edgeObj.getId()))
-                    allEntities.get(edge.from).addRelation(edge.id);
-                if(!allEntities.get(edge.to).hasRelation(edgeObj.getId()))
-                    allEntities.get(edge.to).addRelation(edge.id);
+                // Find relation and add relation in all entities include SubEntity
+                if(!allMappedEntities.get(edge.from).hasRelation(edgeObj.getId()))
+                    allMappedEntities.get(edge.from).addRelation(edge.id);
+                if(!allMappedEntities.get(edge.to).hasRelation(edgeObj.getId()))
+                    allMappedEntities.get(edge.to).addRelation(edge.id);
                 
                 relations.add(edgeObj);
             }
 
             this._entities = entities;
             this._relations = relations;
-        }
-    
+        },
+        /**
+         * @author Michal Fiala
+         * Create Entity and adds it in Collections       
+         * Create SubEntities of Entity and adds it in Collection
+         * @param {JSON} dataNode
+         * @param {Collection} entities contain only Entity
+         * @param {Collection} allMappedEntities contain Entity and SubEntity
+         */
+        _createEntity : function(dataNode, entities, allMappedEntities)
+        {
+            var entity = new this._objectMapping.entity(dataNode);
+            
+            entities.add(entity);
+            allMappedEntities.add(entity);
+            // Has SubEntities
+            if(dataNode.subItems)
+                for(var i =0; i < dataNode.subItems.length; i++)
+                {
+                    // Create SubEntity
+                    var subEntity = new SubEntity(dataNode.subItems[i]);
+                    // Add SubEntity in Entity
+                    entity.addSubEntity(subEntity);
+                    // Add in all mapped entities
+                    allMappedEntities.add(subEntity);
+                }
+        }    
     //</editor-fold>
     
 });

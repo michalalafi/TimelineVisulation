@@ -587,13 +587,14 @@
 .timeline-banditem .splititem-moment{
   width: 2px;
 }
-
 .timeline-banditem .dumbbellitem-moment{
   width: 15px;
   border-radius: 50%;
 }
 .timeline-banditem .dumbbell-node{
-  height: 98%
+  height: 98%;
+  border-style: solid;
+  border-width: 1px;
 } 
 .timeline-banditem .dumbbell-join{
   height: 1px;

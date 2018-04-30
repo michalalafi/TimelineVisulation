@@ -26,7 +26,6 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
     _constructor : function(timeline) {
         Component.call(this, timeline);
         this._bands = {};
-        /** FIALA */
         this._bandTypes = {};
     },
     
@@ -40,7 +39,11 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
         
         /** @member {cz.kajda.timeline.RelationViewer} */
         _relationViewer : null,
-        /** FIALA */
+        /**
+         * @author Michal Fiala
+         * Dictionary for type of entity to band
+         * [Type] : [Band]
+         */
         _bandTypes : null,
     
     //</editor-fold>
@@ -90,12 +93,14 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
     //<editor-fold defaultstate="collapsed" desc="getters & setters">
     
         /**
+         * @author Bc. Michal Kacerovský 
+         * @author Michal Fiala
          * Gets band by its identifier.
-         * @param {String|NUmber} id
+         * @param {String|NUmber} id entity type
          * @returns {cz.kajda.timeline.band.Band}
          */
         getBand : function(id) {
-            /** FIALA */
+            // Try find entity type in bandTypes
             if(this._bandTypes[id])
                 return this._bandTypes[id];
             else
@@ -103,11 +108,13 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
         },
 
         /**
+         * @author Bc. Michal Kacerovský 
+         * @author Michal Fiala
          * Informs whether a band with passed ID exists in the group.
          * @param {Number|String} id 
          */
         hasBand : function(id) {
-            /**FIALA */
+            // Try find entity type in bandTypes
             if(this._bandTypes[id])
                 return isset(this._bandTypes[id])
             else
@@ -149,6 +156,8 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
 
 
     /**
+     * @author Bc. Michal Kacerovský 
+     * @author Michal Fiala
      * Adds new band into the band group.
      * Band properties object :
      * {
@@ -157,6 +166,23 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
      *   color : String // background color (#??????)
      *   itemRenderer : cz.kajda.timeline.render.AbstractItemRenderer
      * }
+     * 
+     * OR
+     * 
+     * Band properties object :
+     * { 
+     *      types: [
+     *              {
+     *                    id: "person",
+     *                    itemRenderer: new BandItemRenderer("#FFB182"),
+     *                    color: "#fafafa"
+     *              },
+     *              {
+     *                    id: "event",
+     *                    itemRenderer: new BandItemRenderer("#F2BC53"),
+     *                    color: "#f5f5f5"
+     *               },
+     *   }
      * @param {Object} opts band properties
      * @returns{cz.kajda.timeline.band.Band} added band
      */
@@ -169,7 +195,8 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
         this.addComponent(band);
 
 
-        /** FIALA */
+        // If Band has property types
+        // For each type add this band in bandTypes
         var entityTypes = opts.types;
         if(entityTypes)
         {
@@ -179,6 +206,7 @@ var BandGroup = new Class("cz.kajda.timeline.band.BandGroup", {
                 this._bandTypes[type.id] = band;
             }
         }
+        // Else add this opts.id (type of entity) and this band
         else
         {
             this._bandTypes[opts.id] = band;

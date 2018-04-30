@@ -1,3 +1,8 @@
+/**
+ * @author Michal Fiala
+ * @version 1.0
+ */
+
 define([
     'momentjs',
     'cz/kajda/timeline/render/AbstractItemRenderer',
@@ -9,6 +14,7 @@ function(moment, AbstractItemRenderer, Color) {
 /**
  * Renderer for dumbbell-entity with subentities.
  * Renders items as a circle and interspace them with line
+ * Renders continuous subitem as box
  * that contain label inside if possible, otherwise puts the label aside.
  * @memberOf cz.kajda.timeline.render
  */
@@ -66,6 +72,7 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
         /**
          * @private
          * Renders an interval entity.
+         * Renders interspace line
          * @param {cz.kajda.timeline.AbstractItem} item
          * @returns {jQuery}
          */
@@ -85,7 +92,13 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                       
             return wrapper;
         },
-        
+        /**
+         * Renders SubItem element
+         * Adds css classes of entity
+         * Adds default css classes
+         * @param {SubItem} subItem
+         * @return {jQuery} HTML element
+         */
         renderSubItem : function(subItem)
         {
             var subEntity = subItem.getEntity();
@@ -160,14 +173,23 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             };
 
         },
+        /**
+         * Calculates left position and width of Continuous SubItem in BandItem
+         * Set this values to SubItem Html element
+         * Set SubItem leftPositionToParent
+         * @param {SubItem} subItem
+         * @param {BandItem} item
+         */
         _correctProtrusionSubItemContinuous : function(subItem, item)
         {
             var entity = subItem.getEntity(),
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
-            
+            // Left position in wrapper
             var absoluteLeftPos = projection.moment2px(entity.getStart());
+            // Left position in bandItem
             var leftPos = absoluteLeftPos - item.getPosition().left;
+            // Width in bandItem
             var width = projection.duration2px(entity.getDuration());
 
             $(htmlElement).css({
@@ -175,18 +197,25 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
                 "left" : leftPos,
                 "width" : width,
             });
-            
+            // Set leftPositionToParent
             subItem.setLeftPositionToParent(leftPos);  
         },
-
+        /**
+         * Calculates left position of Moment SubItem in BandItem
+         * Set this values to SubItem Html element
+         * Set SubItem leftPositionToParent
+         * @param {SubItem} subItem
+         * @param {BandItem} item
+         */
         _correctProtrusionSubItemMoment : function(subItem, item){
             var entity = subItem.getEntity(),
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
-            
+            // Left position in wrapper
             var absoluteLeftPos = projection.moment2px(entity.getStart());
+            // Left position in bandItem
             var leftPos = absoluteLeftPos - item.getPosition().left;
-
+            // If subEntity is start or end, use time from Entity (BandItem)
             if(entity.getType() == "start")
                 leftPos = projection.moment2px(item.getEntity().getStart()) - item.getPosition().left;
             else if(entity.getType() == "end")
@@ -194,16 +223,14 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
 
             $(htmlElement).css({
                 "position" : "absolute",
-                "left" : leftPos,
-                "border-style": "solid",
-                "border-width": 1,
+                "left" : leftPos
             });
-
+            // Set leftPositionToParent
             subItem.setLeftPositionToParent(leftPos);  
         },
         /**
          * @private
-         * Correct protusion of sub-entities, expect only moment entities
+         * Correct protusion of subitems
          * @param {cz.kajda.timeline.AbstractItem} item
          */
         _correctProtrusionSubItems: function(item){

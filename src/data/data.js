@@ -167,5 +167,7 @@ return{
 		/**FIALA */
 		{"id":86,"stereotype":"relationship","from":50,"to":53,"name":"zkouska"},
 		{"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"},
-		{"id":88,"stereotype":"relationship","from":50,"to":63,"name":"zkouska"}]};
+		{"id":88,"stereotype":"relationship","from":50,"to":63,"name":"zkouska"},
+		{"id":89,"stereotype":"relationship","from":50,"to":59,"name":"zkouska"},
+		{"id":90,"stereotype":"relationship","from":50,"to":58,"name":"zkouska"}]};
 	});
