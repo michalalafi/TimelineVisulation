@@ -49,6 +49,7 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
     //<editor-fold defaultstate="collapsed" desc="overridden">
     
         /** 
+         *  @author Bc. Michal Kacerovský
          *  @author Michal Fiala
          *  @see cz.kajda.timeline.Component#build
          *  For each subItem call his build method and append created element to durationElement 
@@ -170,6 +171,7 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
         },
 
         /** 
+         *  @author Bc. Michal Kacerovský
          *  @author Michal Fiala 
          *  @see cz.kajda.timeline.Component#build
          *  For each subItem undraw it

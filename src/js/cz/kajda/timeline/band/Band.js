@@ -41,7 +41,7 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         this._laneEnds = [];
         this._bandItemsSorted = false;
         this._contextOverflown = false;
-        /**FIALA  */
+
         this._types = opts.types == null ? null : this._createTypesDictionary(opts.types);
         this._subItems = [];
         this._subItemsIds = [];
@@ -80,11 +80,20 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         /** @member {Boolean} indicates that the items inside of the band overflow */
         _contentOverflow : false,
 
-        /** FIALA */
+        /** 
+         * @author Michal Fiala
+         * Dictionary {TypeOfEntity} : {Renderer} 
+         */
         _types : {},
-
+        /** 
+         * @author Michal Fiala 
+         * Array of SubItems in Band
+         */
         _subItems: null,
-
+        /** 
+         * @author Michal Fiala
+         * Array of SubItems Ids in Band
+         */
         _subItemsIds: null,
         
     //</editor-fold>
@@ -249,15 +258,19 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         },
 
         /**
+         * @author Bc. Michal Kacerovský
+         * @author Michal Fiala
          * Finds item with passed identifier.
+         * Try find it in BandItems if not found => try find it in SubItems
          * @param {Number|String} id
-         * @returns {cz.kajda.timeline.band.BandItem}
+         * @returns {cz.kajda.timeline.band.BandItem} || @returns {cz.kajda.timeline.band.SubItem}
          */
         getBandItem : function(id) {
-            /** FIALA */
+            // Find it in bandItems array
             var bandItem = this._bandItems[id];
             if(bandItem)
                 return bandItem;
+            // Find it in subItems array    
             else
                 return this._subItems[id];
         },
@@ -282,6 +295,8 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
     //</editor-fold>
 
     /**
+     * @author Bc. Michal Kacerovský
+     * @author Michal Fiala
      * Register item to the band.
      * It does not mean that the item is added as a component.
      * The item becomes band's component when it fits the timeline range.
@@ -291,17 +306,20 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         if(isset(this._bandItems[entity.getId()]))
             this.__exception("Ambiguous item", "Attempt to add item with duplicate identifier (" + entity.getId() + ")");
         
-        /**FIALA */
+        // Get renderer from _types
         var renderer = null
         if(this.issetTypes())
         {
-            renderer= this._types[entity.getType()];                 
-        }    
+            renderer = this._types[entity.getType()];                 
+        }
+        // If not found => Get this.itemRenderer 
         if(renderer == null)
             renderer = this._itemRenderer;
         var bandItem = new BandItem(this._timeline, entity, renderer);
-        // var bandItem = new BandItem(this._timeline, entity, this._itemRenderer);
 
+        // For each subEntity create SubItem add to 
+        // _subItems and subItemsIds 
+        // Insert it in BandItem
         if(entity.issetSubEntities())
         {
             var subEntities = entity.getSubEntities();
@@ -344,10 +362,17 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
         }
     },
 
-    /**FIALA */
+    /**
+     * @author Michal Fiala
+     * Create types dictionary
+     * [Type (EntityType)] : Renderer
+     * @param {JSON} types
+     * @returns {Dictionary}
+     */
     _createTypesDictionary : function (types)
     {  
         var typesDict = {}; 
+        // For each type assign renderer
         for(var i = 0; i< types.length ; i++)
         {
             var type = types[i];
@@ -356,20 +381,25 @@ var Band = new Class("cz.kajda.timeline.band.Band", {
 
         return typesDict;
     },
-
+    /**
+     * @author Michal Fiala
+     * @returns {Boolean}
+     */
     issetTypes : function() {
       if(this._types == null) return false;
       
       return true;
     },
-
-
+    /**
+     * @author Michal Fiala
+     * Return _types
+     * @returns {Dictionary}
+     */
     getTypes : function()
     {
         return this._types;
     }
-
-        
+           
 });
 
 
