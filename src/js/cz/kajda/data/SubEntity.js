@@ -27,10 +27,11 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
          this._continuous = isset(data.end);
          this._endTime = isset(data.end) ? moment.utc(data.end) : null;
          this._cssClasses = data.css ? data.css : null;
+         this._title = data.name;
 
          this._type = data.type ? data.type : null;
     },
-
+    _title : null,
     _startTime : null,
     _endTime : null,
     _continuous : null,
@@ -69,7 +70,14 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
      */
     getType : function(){
         return this._type;
-    }
+    },
+
+    /**
+     * @returns {String} entity title
+     */
+    getTitle : function() {
+        return this._title;
+    },
     //</editor-fold>
     
 });

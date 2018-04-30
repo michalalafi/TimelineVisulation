@@ -29,7 +29,12 @@ var StaticSource = new Class("StaticSource", {
     _constructor: function(T_entity, T_relation) {
         AbstractDataSource.call(this, T_entity, T_relation);
     },
-    
+    /**
+     * @author Michal Fiala
+     * All mapped entities
+     */
+    _allMappedEntities : null,
+
     //<editor-fold defaultstate="collapsed" desc="overridden">
 
         /** @see cz.kajda.data.AbstractDataSource#loadData */
@@ -65,7 +70,7 @@ var StaticSource = new Class("StaticSource", {
                 
                 relations.add(edgeObj);
             }
-
+            this._allMappedEntities = allMappedEntities;
             this._entities = entities;
             this._relations = relations;
         },
@@ -94,7 +99,16 @@ var StaticSource = new Class("StaticSource", {
                     // Add in all mapped entities
                     allMappedEntities.add(subEntity);
                 }
-        }    
+        },
+        
+        /**
+         * @author Michal Fiala
+         * Returns all mapped entities
+         */
+        getAllMappedEntities : function()
+        {
+            return this._allMappedEntities;
+        },
     //</editor-fold>
     
 });

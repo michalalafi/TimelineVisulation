@@ -81,6 +81,14 @@ var AbstractDataSource = new Class("cz.kajda.data.AbstractDataSource", {
         },
 
         /**
+         * @author Michal Fiala
+         * Returns all mapped entities
+         */
+        getAllMappedEntities : function()
+        {
+            return this._entities;
+        },
+        /**
          * Returns all the relations loaded from the source.
          * @returns {cz.kajda.data.Collection}
          */

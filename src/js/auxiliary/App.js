@@ -224,7 +224,7 @@ var App = new Class("App", {
 
             for(var i = 0; i < relationIds.length; i++) {
                 var relation = this._source.getRelations().get(relationIds[i]),
-                    target = this._source.getEntities().get(relation.isOrigin(entity) ? relation.getDestinationId() : relation.getOriginId());
+                    target = this._source.getAllMappedEntities().get(relation.isOrigin(entity) ? relation.getDestinationId() : relation.getOriginId());
                 var tr = $("<tr>"),
                     targetAnchor = $("<a>").text(target.getTitle()).attr("href","#");
 
