@@ -74,7 +74,8 @@ return{
 			{"id":60,"begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
 			{"id":62,"begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
 		]
-		}
+		},
+		{"id":63,"stereotype":"person","name":"Václav 5","description":"Zkouska ","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"}},
 
 		],
 	"edges":
@@ -165,5 +166,6 @@ return{
 		{"id":85,"stereotype":"relationship","from":29,"to":28,"name":"potomek"},
 		/**FIALA */
 		{"id":86,"stereotype":"relationship","from":50,"to":53,"name":"zkouska"},
-		{"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"}]};
+		{"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"},
+		{"id":88,"stereotype":"relationship","from":50,"to":63,"name":"zkouska"}]};
 	});

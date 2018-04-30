@@ -26,7 +26,6 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
     _constructor : function(timeline, entity, renderer) {
         AbstractItem.call(this, timeline, entity, renderer);
 
-        /**FIALA */
         this._subItems = [];
     },
     
@@ -41,18 +40,24 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
         /** @member {jQuery} */
         _durationElement : null,
 
-        /** FIALA */
+        /** @author Michal Fiala
+         *  Array of SubItems
+         */
         _subItems : [],
     //</editor-fold>
     
     //<editor-fold defaultstate="collapsed" desc="overridden">
     
-        /** @see cz.kajda.timeline.Component#build */
+        /** 
+         *  @author Michal Fiala
+         *  @see cz.kajda.timeline.Component#build
+         *  For each subItem call his build method and append created element to durationElement 
+         */
         build : function() {
             var bandItem = this.__super.build.call(this)
                     .attr("data-band", this.getBand().getId())
                     .addClass(this.getPrefixedCssClass());
-
+            // Create subItem element and append to durationElement
             for(var i = 0; i < this._subItems.length; i++)
             {
                 this._durationElement.append(this._subItems[i].build());
@@ -147,15 +152,40 @@ var BandItem = new Class("cz.kajda.timeline.band.BandItem", {
             };
         },
 
-        /** FIALA */
+        /** 
+         *  @author Michal Fiala 
+         *  @param {SubItem} subItem
+         *  Adds subItem to subItems
+         */
         addSubItem : function(subItem){
             subItem.setParent(this);
             this._subItems.push(subItem);
         },
-
+        /** 
+         *  @author Michal Fiala 
+         *  @return {Array} subItems
+         */
         getSubItems: function(){
             return this._subItems;
-        }
+        },
+
+        /** 
+         *  @author Michal Fiala 
+         *  @see cz.kajda.timeline.Component#build
+         *  For each subItem undraw it
+         */
+        undraw : function() {
+            if(this._htmlElement !== null) {
+                this.getHtmlElement().remove();   
+                delete this._htmlElement;
+            }
+            for(var i = 0; i < this._parent._components.length; i++)
+                if(this === this._parent._components[i]);
+                    this._parent._components.splice(i, 1);
+            // Remove subItems
+            for(var i = 0; i < this._subItems.length; i++)
+                this._subItems[i].undraw();        
+        },
     
     //</editor-fold>
     
