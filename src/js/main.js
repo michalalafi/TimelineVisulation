@@ -41,7 +41,7 @@ function($, App, Timeline, BandsDistribution) {
     
     // create new instance of app support
     var app = new App();
-
+    // FIALA 
     var bandsDistribution = new BandsDistribution();
     
 	/** @see cz.kajda.timeline.Timeline~_DEFAULTS */

@@ -600,6 +600,8 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 
                 this.focusItem(bandItem.getEntity(), false);
                 this._fireEvent("itemClick", entity);
+                // FIALA Event for answer tracking
+                this._fireEvent("itemLogClick",entity);
             },
 
             /**

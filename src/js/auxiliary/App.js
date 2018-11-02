@@ -10,9 +10,10 @@ define([
     'cz/kajda/data/Relation',
     'auxiliary/RandSource',
     'auxiliary/StaticSource',
-    'momentjs'
+    'momentjs',
+    'auxiliary/QuestionTool',
 ],
-function(DataWizard, Observable, Entity, Relation, RandSource, StaticSource, moment) {
+function(DataWizard, Observable, Entity, Relation, RandSource, StaticSource, moment, QuestionTool) {
     
 /**
  * Demo application support for the widget.
@@ -42,6 +43,11 @@ var App = new Class("App", {
         "cause" : "zapříčinění",
         "interaction" : "interakce"
     },
+
+    /** @member {Object} questionTool tool for questions
+     *  @author Michal Fiala
+     */
+    _questionTool : null,
     
     
     /**
@@ -97,6 +103,8 @@ var App = new Class("App", {
         $("#guidelines_chb").on("click", new Closure(this, this._timelineGuidelines));
         $("#relations_chb").on("click", new Closure(this, this._timelineRelations));
         $("#item_search_term").on("input", new Closure(this, this._searchInTimeline));
+        /** Michal Fiala */
+        $("#start_test_btn").on("click", new Closure(this, this._startTest));
     },
     
     /**
@@ -280,7 +288,15 @@ var App = new Class("App", {
             if(res === 0) {
                 resTable.append($('<tr><td><em>Žádné nálezy...</em></td></tr>'));
             }
+        },
+
+        /** @author Michal Fiala
+         * 
+         */
+        _startTest: function(){
+            this._questionTool = new QuestionTool();
         }
+        
 
     //</editor-fold>
     

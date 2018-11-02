@@ -10,7 +10,7 @@
         <link href="css/auxiliary/bootstrap-dialog/bootstrap-dialog.min.css" type="text/css" rel="stylesheet" />
         <link href="css/cz.kajda.timeline.css" type="text/css" rel="stylesheet" />
         <link href="css/styles.css" type="text/css" rel="stylesheet" />
-        <!--FIALA CSS -->
+        <!--FIALA CSS customStyles.css -->
         <link href="css/customStyles.css" type="text/css" rel="stylesheet" />
         <script src="js/oop.js"></script>
         <script data-main="js/main" src="js/lib/require/require.js"></script>
@@ -31,6 +31,7 @@
                     <ul class="nav nav-pills tab-list" role="tablist">
                         <li role="presentation" class="active"><a role="tab" data-toggle="tab" href="#home">Záznamy</a></li>
                         <li role="presentation"><a role="tab" data-toggle="tab" href="#widgeting">Rozhraní widgetu</a></li>
+                        <li role="presentation"><a role="tab" data-toggle="tab" href="#testing">Test widgetu</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="home">
@@ -135,10 +136,29 @@
                                 </div>
                             </div>
                         </div>
+                        <div role="tabpanel" class="tab-pane" id="testing">
+                            <!-- FIALA Test tool  -->
+                            <div class="padded" id="testing_content">
+                                <div style="display: none;"> 
+                                    <h2 id="question_label">Otázka</h2>
+                                    <h4 id="questions_done_label"> 1/10</h4>
+                                    <div id="answer_fgroup_label" class="form-group">
+                                        <label for="answer">Odpověď</label>
+                                        <input type="text" class="form-control" id="answer">
+                                    </div>
+                                </div>
+                                <div style="display: none;" class="btn-group btn-group-justified">
+                                    <a class="btn btn-default" id="confirm_btn">Potvrdit</a>
+                                </div>
+                                <div class="btn-group btn-group-justified">
+                                    <a class="btn btn-default" id="start_test_btn">Začít test</a>
+                                </div>
+                            </div>
+                            
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
   </body>
 </html>

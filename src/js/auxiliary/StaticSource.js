@@ -76,6 +76,7 @@ var StaticSource = new Class("StaticSource", {
         },
         /**
          * @author Michal Fiala
+         * @author Bc. Michal Kacerovský
          * Create Entity and adds it in Collections       
          * Create SubEntities of Entity and adds it in Collection
          * @param {JSON} dataNode
