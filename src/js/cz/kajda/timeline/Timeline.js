@@ -601,7 +601,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this.focusItem(bandItem.getEntity(), false);
                 this._fireEvent("itemClick", entity);
                 // FIALA Event for answer tracking
-                this._fireEvent("itemLogClick",entity);
+                this._fireEvent("itemLogClick", entity);
             },
 
             /**
@@ -677,7 +677,9 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
             _handleRelationClick : function(e) {
                 var target = $(e.currentTarget),
                     relation = this.getDataSource().getRelations().get(target.data("relation"));
-                this._fireEvent("relationClick", relation)
+                this._fireEvent("relationClick", relation);
+                // FIALA Event for answer tracking
+                this._fireEvent("itemLogClick", relation);
             },
 
         //</editor-fold>

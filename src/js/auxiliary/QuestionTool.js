@@ -122,7 +122,7 @@ var QuestionTool = new Class("QuestionTool", {
         }, 500);
     },
     _changeProgressLabel : function(){
-        $("#questions_done_label").text((this._question_index + 1) + "/" + (this._question_max_index + 1) ) 
+        $("#questions_done_label").text((this._question_index + 1) + "/" + (this._question_max_index + 1) );
     },
     _itemLogClicked : function(e){
         this._jsonResult += JSON.stringify(e);
