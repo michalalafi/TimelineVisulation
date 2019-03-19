@@ -931,22 +931,31 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 if(!(entity instanceof AbstractEntity))
                     entity = this._dataSource.getAllMappedEntities().get(entity);
 
+                //Fiala pokud je to pod-entita nastavime jako puvodni ji a dale pouzijeme tu nad-entitu na focus
+                var sourceEntity = null;
+                if(entity.getParentEntity() !== null){
+                    sourceEntity = entity;
+                    entity = entity.getParentEntity();
+                }  
+
                 if(adjust) this.adjustTo(entity, includingZoom);
                 var bandItem = this._bandGroup.getBandItem(entity.getId());
-                var parentBandItem = bandItem;
-                //Fiala
-                if(entity.getParentEntity() !== null){
-                    parentBandItem = this._bandGroup.getBandItem(entity.getParentEntity().getId());
-                }
+
                 if(bandItem === null) return;
                 
                 this.getBandGroup().getRelationViewer().redraw();
 
-                if(parentBandItem.isFocused()) return;
+                if(bandItem.isFocused()) return;
                 this.blur();
-                parentBandItem.focus();
-                this._focusedItem = parentBandItem;
-                this._fireEvent("itemFocus", bandItem.getEntity());
+                bandItem.focus();
+                this._focusedItem = bandItem;
+                //Pokud to bylo podentita tak vypln informace o ni
+                if(sourceEntity !== null){
+                    this._fireEvent("itemFocus", sourceEntity);
+                }
+                else{
+                    this._fireEvent("itemFocus", bandItem.getEntity());
+                }
                 return true;
             },
         

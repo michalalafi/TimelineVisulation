@@ -137,16 +137,42 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
             // Left position in wrapper
+            var start = entity.getStart();
             var absoluteLeftPos = projection.moment2px(entity.getStart());
+            var itemLeftPos = item.getPosition().left;
             // Left position in bandItem
             var leftPos = absoluteLeftPos - item.getPosition().left;
-
             $(htmlElement).css({
                     "position" : "absolute",
                     "left" : leftPos,
                 });
             // Set leftPositionToParent
             subItem.setLeftPositionToParent(leftPos);    
+        },
+        _correctProtrusionSubItem: function(subItem ,item){
+            var entity = subItem.getEntity(),
+            projection = item.getTimeline().getProjection(),
+            htmlElement = subItem.getHtmlElement();
+            // Left position in wrapper
+            var absoluteLeftPos = projection.moment2px(entity.getStart());
+            // Left position in bandItem
+            var leftPos = absoluteLeftPos - item.getPosition().left; 
+
+            $(htmlElement).css({
+                "position" : "absolute",
+                "left" : leftPos,
+            });
+
+            if(entity.isContinuous()){
+                // Width in bandItem
+                var width = projection.duration2px(entity.getDuration());
+
+                $(htmlElement).css({
+                    "width" : width
+                });
+            }
+            // Set leftPositionToParent
+            subItem.setLeftPositionToParent(leftPos);
         },
         /**
          * @private
@@ -157,11 +183,12 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             var subItems = item.getSubItems();
             for(var i = 0; i < subItems.length; i++)
             {
-                var subItem = subItems[i];
-                if(subItem.getEntity().isContinuous())
-                    this._correctProtrusionSubItemContinuous(subItem, item);
-                else 
-                    this._correctProtrusionSubItemMoment(subItem, item);
+                this._correctProtrusionSubItem(subItems[i], item);
+                // var subItem = subItems[i];
+                // if(subItem.getEntity().isContinuous())
+                //     this._correctProtrusionSubItemContinuous(subItem, item);
+                // else 
+                //     this._correctProtrusionSubItemMoment(subItem, item);
             }
         },
 
