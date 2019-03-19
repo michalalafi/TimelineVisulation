@@ -34,6 +34,7 @@ var Entity = new Class("cz.kajda.data.Entity", {
          this._properties = data.properties ? data.properties : null;
          this._continuous = isset(data.end);
          this._description = data.description;
+		 // FIALA
          this._subEntities = data.subItems ? [] : null;
          this._css = data.css ? data.css : null;
 
@@ -90,6 +91,11 @@ var Entity = new Class("cz.kajda.data.Entity", {
          * css of entity
          */
         _css : null,
+        /**
+         * @author Michal Fiala
+         * parent entity
+         */
+        _parentEntity : null,
     //</editor-fold>  
    
     //<editor-fold defaultstate="collapsed" desc="private methods">
@@ -243,8 +249,15 @@ var Entity = new Class("cz.kajda.data.Entity", {
             if(this._subEntities === null) return false;
             
             return true;
-          }
-   
+        },
+        /**
+        * @author Michal Fiala
+        * @returns {Entity} parent entity
+        */
+        getParentEntity : function(){
+            return this._parentEntity;
+        }
+    
     //</editor-fold>
     
 });

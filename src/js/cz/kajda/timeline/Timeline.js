@@ -929,19 +929,24 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 if(!isset(adjust)) adjust = true;
                 if(!isset(includingZoom)) includingZoom = true;
                 if(!(entity instanceof AbstractEntity))
-                    entity = this._dataSource.getEntities().get(entity);
+                    entity = this._dataSource.getAllMappedEntities().get(entity);
 
                 if(adjust) this.adjustTo(entity, includingZoom);
                 var bandItem = this._bandGroup.getBandItem(entity.getId());
+                var parentBandItem = bandItem;
+                //Fiala
+                if(entity.getParentEntity() !== null){
+                    parentBandItem = this._bandGroup.getBandItem(entity.getParentEntity().getId());
+                }
                 if(bandItem === null) return;
                 
                 this.getBandGroup().getRelationViewer().redraw();
 
-                if(bandItem.isFocused()) return;
+                if(parentBandItem.isFocused()) return;
                 this.blur();
-                bandItem.focus();
-                this._focusedItem = bandItem;
-                this._fireEvent("itemFocus", this._focusedItem.getEntity());
+                parentBandItem.focus();
+                this._focusedItem = parentBandItem;
+                this._fireEvent("itemFocus", bandItem.getEntity());
                 return true;
             },
         
@@ -1036,7 +1041,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
              */
             adjustTo : function(entity, includingZoom /* = true */) {
                 if(!isset(includingZoom)) includingZoom = true;
-                if(!(entity instanceof AbstractEntity)) entity = this._dataSource.getEntities().get(entity);
+                if(!(entity instanceof AbstractEntity)) entity = this._dataSource.getAllMappedEntities().get(entity);
                 
                 var duration, entityCenterMoment, i, bandItem, zl, selectedZl;
 

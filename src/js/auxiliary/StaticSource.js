@@ -94,7 +94,7 @@ var StaticSource = new Class("StaticSource", {
                 for(var i =0; i < dataNode.subItems.length; i++)
                 {
                     // Create SubEntity
-                    var subEntity = new SubEntity(dataNode.subItems[i]);
+                    var subEntity = new SubEntity(dataNode.subItems[i], entity);
                     // Add SubEntity in Entity
                     entity.addSubEntity(subEntity);
                     // Add in all mapped entities
