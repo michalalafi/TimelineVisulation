@@ -25,7 +25,7 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
 
          this._startTime = moment.utc(data.begin);
          this._continuous = isset(data.end);
-         this._endTime = this._guessEndTime(this._startTime, data.end, "day");
+         this._endTime = this._guessEndTime(this._startTime, data.end, this._DEF_PRECISION);
          this._cssClasses = data.css ? data.css : null;
          this._title = data.name;
 
@@ -141,7 +141,7 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
      * @returns {String} start time in the format matching its precision
      */
     getStartFormatted : function() {
-        return this._formatDate(this.getStart(), "Day");
+        return this._formatDate(this.getStart(), this._DEF_PRECISION);
     },
 
     /**
@@ -152,7 +152,7 @@ var SubEntity = new Class("cz.kajda.data.SubEntity", {
      */
     getEndFormatted : function() {
         if(!this._continuous) return null;
-        return this._formatDate(this.getEnd(), "Day");
+        return this._formatDate(this.getEnd(), this._DEF_PRECISION);
     },
 
     /**

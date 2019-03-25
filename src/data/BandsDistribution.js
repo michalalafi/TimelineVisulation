@@ -17,12 +17,12 @@ function(BandItemRenderer, SplitBandItemRenderer, DumbbellItemRenderer){
                itemRenderer: new BandItemRenderer("#7DD968"),
                color: "#f5f5f5"
            },*/
-        //    {
-        //        id: "person",
-        //        label: "Lidé",
-        //        itemRenderer: new BandItemRenderer("#FFB182"),
-        //        color: "#fafafa"
-        //    },
+           {
+               id: "person",
+               label: "Lidé",
+               itemRenderer: new BandItemRenderer("#FFB182"),
+               color: "#fafafa"
+           },
         //    {
         //        id: "event",
         //        label: "Události",
@@ -76,11 +76,6 @@ function(BandItemRenderer, SplitBandItemRenderer, DumbbellItemRenderer){
                id: "Sjednoceny pruh",
                label: "Sjednoceni",
                types: [
-                   {
-                         id: "person",
-                         itemRenderer: new BandItemRenderer("#FFB182"),
-                         color: "#fafafa"
-                   },
                    {
                          id: "event",
                          itemRenderer: new BandItemRenderer("#F2BC53"),

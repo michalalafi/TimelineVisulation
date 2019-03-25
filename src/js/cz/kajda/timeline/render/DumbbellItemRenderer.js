@@ -135,7 +135,8 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
          * @param {SubItem} subItem
          * @param {BandItem} item
          */
-        _correctProtrusionSubItemMoment : function(subItem, item){
+        _correctProtrusionSubItemMoment : function(subItem, item)
+        {
             var entity = subItem.getEntity(),
                 projection = item.getTimeline().getProjection(),
                 htmlElement = subItem.getHtmlElement();
@@ -156,6 +157,37 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             // Set leftPositionToParent
             subItem.setLeftPositionToParent(leftPos);  
         },
+
+        _correctProtrusionSubItem: function(subItem ,item){
+            var entity = subItem.getEntity(),
+                projection = item.getTimeline().getProjection(),
+                htmlElement = subItem.getHtmlElement();
+            // Left position in wrapper
+            var absoluteLeftPos = projection.moment2px(entity.getStart());
+            // Left position in bandItem
+            var leftPos = absoluteLeftPos - item.getPosition().left;
+            // If subEntity is start or end, use time from Entity (BandItem)
+            if(entity.getType() == "start")
+                leftPos = projection.moment2px(item.getEntity().getStart()) - item.getPosition().left;
+            else if(entity.getType() == "end")
+                leftPos = projection.moment2px(item.getEntity().getEnd()) - item.getPosition().left - 15;
+
+            $(htmlElement).css({
+                "position" : "absolute",
+                "left" : leftPos
+            });
+
+            if(entity.isContinuous()){
+                // Width in bandItem
+                var width = projection.duration2px(entity.getDuration());
+
+                $(htmlElement).css({
+                    "width" : width
+                });
+            }
+            // Set leftPositionToParent
+            subItem.setLeftPositionToParent(leftPos); 
+        },
         /**
          * @private
          * Correct protusion of subitems
@@ -165,11 +197,12 @@ var DumbbellItemRenderer = new Class("cz.kajda.timeline.render.DumbbellItemRende
             var subItems = item.getSubItems();
             for(var i = 0; i < subItems.length; i++)
             {
-                var subItem = subItems[i];
-                if(subItem.getEntity().isContinuous())
-                    this._correctProtrusionSubItemContinuous(subItem, item);
-                else 
-                    this._correctProtrusionSubItemMoment(subItem, item);
+                // var subItem = subItems[i];
+                // if(subItem.getEntity().isContinuous())
+                //     this._correctProtrusionSubItemContinuous(subItem, item);
+                // else 
+                //     this._correctProtrusionSubItemMoment(subItem, item);
+                this._correctProtrusionSubItem(subItems[i], item);
             }
         },
         

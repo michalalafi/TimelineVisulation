@@ -142,6 +142,7 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             var itemLeftPos = item.getPosition().left;
             // Left position in bandItem
             var leftPos = absoluteLeftPos - item.getPosition().left;
+
             $(htmlElement).css({
                     "position" : "absolute",
                     "left" : leftPos,
