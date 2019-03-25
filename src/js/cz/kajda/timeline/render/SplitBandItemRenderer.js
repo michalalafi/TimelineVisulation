@@ -75,56 +75,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
 
             return element;    
         },
-
-        /**
-         * Calculates left position and width of Continuous SubItem in BandItem
-         * Set this values to SubItem Html element
-         * Set SubItem leftPositionToParent
-         * @param {SubItem} subItem
-         * @param {BandItem} item
-         */
-        _correctProtrusionSubItemContinuous : function(subItem, item)
-        {
-            var entity = subItem.getEntity(),
-                projection = item.getTimeline().getProjection(),
-                htmlElement = subItem.getHtmlElement();
-            // Left position in wrapper
-            var absoluteLeftPos = projection.moment2px(entity.getStart());
-            // Left position in bandItem
-            var leftPos = absoluteLeftPos - item.getPosition().left; 
-            // Width in bandItem
-            var width = projection.duration2px(entity.getDuration());
-            /*
-                Prvni zpusob vypočet left pozice podle šířky celeho divu
-
-                Vypočteno začatek subEntity -  začátek entity 
-
-                Vypočtení jakou část zabírá od začátku subEntita 
-
-                Left pozice bude násobek koeficientu s aktuální šírkou Entity
-            */
-                    /* Rozdil zacatku cele entity od zacatku subEntity */
-                    /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                    /* Podil subEntity vuci Entite */
-                    /*var diveded = duration._milliseconds / entityDuration._milliseconds;
-                    leftPos = entityWidth * diveded; */
-            /* Druhy zpusob je prevedeni rozdilu zacatku subEntity od zacatku Entity na px */
-                    /* Rozdil zacatku cele entity od zacatku subEntity */
-                    /* var duration = moment.duration(subEntity.getStart().diff(entity.getStart())); */
-                    /*leftPos =  projection.duration2px(duration); */
-            /* Treti zpusob je nalezeni vzdalenosti Entity od zacatku a SubEntity od zacatku a pak odecteni techto vzdalenosti */
-                    /* var entityLeft = projection.moment2px(startTime);
-                    var subEntityLeft = projection.moment2px(startTimeSubEntity);
-                    leftPos = projection.moment2px(startTimeSubEntity) - projection.moment2px(startTime); */
-            /* Ctvrty zpusob left pozice subEntity v celem kontextu - left pozice entity */
-            $(htmlElement).css({
-                "position" : "absolute",
-                "left" : leftPos,
-                "width" : width
-            });
-            // Set leftPositionToParent
-            subItem.setLeftPositionToParent(leftPos);
-        },
         /**
          * Calculates left position of Moment SubItem in BandItem
          * Set this values to SubItem Html element
@@ -132,24 +82,6 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
          * @param {SubItem} subItem
          * @param {BandItem} item
          */
-        _correctProtrusionSubItemMoment : function(subItem, item){
-            var entity = subItem.getEntity(),
-                projection = item.getTimeline().getProjection(),
-                htmlElement = subItem.getHtmlElement();
-            // Left position in wrapper
-            var start = entity.getStart();
-            var absoluteLeftPos = projection.moment2px(entity.getStart());
-            var itemLeftPos = item.getPosition().left;
-            // Left position in bandItem
-            var leftPos = absoluteLeftPos - item.getPosition().left;
-
-            $(htmlElement).css({
-                    "position" : "absolute",
-                    "left" : leftPos,
-                });
-            // Set leftPositionToParent
-            subItem.setLeftPositionToParent(leftPos);    
-        },
         _correctProtrusionSubItem: function(subItem ,item){
             var entity = subItem.getEntity(),
             projection = item.getTimeline().getProjection(),
