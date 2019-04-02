@@ -58,28 +58,28 @@ return{
 				{"id":53}
 			]
 		},*/
-		{"id":52,"stereotype":"split-event","name":"Test2","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
+		{"id":52,"stereotype":"split-event","name":"TestSplit","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
 			[
-				{"id":53,"name": "Commit","begin":"2010-09-27T00:00:00","end":"2111-01-21T23:59:59"},
-				// {"id":54,"name": "Ticket","begin":"2080-05-27T00:00:00","end":"2100-06-21T23:59:59","css":"person"},
+				// {"id":53,"name": "Commit","begin":"2010-09-27T00:00:00","end":"2111-01-21T23:59:59"},
+				{"id":54,"name": "Ticket","begin":"2100-05-27T00:00:00","end":"2130-06-21T23:59:59","css":"person"},
 				// {"id":55,"name": "Comment","begin":"2120-01-01T00:00:00","end":"2150-06-21T23:59:59","css":"queen fancy"},
-				// {"id":56,"name": "Work","begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"},
-				{"id":61,"name": "Commit","begin":"2020-01-01T00:00:00","css":"king"},
+				{"id":56,"name": "Work","begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"},
+				{"id":61,"name": "Commit","begin":"2015-01-01T00:00:00","css":"king"},
 				// {"id":64,"name": "CommitTestChyby","begin":"2040-09-27T00:00:00","css":"king"},
 			]
 		},
-		{"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
-		[
-			{"id":58,"name": "King","type": "start","css":"dumbbell-king"},
-			{"id":59,"name": "Dumbell","type": "end"/*,"css":"dumbbell-person"*/},
-			{"id":60,"name": "Money","begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
-			{"id":62,"name": "Commit","begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
-			{"id":64,"name": "CommitTestChyby","begin":"2040-09-27T00:00:00","css":"king"},
-		]
-		},
-		{"id":63,"stereotype":"person","name":"Václav 5","description":"Zkouska ","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"}},
+		// {"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
+		// [
+		// 	{"id":58,"name": "King","type": "start","css":"dumbbell-king"},
+		// 	{"id":59,"name": "Dumbell","type": "end"/*,"css":"dumbbell-person"*/},
+		// 	{"id":60,"name": "Money","begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
+		// 	{"id":62,"name": "Commit","begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
+		// 	{"id":64,"name": "CommitTestChyby","begin":"2040-09-27T00:00:00","css":"king"},
+		// ]
+		// },
+		// {"id":63,"stereotype":"person","name":"Václav 5","description":"Zkouska ","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"}},
 
-		],
+		 ],
 	"edges":
 		[{"id":1,"stereotype":"relationship","from":3,"to":2,"name":"synovec"},
 		{"id":2,"stereotype":"relationship","from":4,"to":3,"name":"synovec"},
@@ -167,10 +167,11 @@ return{
 		{"id":84,"stereotype":"relationship","from":45,"to":50,"name":"potomek"},
 		{"id":85,"stereotype":"relationship","from":29,"to":28,"name":"potomek"},
 		/**FIALA */
-		{"id":86,"stereotype":"relationship","from":50,"to":53,"name":"zkouska"},
-		{"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"},
-		{"id":88,"stereotype":"relationship","from":50,"to":63,"name":"zkouska"},
-		{"id":89,"stereotype":"relationship","from":50,"to":59,"name":"zkouska"},
-		{"id":90,"stereotype":"relationship","from":50,"to":58,"name":"zkouska"},
-		{"id":91,"stereotype":"relationship","from":50,"to":64,"name":"commitTEst"},]};
+		// {"id":86,"stereotype":"relationship","from":50,"to":53,"name":"zkouska"},
+		// {"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"},
+		// {"id":88,"stereotype":"relationship","from":50,"to":63,"name":"zkouska"},
+		// {"id":89,"stereotype":"relationship","from":50,"to":59,"name":"zkouska"},
+		// {"id":90,"stereotype":"relationship","from":50,"to":58,"name":"zkouska"},
+		// {"id":91,"stereotype":"relationship","from":50,"to":64,"name":"commitTEst"},
+	]};
 	});

@@ -4,7 +4,7 @@
 }
 .person{
     /*background-color: blue; */
-    background:rgba(39, 2, 253, 0.5);
+    background:rgba(39, 2, 253, 0.7);
 }
 .queen{
     /*background-color: pink; */
@@ -14,7 +14,7 @@
     border-radius: 5px;
 }
 .commit{
-    background:rgba(4, 255, 59, 0.5);
+    background:rgba(4, 84, 255, 0.5);
 }
 
 .dumbbell-king{
