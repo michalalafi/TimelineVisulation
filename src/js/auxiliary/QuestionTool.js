@@ -7,126 +7,281 @@ define([
     'cz/kajda/common/Observable',
     '../../data/questions',
 ],
-function(Observable, __questions_data) {
+function(Observable, __questionsData) {
     
 
 var QuestionTool = new Class("QuestionTool", {
     
     _extends : Observable,
 
+    
     _constructor : function() {
         this._setup();
         Observable.call(this);
     },
-    /** */
+    _test : null,
+    /** Result of user activities */
     _jsonResult : "",
-    /** */
+    /** Actuall question */
     _question_index : 0,
-    /** */
+    /** Max questions */
     _question_max_index : 0,
-    /** */
+    /** Questions */
     _questions : {},
-    /** */
+
+    _actualQuestion : null,
+
+    _WRONG_ANSWER_TIMEOUT : 1000,
+
+    _answerElement : null,
+
+    _testContentElement : null,
+
+    _startTestElement : null,
+
+    _endTestElement : null,
+
+    _questionLabelElement : null,
+
+    _wrongAnswerElement : null,
+
+    _progressLabelElement : null,
+
+    _startOfTestTime: null,
+
+    _endOfTestTime: null,
+
+    /**
+     * Setup question tool
+     */
     _setup : function(){
         this.__groupDebug("Questions setup info");
 
+        this._setupTestObject();
         // Prepare questions
-        this._setQuestions();
+        this._setupQuestions();
         // Set events
         this._setupEvents();
-        // Set first question
-        this._changeQuestion(this._questions[this._question_index]);
-        // Visible content
-        this._showContent();
-        // Change progress
-        this._changeProgressLabel();
+        //Start test
+        this._startTest();
 
         this.__closeGroupDebug();
     },
     /**
-     * 
+     * Prepare question from array
      */
-    _setQuestions : function(){
+    _setupQuestions : function(){
         this.__groupDebug("Questions ready");
-
-        this._questions = __questions_data.questions;
-        console.log(this._questions);
+        //Set questions
+        this._questions = __questionsData.questions;
+        //Set max questions index
         this._question_max_index = this._questions.length - 1;
+        
+        console.log(this._questions);
 
         this.__closeGroupDebug();
     },
     /**
-     * 
+     * Prepare events to be logged
      */
     _setupEvents : function(){
         this.__groupDebug("Events setup");
 
-            this.addListener("itemLogClick", new Closure(this, this._itemLogClicked));
-            $("#confirm_btn").on("click", new Closure(this, this._confirmAnswer));
+        //Item click
+        this.addListener("itemLogClick", new Closure(this, this._itemLogClicked));
+
+        //Timeline zoom
+        this.addListener("timelineLogZoom", new Closure(this, this._timelineLogZoomed));
+
+        //Confirm button click
+        $("#confirm_btn").on("click", new Closure(this, this._confirmAnswer));
+
+        //Setup elements
+        this._startTestElement = $("#start_test_content");
+        this._endTestElement = $("#end_test_content");
+        this._testContentElement = $("#test_content");
+        this._answerElement = $("#answer_text");
+        this._questionLabelElement = $("#question_label");
+        this._wrongAnswerElement = $("#wrong_anser_content");
+        this._progressLabelElement = $("#questions_progress_label");
 
         this.__closeGroupDebug();
+    },
+
+    _setupTestObject(){
+        this._test = new Object();
+        this._test.eventsCount = 0;
+        this._test.questions = [];
+    },
+    _setupQuestionObjectByActualIndex(){
+        //Creating question object 
+        var questionIndex = this._question_index;
+        var questionText = this._questions[this._question_index].text;
+
+        var question = new Object();
+
+        question.events = [];
+        question.index = questionIndex;
+        question.text = questionText;
+
+        return question;
+    },
+    /**
+     * Starts test
+     */
+    _startTest(){
+        // Visible content
+        this._toggleVisibilityOfElement(this._testContentElement, true);
+        // Not visible start button
+        this._toggleVisibilityOfElement(this._startTestElement, false);
+        // Set first question
+        this._changeQuestion(this._questions[this._question_index]);
+        // Change progress
+        this._changeProgressLabel();
+        // Set start time
+        this._test.startTime = new Date();
+    },
+    _endTest(){
+        // Hide content
+        this._toggleVisibilityOfElement(this._testContentElement, false);
+        // Hide content
+        this._toggleVisibilityOfElement(this._endTestElement, true);
+
+        // Set start time
+        this._test.endTime = new Date();
+        this._test.duration = Math.round((this._test.endTime.getTime() - this._test.startTime.getTime())/1000);
+
+        console.log(this._test);
     },
     /**
      * 
      */
-    _showContent : function(){
-        this.__groupDebug("Content visible");
-
-        $("#testing_content").children().each(function(){
-            if($(this).is(":visible"))
-                $(this).hide();
-            else
-                $(this).show();    
-        });
-
-        this.__closeGroupDebug();
+    _isEndOfTest(){
+        if(this._question_index >= this._question_max_index){
+            return true;
+        }
+        return false;
     },
     /**
      * 
+     */
+    _toggleVisibilityOfElement : function(element ,visibility){
+        if(visibility)
+            element.show();
+        else
+            element.hide(); 
+    },
+    /**
+     * Increment index
      */
     _incrementQuestionsIndex : function(){
-        if(this._question_index == this._question_max_index)
-        {
-            alert("Konec hry");
-        }
-        else
-        {
-            this._question_index++;
-        }
+        this._question_index++;
     },
-    _changeQuestion : function(question){
+    /**
+     * 
+     */
+    _changeQuestion : function(){
         this.__groupDebug("Question changed");
+        this._actualQuestion = this._setupQuestionObjectByActualIndex();
+        this._test.questions.push(this._actualQuestion);
 
-        $("#question_label").text(question.text);
+        //Change label
+        this._questionLabelElement.text(this._actualQuestion.text);
 
         this.__closeGroupDebug();
     },
+    /**
+     * 
+     * @param {*} e 
+     */
     _confirmAnswer : function(e){
-        var answer = $("#answer_text").val();
+        console.log(this._test);
+        var answer = this._answerElement.val();
         if(answer === this._questions[this._question_index].answer){
             this._rightAnswer();
         }
         else{
-            this._wrongAnwer();
+            this._wrongAnswer();
+        }
+
+        this._answerElement.val("");
+    },
+    /**
+     * 
+     */
+    _rightAnswer : function() {
+        if(this._isEndOfTest()){
+            this._endTest();
+        }
+        else{
+            this._incrementQuestionsIndex();
+            this._changeProgressLabel();
+            this._changeQuestion();
         }
     },
-    _rightAnswer : function() {
-        this._incrementQuestionsIndex();
-        this._changeProgressLabel();
-        this._changeQuestion(this._questions[this._question_index]);
-    },
-    _wrongAnwer : function() {
-        $("#wrong_anser_content").show();
+    /**
+     * 
+     */
+    _wrongAnswer : function() {
+        var el = this._wrongAnswerElement;
+        this._toggleVisibilityOfElement(el, true);
         setTimeout(function(){
-            $("#wrong_anser_content").hide();
-        }, 500);
+            el.hide();
+        }, this._WRONG_ANSWER_TIMEOUT);
     },
+    /**
+     * 
+     */
     _changeProgressLabel : function(){
-        $("#questions_done_label").text((this._question_index + 1) + "/" + (this._question_max_index + 1) );
+        // this._progressLabelElement.text((this._question_index + 1) + "/" + (this._question_max_index + 1) );
+        var actual = (this._question_index + 1);
+        var to = (this._question_max_index + 1);
+        this._progressLabelElement.text(`${actual}/${to}`);
     },
+    /**
+     * 
+     */
     _itemLogClicked : function(e){
-        this._jsonResult += JSON.stringify(e);
-        console.log(this._jsonResult);
+        this._actualQuestion.events.push(e);
+    },
+    /**
+     * 
+     * @param {*} e 
+     */
+    _timelineLogZoomed : function(e){
+        this._actualQuestion.events.push(e);
+    },
+    _copyPasteTest(){
+        var copied = false;
+  
+        // Create textarea element
+        const textarea = document.createElement('textarea');
+        
+        // Set the value of the text
+        textarea.value = "Ahoj kluku";
+        
+        // Make sure we cant change the text of the textarea
+        textarea.setAttribute('readonly', '');
+        
+        // Hide the textarea off the screnn
+        textarea.style.position = 'absolute';
+        textarea.style.left = '-9999px';
+        
+        // Add the textarea to the page
+        document.body.appendChild(textarea);
+
+        // Copy the textarea
+        textarea.select()
+
+        try {
+            var successful = document.execCommand('copy');
+            copied = true;
+        } catch(err) {
+            copied = false;
+        }
+
+        textarea.remove();
+        console.log(copied);
     }
     
 });

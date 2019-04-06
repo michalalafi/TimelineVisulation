@@ -138,24 +138,28 @@
                         </div>
                         <div role="tabpanel" class="tab-pane" id="testing">
                             <!-- FIALA Test tool  -->
-                            <div class="padded" id="testing_content">
-                                <div style="display: none;"> 
+                            <div class="padded" id="test_content" style="display: none;">
+                                <div> 
                                     <h2 id="question_label">Otázka</h2>
-                                    <h4 id="questions_done_label"> 1/10</h4>
+                                    <h4 id="questions_progress_label"> 1/10</h4>
                                     <div id="answer_fgroup_label" class="form-group">
                                         <label for="answer">Odpověď</label>
                                         <input type="text" class="form-control" id="answer_text">
                                     </div>
                                 </div>
-                                <div style="display: none;" class="btn-group btn-group-justified">
+                                <div class="btn-group btn-group-justified">
                                     <a class="btn btn-default" id="confirm_btn">Potvrdit</a>
                                 </div>
-                                <div class="btn-group btn-group-justified">
-                                    <a class="btn btn-default" id="start_test_btn">Začít test</a>
-                                </div>
+                            </div>
+
+                            <div class="padded btn-group btn-group-justified" style="margin-top:10px;" id="start_test_content">
+                                <a class="btn btn-default" id="start_test_btn">Začít test</a>
                             </div>
                             <div class="padded" style="display: none; color: red;" id="wrong_anser_content">
                                 <h2>Špatná odpověď</h2>
+                            </div>
+                            <div class="padded" style="display: none;" id="end_test_content">
+                                <h2>Konec testu</h2>
                             </div>
                             
                         </div>

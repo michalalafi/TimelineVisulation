@@ -564,6 +564,9 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 if("wheelDelta" in e.originalEvent) delta = e.originalEvent.wheelDelta;
                 var direction = delta < 0 ? -1 : 1;
                 this.zoom(direction, timelineEventX);
+
+                // FIALA Event for timeline zoom log
+                this._fireEvent("timelineLogZoom", e);
             },
 
             /**
