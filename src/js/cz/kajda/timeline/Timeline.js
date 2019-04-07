@@ -566,7 +566,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this.zoom(direction, timelineEventX);
 
                 // FIALA Event for timeline zoom log
-                this._fireEvent("timelineLogZoom", e);
+                this._fireEvent("timelineLogZoom", this);
             },
 
             /**
@@ -603,7 +603,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 
                 this.focusItem(bandItem.getEntity(), false);
                 this._fireEvent("itemClick", entity);
-                // FIALA Event for answer tracking
+                // FIALA Event for item click
                 this._fireEvent("itemLogClick", entity);
             },
 
@@ -619,6 +619,9 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this._popoverItemTimer = setTimeout(new Closure(this, this._renderPopover, [bandItem, e]), this.option("popoverDelay"));
                 this._renderGuidelines(bandItem, true);
                 this._fireEvent("itemEnter", entity);
+
+                // FIALA Event item enter
+                this._fireEvent("itemLogEnter", entity);
             },
 
             /**
@@ -643,6 +646,9 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 e.stopPropagation();
                 var entity = this.getEntities().get($(e.currentTarget).data("entity"));
                 this._fireEvent("itemRightClick", entity);
+
+                // FIALA Event item righ click
+                this._fireEvent("itemLogRightClick", entity);
             },
             
             /**
@@ -656,6 +662,9 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 clearTimeout(this._popoverRelationTimer);
                 this._popoverRelationTimer = setTimeout(new Closure(this, this._renderRelationPopover, [relation, e]), this.option("popoverDelay"));
                 this._fireEvent("relationEnter", relation);
+
+                // FIALA Event relation enter
+                this._fireEvent("relationLogEnter", relation);
             },
             
             /**
@@ -681,8 +690,8 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 var target = $(e.currentTarget),
                     relation = this.getDataSource().getRelations().get(target.data("relation"));
                 this._fireEvent("relationClick", relation);
-                // FIALA Event for answer tracking
-                this._fireEvent("itemLogClick", relation);
+                // FIALA Event relation click
+                this._fireEvent("relationLogClick", relation);
             },
 
         //</editor-fold>

@@ -86,16 +86,7 @@ var QuestionTool = new Class("QuestionTool", {
      */
     _setupEvents : function(){
         this.__groupDebug("Events setup");
-
-        //Item click
-        this.addListener("itemLogClick", new Closure(this, this._itemLogClicked));
-
-        //Timeline zoom
-        this.addListener("timelineLogZoom", new Closure(this, this._timelineLogZoomed));
-
-        //Confirm button click
-        $("#confirm_btn").on("click", new Closure(this, this._confirmAnswer));
-
+        
         //Setup elements
         this._startTestElement = $("#start_test_content");
         this._endTestElement = $("#end_test_content");
@@ -105,31 +96,40 @@ var QuestionTool = new Class("QuestionTool", {
         this._wrongAnswerElement = $("#wrong_anser_content");
         this._progressLabelElement = $("#questions_progress_label");
 
+        //Item click
+        this.addListener("itemLogClick", new Closure(this, this._itemLogClicked));
+        //Timeline zoom
+        this.addListener("timelineLogZoom", new Closure(this, this._timelineLogZoomed));
+        //Relation click
+        this.addListener("relationLogClick", new Closure(this, this._relationLogClicked));
+        //Item enter
+        this.addListener("itemLogEnter", new Closure(this, this._itemLogEnter));
+        //Relation enter
+        this.addListener("relationLogEnter", new Closure(this, this._relationLogEnter));
+        //Relation enter
+        this.addListener("itemLogRightClick", new Closure(this, this._itemLogRightClicked));
+
+
+        //Confirm button click
+        $("#confirm_btn").on("click", new Closure(this, this._confirmAnswer));
+
+        this._answerElement.on("keyup", new Closure(this, this._keyUpEvent));
+
+        document.body.addEventListener("click",new Closure(this, this._mouseClickEvent), true);
+
         this.__closeGroupDebug();
     },
 
-    _setupTestObject(){
+    _setupTestObject: function(){
         this._test = new Object();
         this._test.eventsCount = 0;
+        this._test.mouseClickedCount = 0;
         this._test.questions = [];
-    },
-    _setupQuestionObjectByActualIndex(){
-        //Creating question object 
-        var questionIndex = this._question_index;
-        var questionText = this._questions[this._question_index].text;
-
-        var question = new Object();
-
-        question.events = [];
-        question.index = questionIndex;
-        question.text = questionText;
-
-        return question;
     },
     /**
      * Starts test
      */
-    _startTest(){
+    _startTest : function(){
         // Visible content
         this._toggleVisibilityOfElement(this._testContentElement, true);
         // Not visible start button
@@ -141,7 +141,7 @@ var QuestionTool = new Class("QuestionTool", {
         // Set start time
         this._test.startTime = new Date();
     },
-    _endTest(){
+    _endTest : function(){
         // Hide content
         this._toggleVisibilityOfElement(this._testContentElement, false);
         // Hide content
@@ -153,10 +153,28 @@ var QuestionTool = new Class("QuestionTool", {
 
         console.log(this._test);
     },
+
+    _setupQuestionObjectByActualIndex : function(){
+        //Creating question object 
+        var questionIndex = this._question_index;
+        var questionText = this._questions[this._question_index].text;
+
+        var question = new Object();
+
+        question.events = [];
+        question.index = questionIndex;
+        question.text = questionText;
+        question.startTime = new Date();
+
+        return question;
+    },
+    _endQuestion : function(question){
+
+    },
     /**
      * 
      */
-    _isEndOfTest(){
+    _isEndOfTest : function(){
         if(this._question_index >= this._question_max_index){
             return true;
         }
@@ -182,6 +200,11 @@ var QuestionTool = new Class("QuestionTool", {
      */
     _changeQuestion : function(){
         this.__groupDebug("Question changed");
+        if(this._actualQuestion !== null){
+            this._actualQuestion.endTime = new Date();
+            this._actualQuestion.duration = Math.round((this._actualQuestion.endTime.getTime() - this._actualQuestion.startTime.getTime())/1000);
+        }
+
         this._actualQuestion = this._setupQuestionObjectByActualIndex();
         this._test.questions.push(this._actualQuestion);
 
@@ -238,20 +261,42 @@ var QuestionTool = new Class("QuestionTool", {
         var to = (this._question_max_index + 1);
         this._progressLabelElement.text(`${actual}/${to}`);
     },
-    /**
-     * 
-     */
+
+
     _itemLogClicked : function(e){
+        this._setTypeAndTimeToEvent(e, "Item click");
         this._actualQuestion.events.push(e);
     },
-    /**
-     * 
-     * @param {*} e 
-     */
     _timelineLogZoomed : function(e){
+        this._setTypeAndTimeToEvent(e, "Timeline zoom");
         this._actualQuestion.events.push(e);
     },
-    _copyPasteTest(){
+    _relationLogClicked : function(e){
+        this._setTypeAndTimeToEvent(e, "Relation click");
+        this._actualQuestion.events.push(e);
+    },
+    _itemLogEnter : function(e){
+        this._setTypeAndTimeToEvent(e, "Item enter");
+        this._actualQuestion.events.push(e);
+    },
+    _relationLogEnter : function(e){
+        this._setTypeAndTimeToEvent(e, "Relation enter");
+        this._actualQuestion.events.push(e);
+    },
+    _itemLogRightClicked : function(e){
+        this._setTypeAndTimeToEvent(e, "Item right clicked");
+        this._actualQuestion.events.push(e);
+    },
+
+
+
+    _setTypeAndTimeToEvent : function(e, eventType){
+        e.eventType = eventType;
+        e.eventTime = new Date();
+
+        return e;
+    },
+    _copyPaste : function(){
         var copied = false;
   
         // Create textarea element
@@ -282,6 +327,14 @@ var QuestionTool = new Class("QuestionTool", {
 
         textarea.remove();
         console.log(copied);
+    },
+    _keyUpEvent : function(e){
+        if(e.keyCode === 13){
+            this._confirmAnswer();
+        }
+    },
+    _mouseClickEvent : function(e){
+        this._test.mouseClickedCount++;
     }
     
 });
