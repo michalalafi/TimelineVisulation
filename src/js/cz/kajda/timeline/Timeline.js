@@ -566,7 +566,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this.zoom(direction, timelineEventX);
 
                 // FIALA Event for timeline zoom log
-                this._fireEvent("timelineLogZoom", this);
+                this._fireEvent("timelineLogZoom", {direction : direction, timelineEventX : timelineEventX});
             },
 
             /**
