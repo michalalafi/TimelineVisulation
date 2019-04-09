@@ -1,5 +1,6 @@
 /**
  * @author Michal Fiala
+ * Tool for track user activities while searching for answer
  * @version 1.0
  */
 
@@ -19,51 +20,39 @@ var QuestionTool = new Class("QuestionTool", {
         this._setup();
         Observable.call(this);
     },
+    /** Object to store test result */
     _test : null,
-    /** Result of user activities */
-    _jsonResult : "",
-    /** Actuall question */
+    /** Actuall question index */
     _question_index : 0,
     /** Max questions */
     _question_max_index : 0,
     /** Questions */
     _questions : {},
-
+    /** Actual question object */
     _actualQuestion : null,
-
-    _WRONG_ANSWER_TIMEOUT : 1000,
-
+    /** Element of answer */
     _answerElement : null,
-
+    /** Element of test content */
     _testContentElement : null,
-
+    /** Element of start test */
     _startTestElement : null,
-
+    /** Element of end test */
     _endTestElement : null,
-
+    /** Element of question label */
     _questionLabelElement : null,
-
+    /** Element of wrong answer */
     _wrongAnswerElement : null,
-
+    /** Element of progress label */
     _progressLabelElement : null,
-
-    _startOfTestTime: null,
-
-    _endOfTestTime: null,
-
-    _logListeners : [
-        {
-            listener : "itemLogClick",
-            handlerer : new Closure(this, this._itemLogClicked)
-        }
-    ],
+    /** Timeout to hide label */
+    _WRONG_ANSWER_TIMEOUT : 1000,
 
     /**
      * Setup question tool
      */
     _setup : function(){
-        this.__groupDebug("Questions setup info");
-
+        this.__groupDebug("Question tool setup");
+        // Prepare test object
         this._setupTestObject();
         // Prepare questions
         this._setupQuestions();
@@ -75,16 +64,14 @@ var QuestionTool = new Class("QuestionTool", {
         this.__closeGroupDebug();
     },
     /**
-     * Prepare question from array
+     * Prepare question from data file
      */
     _setupQuestions : function(){
-        this.__groupDebug("Questions ready");
+        this.__groupDebug("Questions setup");
         //Set questions
         this._questions = __questionsData.questions;
         //Set max questions index
         this._question_max_index = this._questions.length - 1;
-        
-        console.log(this._questions);
 
         this.__closeGroupDebug();
     },
@@ -113,19 +100,21 @@ var QuestionTool = new Class("QuestionTool", {
         this.addListener("itemLogEnter", new Closure(this, this._itemLogEnter));
         //Relation enter
         this.addListener("relationLogEnter", new Closure(this, this._relationLogEnter));
-        //Relation enter
+        //Item right click
         this.addListener("itemLogRightClick", new Closure(this, this._itemLogRightClicked));
 
         //Confirm button click
         $("#confirm_btn").on("click", new Closure(this, this._confirmAnswer));
-
+        //Key pressed
         this._answerElement.on("keyup", new Closure(this, this._keyUpEvent));
-
+        //Mouse clicked
         document.body.addEventListener("click",new Closure(this, this._mouseClickEvent), true);
 
         this.__closeGroupDebug();
     },
-
+    /**
+     * Setup test object - test result
+     */
     _setupTestObject: function(){
         this._test = new Object();
         this._test.mouseClickedCount = 0;
@@ -140,31 +129,46 @@ var QuestionTool = new Class("QuestionTool", {
         // Not visible start button
         this._toggleVisibilityOfElement(this._startTestElement, false);
         // Set first question
-        this._changeQuestion(this._questions[this._question_index]);
+        this._changeQuestion();
         // Change progress
         this._changeProgressLabel();
         // Set start time
         this._test.startTime = new Date();
     },
+    /**
+     * Ends test
+     */
     _endTest : function(){
         // Hide content
         this._toggleVisibilityOfElement(this._testContentElement, false);
         // Hide content
         this._toggleVisibilityOfElement(this._endTestElement, true);
 
-        // Set end time
+        // Set test end time
         this._test.endTime = new Date();
-        // Set duration
+        // Set test duration
         this._test.duration = Math.round((this._test.endTime.getTime() - this._test.startTime.getTime())/1000);
-        // Set events count
+        // Set test events count
         this._test.eventsCount = this._countEventsInTest(this._test);
 
-        console.log(this._test);
-     
         this._copyPaste();
+        this._download(this._getDateToString(this._test.startTime) + ".js","return" + JSON.stringify(this._test));
     },
+    /**
+     * Returns formated date to string
+     * @param {Date} date 
+     */
+    _getDateToString : function(date){
+        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    },
+    /**
+     * Counts events in whole test
+     * @param {test object} test
+     * @returns {int} count
+     */
     _countEventsInTest : function(test){
         var result = 0;
+        // For each question in test get events length
         for(var i = 0; i < test.questions.length; i++){
             var question = test.questions[i];
             if(question.events !== null){
@@ -173,13 +177,17 @@ var QuestionTool = new Class("QuestionTool", {
         }
         return result;
     },
+    /**
+     * Setup question object
+     * @returns {question object} question
+     */
     _setupQuestionObjectByActualIndex : function(){
         //Creating question object 
+        var question = new Object();
+        //Get index and text of question
         var questionIndex = this._question_index;
         var questionText = this._questions[this._question_index].text;
-
-        var question = new Object();
-
+        //Set atributes of question
         question.events = [];
         question.index = questionIndex;
         question.questionText = questionText;
@@ -187,12 +195,16 @@ var QuestionTool = new Class("QuestionTool", {
 
         return question;
     },
+    /**
+     * Ends question
+     */
     _endQuestion : function(){
         this._actualQuestion.questionEndTime = new Date();
         this._actualQuestion.questionDuration = Math.round((this._actualQuestion.questionEndTime.getTime() - this._actualQuestion.questionStartTime.getTime())/1000);
     },
     /**
-     * 
+     * Returns if is no more questions
+     * @returns {bool}
      */
     _isEndOfTest : function(){
         if(this._question_index >= this._question_max_index){
@@ -201,7 +213,9 @@ var QuestionTool = new Class("QuestionTool", {
         return false;
     },
     /**
-     * 
+     * Set visibility of element
+     * @param {element} elementToWork 
+     * @param {visibility} visibility 
      */
     _toggleVisibilityOfElement : function(element ,visibility){
         if(visibility)
@@ -210,28 +224,85 @@ var QuestionTool = new Class("QuestionTool", {
             element.hide(); 
     },
     /**
-     * Increment index
-     */
-    _incrementQuestionsIndex : function(){
-        this._question_index++;
-    },
-    /**
-     * 
+     * Changes question by actual index
      */
     _changeQuestion : function(){
-        if(this._actualQuestion !== null){
-           this._endQuestion();
-        }
-
+        // Set new question by index
         this._actualQuestion = this._setupQuestionObjectByActualIndex();
+        // Push into test object
         this._test.questions.push(this._actualQuestion);
 
         //Change label
-        this._questionLabelElement.text(this._actualQuestion.text);
+        this._questionLabelElement.text(this._actualQuestion.questionText);
     },
     /**
-     * 
-     * @param {*} e 
+     * End test if isEndOfTEst
+     * Else change question
+     */
+    _rightAnswer : function() {
+        // If actual is set, end this question
+        if(this._actualQuestion !== null){
+            this._endQuestion();
+        }
+        //End test
+        if(this._isEndOfTest()){
+            this._endTest();
+        }
+        //Change question
+        else{
+            this._question_index++;
+            this._changeProgressLabel();
+            this._changeQuestion();
+        }
+    },
+    /**
+     * Show and hide wrong aswer label
+     */
+    _wrongAnswer : function() {
+        var el = this._wrongAnswerElement;
+        this._toggleVisibilityOfElement(el, true);
+        setTimeout(function(){
+            el.hide();
+        }, this._WRONG_ANSWER_TIMEOUT);
+    },
+    /**
+     * Changes progress label by actual index
+     */
+    _changeProgressLabel : function(){
+        var actual = (this._question_index + 1);
+        var to = (this._question_max_index + 1);
+        this._progressLabelElement.text(`${actual}/${to}`);
+    },
+    /**
+     * Creates event object and store info and date in it
+     * @param {object} info 
+     * @param {string} eventType 
+     * @returns {object} event
+     */
+    _createEvent : function(info, eventType){
+        var event = new Object();
+        event.info = info;
+        event.eventType = eventType;
+        event.eventTime = new Date();
+        return event;
+    },
+    _download: function(filename, text) {
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('download', filename);
+    
+        element.style.display = 'none';
+        document.body.appendChild(element);
+    
+        element.click();
+    
+        document.body.removeChild(element);
+    },
+    /** ############################# Section - event handlerer  ############################# */
+    /**
+     * Event after confirm button clicked
+     * Check if answer is right
+     * @param {event} e 
      */
     _confirmAnswer : function(e){
         var answer = this._answerElement.val();
@@ -244,47 +315,6 @@ var QuestionTool = new Class("QuestionTool", {
 
         this._answerElement.val("");
     },
-    /**
-     * 
-     */
-    _rightAnswer : function() {
-        if(this._isEndOfTest()){
-            this._endTest();
-        }
-        else{
-            this._incrementQuestionsIndex();
-            this._changeProgressLabel();
-            this._changeQuestion();
-        }
-    },
-    /**
-     * 
-     */
-    _wrongAnswer : function() {
-        var el = this._wrongAnswerElement;
-        this._toggleVisibilityOfElement(el, true);
-        setTimeout(function(){
-            el.hide();
-        }, this._WRONG_ANSWER_TIMEOUT);
-    },
-    /**
-     * 
-     */
-    _changeProgressLabel : function(){
-        // this._progressLabelElement.text((this._question_index + 1) + "/" + (this._question_max_index + 1) );
-        var actual = (this._question_index + 1);
-        var to = (this._question_max_index + 1);
-        this._progressLabelElement.text(`${actual}/${to}`);
-    },
-
-    _createEvent : function(info, eventType){
-        var event = new Object();
-        event.info = info;
-        event.eventType = eventType;
-        event.eventTime = new Date();
-        return event;
-    },
-    /** ############################# Section - event handlerer  ############################# */
     _itemLogClicked : function(e){
         this._actualQuestion.events.push(this._createEvent(e, "Item click"));
     },
@@ -312,28 +342,7 @@ var QuestionTool = new Class("QuestionTool", {
         // Create textarea element
         const textarea = document.createElement('textarea');
 
-        // // Note: cache should not be re-used by repeated calls to JSON.stringify.
-        // var cache = [];
-        // textarea.value = JSON.stringify(this._test, function(key, value) {
-        //     if (typeof value === 'object' && value !== null) {
-        //         if (cache.indexOf(value) !== -1) {
-        //             // Duplicate reference found
-        //             try {
-        //                 // If this value does not reference a parent it can be deduped
-        //                 return JSON.parse(JSON.stringify(value));
-        //             } catch (error) {
-        //                 // discard key if value cannot be deduped
-        //                 return;
-        //             }
-        //         }
-        //         // Store value in our collection
-        //         cache.push(value);
-        //     }
-        //     return value;
-        // });
-        // cache = null;
-
-        // // Set the value of the text
+        // Set the value of the text
         textarea.value = JSON.stringify(this._test);
         
         // Make sure we cant change the text of the textarea
@@ -355,9 +364,11 @@ var QuestionTool = new Class("QuestionTool", {
         } catch(err) {
             copied = false;
         }
+        if(copied){
+            console.log(textarea.value);
+        }
 
         textarea.remove();
-        console.log(copied);
     },
     /**
      * If enter was pressed, call confirm Answer
