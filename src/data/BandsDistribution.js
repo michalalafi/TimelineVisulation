@@ -23,18 +23,18 @@ function(BandItemRenderer, SplitBandItemRenderer, DumbbellItemRenderer){
                itemRenderer: new BandItemRenderer("#FFB182"),
                color: "#fafafa"
            },
-           {
-               id: "event",
-               label: "Události",
-               itemRenderer: new BandItemRenderer("#F2BC53"),
-               color: "#f5f5f5"
-           },
-           {
-               id: "item",
-               label: "Objekty",
-               itemRenderer: new BandItemRenderer("#78B4FF"),
-               color: "#fafafa"
-           },
+        //    {
+        //        id: "event",
+        //        label: "Události",
+        //        itemRenderer: new BandItemRenderer("#F2BC53"),
+        //        color: "#f5f5f5"
+        //    },
+        //    {
+        //        id: "item",
+        //        label: "Objekty",
+        //        itemRenderer: new BandItemRenderer("#78B4FF"),
+        //        color: "#fafafa"
+        //    },
            /* FIALA */
 
            /* Funcki verze */
@@ -72,30 +72,30 @@ function(BandItemRenderer, SplitBandItemRenderer, DumbbellItemRenderer){
         //        // color: "#fafafa"
         //    },
         /** SJEDNOCENI VSECH */
-        //    {
-        //        id: "Sjednoceny pruh",
-        //        label: "Sjednoceni",
-        //        types: [
-        //            {
-        //                  id: "event",
-        //                  itemRenderer: new BandItemRenderer("#F2BC53"),
-        //                  color: "#f5f5f5"
-        //             },
-        //             {
-        //                  id: "item",
-        //                  itemRenderer: new BandItemRenderer("#78B4FF"),
-        //                  color: "#fafafa"
-        //             },
-        //             {
-        //                  id: "split-event", 
-        //                  itemRenderer: new SplitBandItemRenderer("#03f945")
-        //             },
-        //             {
-        //                  id: "dumbbell-entity", 
-        //                  itemRenderer: new DumbbellItemRenderer("#03f945")
-        //             }
-        //        ]
-        //    }
+           {
+               id: "Sjednoceny pruh",
+               label: "Sjednoceni",
+               types: [
+                   {
+                         id: "event",
+                         itemRenderer: new BandItemRenderer("#F2BC53"),
+                         color: "#f5f5f5"
+                    },
+                    {
+                         id: "item",
+                         itemRenderer: new BandItemRenderer("#78B4FF"),
+                         color: "#fafafa"
+                    },
+                    {
+                         id: "split-event", 
+                         itemRenderer: new SplitBandItemRenderer("#03f945")
+                    },
+                    {
+                         id: "dumbbell-entity", 
+                         itemRenderer: new DumbbellItemRenderer("#03f945")
+                    }
+               ]
+           }
 
            
        ],    

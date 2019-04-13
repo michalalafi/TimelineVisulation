@@ -589,6 +589,8 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this._currentTime.add(deltaDuration, "seconds");
                 this.redraw();
                 this._fireEvent("timeChanged", this._currentTime, deltaDuration);
+                // FIALA Event for timeline drop log
+                this._fireEvent("timelineLogShifted", {currentTime : this._currentTime, deltaDuration: deltaDuration});
             },
 
             /**

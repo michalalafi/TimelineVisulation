@@ -52,32 +52,24 @@ return{
 		{"id":49,"stereotype":"event","name":"vražda sv. Václava","description":"Všechny legendy bez rozdílu (ovšem ne se zcela jasným motivem) uvádějí, že 28. září 935 (spíše než 929) došlo ve Staré Boleslavi k Václavově úkladné vraždě, zosnované Boleslavem, kterého poštívali „čeští mužové“. Dále pak byli zavražděni i členové Václavovy družiny tak, jak přikazovala tehdejší zvyklost krevní msty. Existují názory, které vyvozují mimo jiné z toho, jak legendisté příběh vyprávějí, že mohlo jít spíš o nešťastnou náhodu a osudné nedorozumění s tragickým koncem a nikoliv o vyvrcholení mocenského boje mezi dvěma tábory Přemyslovců.","begin":"0935-09-28T00:00:00","properties":{"imageSrc":"https://upload.wikimedia.org/wikipedia/commons/2/27/ZapichnutiVaclava_liberviaticus.jpg","startPrecision":"day"}},
 		{"id":50,"stereotype":"person","name":"Václav II.","description":"Václav II. byl šestý český a první polský král z dynastie Přemyslovců.","begin":"1271-09-27T00:00:00","end":"1305-06-21T23:59:59","properties":{"imageSrc":"http://www.panovnici.estranky.cz/img/mid/249/vaclav-ii.-kral.jpg","startPrecision":"day","endPrecision":"day"}},
 		/* FIALA */
-		/*{"id":51,"stereotype":"split-event","name":"Test","properties":{"startPrecision":"year"},"subItems":
-			[
-				{"id":52},
-				{"id":53}
-			]
-		},*/
 		{"id":52,"stereotype":"split-event","name":"TestSplit","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
 			[
-				// {"id":53,"name": "Commit","begin":"2010-09-27T00:00:00","end":"2111-01-21T23:59:59"},
+				{"id":53,"name": "Commit","begin":"2010-09-27T00:00:00","end":"2111-01-21T23:59:59"},
 				{"id":54,"name": "Ticket","begin":"2100-05-27T00:00:00","end":"2130-06-21T23:59:59","css":"person"},
-				// {"id":55,"name": "Comment","begin":"2120-01-01T00:00:00","end":"2150-06-21T23:59:59","css":"queen fancy"},
 				{"id":56,"name": "Work","begin":"2020-01-01T00:00:00","end":"2100-09-21T23:59:59","css":"commit fancy"},
 				{"id":61,"name": "Commit","begin":"2015-01-01T00:00:00","css":"king"},
-				// {"id":64,"name": "CommitTestChyby","begin":"2040-09-27T00:00:00","css":"king"},
 			]
 		},
-		// {"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
-		// [
-		// 	{"id":58,"name": "King","type": "start","css":"dumbbell-king"},
-		// 	{"id":59,"name": "Dumbell","type": "end"/*,"css":"dumbbell-person"*/},
-		// 	{"id":60,"name": "Money","begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
-		// 	{"id":62,"name": "Commit","begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
-		// 	{"id":64,"name": "CommitTestChyby","begin":"2040-09-27T00:00:00","css":"king"},
-		// ]
-		// },
-		// {"id":63,"stereotype":"person","name":"Václav 5","description":"Zkouska ","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"}},
+		{"id":57,"stereotype":"dumbbell-entity","name":"TestDumbbell","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"},"subItems":
+		[
+			{"id":58,"name": "King","type": "start","css":"dumbbell-king"},
+			{"id":59,"name": "Dumbell","type": "end"/*,"css":"dumbbell-person"*/},
+			{"id":60,"name": "Money","begin":"2020-09-27T00:00:00","css":"dumbbell-event"},
+			{"id":62,"name": "Commit","begin":"2030-09-27T00:00:00","end":"2050-06-21T23:59:59","css":"dumbbell-event"},
+			{"id":64,"name": "CommitTestChyby","begin":"2040-09-27T00:00:00","css":"king"},
+		]
+		},
+		{"id":63,"stereotype":"person","name":"Václav 5","description":"Zkouska ","begin":"2010-09-27T00:00:00","end":"2150-06-21T23:59:59","properties":{"startPrecision":"day"}},
 
 		 ],
 	"edges":
@@ -167,11 +159,12 @@ return{
 		{"id":84,"stereotype":"relationship","from":45,"to":50,"name":"potomek"},
 		{"id":85,"stereotype":"relationship","from":29,"to":28,"name":"potomek"},
 		/**FIALA */
-		// {"id":86,"stereotype":"relationship","from":50,"to":53,"name":"zkouska"},
-		// {"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"},
-		// {"id":88,"stereotype":"relationship","from":50,"to":63,"name":"zkouska"},
-		// {"id":89,"stereotype":"relationship","from":50,"to":59,"name":"zkouska"},
-		// {"id":90,"stereotype":"relationship","from":50,"to":58,"name":"zkouska"},
-		// {"id":91,"stereotype":"relationship","from":50,"to":64,"name":"commitTEst"},
+		{"id":86,"stereotype":"relationship","from":50,"to":53,"name":"zkouska"},
+		{"id":87,"stereotype":"relationship","from":50,"to":61,"name":"zkouska"},
+		{"id":88,"stereotype":"relationship","from":50,"to":63,"name":"zkouska"},
+		{"id":89,"stereotype":"relationship","from":50,"to":59,"name":"zkouska"},
+		{"id":90,"stereotype":"relationship","from":50,"to":58,"name":"zkouska"},
+		{"id":91,"stereotype":"blabla","from":50,"to":64,"name":"commitTEst"},
+		{"id":92,"stereotype":"blabla","from":64,"to":64,"name":"backTest"},
 	]};
 	});

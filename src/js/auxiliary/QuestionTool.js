@@ -102,7 +102,8 @@ var QuestionTool = new Class("QuestionTool", {
         this.addListener("relationLogEnter", new Closure(this, this._relationLogEnter));
         //Item right click
         this.addListener("itemLogRightClick", new Closure(this, this._itemLogRightClicked));
-
+        //Timeline shifted
+        this.addListener("timelineLogShifted", new Closure(this, this._timelineLogShifted));
         //Confirm button click
         $("#confirm_btn").on("click", new Closure(this, this._confirmAnswer));
         //Key pressed
@@ -163,7 +164,7 @@ var QuestionTool = new Class("QuestionTool", {
     },
     /**
      * Counts events in whole test
-     * @param {test object} test
+     * @param {Object} test
      * @returns {int} count
      */
     _countEventsInTest : function(test){
@@ -320,6 +321,9 @@ var QuestionTool = new Class("QuestionTool", {
     },
     _timelineLogZoomed : function(e){
         this._actualQuestion.events.push(this._createEvent(e, "Timeline zoom"));
+    },
+    _timelineLogShifted: function(e){
+        this._actualQuestion.events.push(this._createEvent(e, "Timeline shifted"));
     },
     _relationLogClicked : function(e){
         this._actualQuestion.events.push(this._createEvent(e, "Relation click"));
