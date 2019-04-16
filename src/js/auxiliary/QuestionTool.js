@@ -151,7 +151,7 @@ var QuestionTool = new Class("QuestionTool", {
         this._test.duration = Math.round((this._test.endTime.getTime() - this._test.startTime.getTime())/1000);
         // Set test events count
         this._test.eventsCount = this._countEventsInTest(this._test);
-
+        // Export result
         this._copyPaste();
         this._download(this._getDateToString(this._test.startTime) + ".js","return" + JSON.stringify(this._test));
     },
@@ -287,14 +287,22 @@ var QuestionTool = new Class("QuestionTool", {
         event.eventTime = new Date();
         return event;
     },
+    /**
+     * Prepare file for download
+     * Set text of file @text
+     * Start dowlanding file
+     * @param {String} filename 
+     * @param {String} text 
+     */
     _download: function(filename, text) {
+        //Create element for file
         var element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
         element.setAttribute('download', filename);
     
         element.style.display = 'none';
         document.body.appendChild(element);
-    
+        //Start download
         element.click();
     
         document.body.removeChild(element);

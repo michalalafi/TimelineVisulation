@@ -6,8 +6,8 @@ define([],function(){
     return{
         questions : [
             {
-                "text" : "Kdo byl prvni kral?",
-                "answer" : "Karel"
+                "text" : "V kolikátém století žil Karel IV.?",
+                "answer" : "14"
             },
             {
                 "text" : "Kdo je Karel?",
