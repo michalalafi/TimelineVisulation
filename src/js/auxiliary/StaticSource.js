@@ -65,6 +65,12 @@ var StaticSource = new Class("StaticSource", {
                 // Find relation and add relation in all entities include SubEntity
                 if(!allMappedEntities.get(edge.from).hasRelation(edgeObj.getId()))
                     allMappedEntities.get(edge.from).addRelation(edge.id);
+
+                if(!edge.hasOwnProperty('to') || edgeObj._destinationId === null){
+                    // console.log(edgeObj); 
+                    continue;
+                }
+                // console.log(edge);
                 if(!allMappedEntities.get(edge.to).hasRelation(edgeObj.getId()))
                     allMappedEntities.get(edge.to).addRelation(edge.id);
                 

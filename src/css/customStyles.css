@@ -1,33 +1,18 @@
-.king{
-    /*background-color: black; */
-    background:rgba(59, 58, 58, 1);
+.zaloz-firmy{
+    background-color: #17d139;
 }
-.person{
-    /*background-color: blue; */
-    background:rgba(39, 2, 253, 0.7);
+.prodej-firmy{
+    background-color: #440103;
 }
-.queen{
-    /*background-color: pink; */
-    background:rgba(228, 109, 109, 0.5);
+.nova-tech{
+    background-color: lightseagreen;
 }
-.fancy{
-    border-radius: 5px;
+.dobra-udalost{
+    background-color: green;
 }
-.commit{
-    background:rgba(4, 84, 255, 0.5);
+.spatna-udalost{
+    background-color: red;
 }
-
-.dumbbell-king{
-    /*background-color: black; */
-    background:rgb(59, 58, 58);
-}
-
-.dumbbell-person{
-    /*background-color: blue; */
-    background:rgb(39, 2, 253);
-}
-
-.dumbbell-event{
-    /*background-color: blue; */
-    background:rgb(44, 253, 2);
+.konkurz{
+    background-color: #0d7c9b;
 }

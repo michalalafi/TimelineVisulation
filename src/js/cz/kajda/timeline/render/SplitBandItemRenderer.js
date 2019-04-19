@@ -162,7 +162,7 @@ var SplitBandItemRenderer = new Class("cz.kajda.timeline.render.SplitBandItemRen
             else{
                 this._correctProtrusionSubItems(item);
                 item.getHtmlElement()
-                    .find("." + this.DURATION_CLASS).css("background-color","transparent")
+                    .find("." + this.DURATION_CLASS).css("background-color",this._color.getRgba())
                 item.showSubItems();
             }
         }

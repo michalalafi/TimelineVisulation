@@ -606,7 +606,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this.focusItem(bandItem.getEntity(), false);
                 this._fireEvent("itemClick", entity);
                 // FIALA Event for item click
-                this._fireEvent("itemLogClick", entity);
+                this._fireEvent("itemLogClick", Object.assign({}, entity, { _subEntities: [] }));
             },
 
             /**
@@ -623,7 +623,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this._fireEvent("itemEnter", entity);
 
                 // FIALA Event item enter
-                this._fireEvent("itemLogEnter", entity);
+                this._fireEvent("itemLogEnter", Object.assign({}, entity, { _subEntities: [] }));
             },
 
             /**
@@ -650,7 +650,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
                 this._fireEvent("itemRightClick", entity);
 
                 // FIALA Event item righ click
-                this._fireEvent("itemLogRightClick", entity);
+                this._fireEvent("itemLogRightClick", Object.assign({}, entity, { _subEntities: [] }));
             },
             
             /**
@@ -1167,7 +1167,7 @@ var Timeline = Class("cz.kajda.timeline.Timeline", {
             var lc = this.option("locale")[key];
             if(lc) return lc;
             return "{" + key + "}";
-        }
+        },
     
     //</editor-fold>    
     
